@@ -1,0 +1,178 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>BOLO | UNIVERSE</title>
+
+<link href="v2.css" rel="stylesheet" type="text/css"/>
+<!--script type="text/javascript" src="js/util/jquery-1.9.1.js"data-main="js/index"></script-->
+<script type="text/javascript" src="js/socket.io-client/dist/socket.io.js"></script>
+<script type="text/javascript" src="js/util/seedrandom.js" ></script>
+<script type="text/javascript" src="js/util/require.js" data-main="js/index"></script>
+<script type="text/javascript" src="js/util/tween.js" ></script>
+<script type="text/javascript" src="js/network.js"></script>
+
+
+<script type="text/javascript">
+
+var purpose = "TREES";
+
+function resetPurposeButtons() {
+    document.getElementById("TREES").innerHTML = 'trees';
+    document.getElementById("ROADS").innerHTML = 'roads';
+    document.getElementById("BUILDINGS").innerHTML = 'buildings';
+    document.getElementById("TURRETS").innerHTML = 'turrets';
+    document.getElementById("MINES").innerHTML = 'mines';
+    console.log('asdasd');
+}
+
+
+function alertMe(str){
+    resetPurposeButtons();
+    document.getElementById(str).innerHTML=str;
+    if(window.simUIMessage){
+        window.simUIMessage(str);
+    }
+}
+
+</script>
+
+</head>
+
+<body onbeforeunload="if(window.saveSession)window.saveSession();console.log('app closed.');" oncontextmenu="return false;" style="cursor: crosshair">
+<div id="display-frame">
+    <div class="uiElem" id="fpsContainer" style="top:3px;left:3px;">
+        <div><span id="fps"></span></div>
+    </div>
+</div>
+<div id="hud" style="width:100%;height:100%;z-index:1;top:0px;">
+
+    <div id="topLeftBox">
+    
+        <div id="logoBox" class="navFont" style="margin:20px;padding:12px;">BOLO | UNIVERSE</div>
+    
+    </div>
+    
+    <div id="topRightBox">
+    
+    	<div id="container" style="padding:20px;">
+    
+            <div id="purposeBox" style="padding:12px;">
+                <div class="purposeButton"><a href="#" onclick="alertMe('TREES');" id="TREES">TREES</a></div>
+                <div class="purposeButton"><a href="#" onclick="alertMe('ROADS');" id="ROADS">roads</a></div>
+                <div class="purposeButton"><a href="#" onclick="alertMe('BUILDINGS');" id="BUILDINGS">buildings</a></div>
+                <div class="purposeButton"><a href="#" onclick="alertMe('TURRETS');" id="TURRETS">turrets</a></div>
+                <div class="purposeButton"><a href="#" onclick="alertMe('MINES');" id="MINES">mines</a></div>
+               
+            </div>
+    
+    
+        </div>
+    
+    </div>
+    
+    
+    <div id="bottomLeftBox">
+    
+        <div id="container" style="padding:20px;">
+    
+            <div id="basesBox" style="padding:12px;">
+                <div class="navFont" style="color:#bb9878;">BASES</div>
+                <div style="padding:0px;" class="navFont">
+                    <div id="basebox_0" class="colorBox" style="background-color:#bb9878;"></div>
+                    <div id="basebox_1" class="colorBox" style="background-color:#bb9878;"></div>
+                    <div id="basebox_2" class="colorBox" style="background-color:#bb9878;"></div>
+                    <div id="basebox_3" class="colorBox" style="background-color:#bb9878;"></div>
+                    <div id="basebox_4" class="colorBox" style="background-color:#bb9878;"></div>
+                    <div id="basebox_5" class="colorBox"></div>
+                    <div id="basebox_6" class="colorBox"></div><br/>
+                    <div id="basebox_7" class="colorBox"></div>
+                    <div id="basebox_8" class="colorBox"></div>
+                    <div id="basebox_9" class="colorBox"></div>
+                    <div id="basebox_10" class="colorBox"></div>
+                    <div id="basebox_11" class="colorBox"></div>
+                    <div id="basebox_12" class="colorBox"></div>
+                    <div id="basebox_13" class="colorBox"></div><br/>
+                    <div id="basebox_14" class="colorBox"></div>
+                    <div id="basebox_15" class="colorBox"></div>
+                    <div id="basebox_16" class="colorBox"></div>
+                    <div id="basebox_17" class="colorBox"></div>
+                    <div id="basebox_18" class="colorBox"></div>
+                    <div id="basebox_19" class="colorBox"></div>
+                    <div id="basebox_20" class="colorBox"></div><br/>
+                </div>
+            </div><div id="turretsBox" style="padding:12px;">
+                <div class="navFont" style="color:#14751c;">TURRETS</div>
+                <div style="padding:0px;" class="navFont">
+                	<div id="cbox_0" class="colorBox" style="background-color:#14751c;"></div>
+                    <div id="cbox_1" class="colorBox" style="background-color:#14751c;"></div>
+                    <div id="cbox_2" class="colorBox" style="background-color:#14751c;"></div>
+                    <div id="cbox_3" class="colorBox" style="background-color:#14751c;"></div>
+                    <div id="cbox_4" class="colorBox" style="background-color:#14751c;"></div>
+                    <div id="cbox_5" class="colorBox" style="background-color:#14751c;"></div>
+                    <div id="cbox_6" class="colorBox"></div><br/>
+                    <div id="cbox_7" class="colorBox"></div>
+                    <div id="cbox_8" class="colorBox"></div>
+                    <div id="cbox_9" class="colorBox"></div>
+                    <div id="cbox_10" class="colorBox"></div>
+                    <div id="cbox_11" class="colorBox"></div>
+                    <div id="cbox_12" class="colorBox"></div>
+                    <div id="cbox_13" class="colorBox"></div><br/>
+                    <div id="cbox_14" class="colorBox"></div>
+                    <div id="cbox_15" class="colorBox"></div>
+                    <div id="cbox_16" class="colorBox"></div>
+                    <div id="cbox_17" class="colorBox"></div>
+                    <div id="cbox_18" class="colorBox"></div>
+                    <div id="cbox_19" class="colorBox"></div>
+                    <div id="cbox_20" class="colorBox"></div><br/>
+                </div>
+            </div>
+    
+    
+        </div>
+    
+    </div>
+    
+    
+    <div id="bottomCenterBox">
+        <table cellpadding=0 cellspacing=0 border=0>
+            <div class="navFont" style="color:#db17cb;">CHAT</div>
+            <div id="incomingChatMessages" style="color:#db17cb;"></div>
+            <input id="outgoingChatMessage" class=".selectable"></input>
+            <!--div id="playerListElems">
+            </div-->
+        </table>
+    </div>
+    
+    <div id="bottomRightBox">
+    
+        <div id="container" style="padding:20px;">
+    
+           
+            <div style="padding:12px;background-color:rgba(0,0,0, 0.5);">
+                <table cellpadding=0 cellspacing=0 border=0>
+                <tr>
+                <td><div style="background-color:#000;width:100px;"><div id="statColor_shells" style="background-color:#db17cb;width:100px;height:12px;margin-bottom:4px;"></div></div>
+                    <div style="background-color:#000;"><div id="statColor_mines" style="background-color:#2ac8ca;width:100px;height:12px;margin-bottom:4px;"></div></div>
+                    <div style="background-color:#000;"><div id="statColor_armor" style="background-color:#20db17;width:100px;height:12px;margin-bottom:4px;"></div></div>
+                    <div style="background-color:#000;"><div id="statColor_wood" style="background-color:#db8617;width:100px;height:12px;"></div></div></td>
+                <td width="2px;"></td>
+                <td>
+                    <div class="navFont" style="color:#db17cb;">SHELLS</div>
+                    <div class="navFont" style="color:#2ac8ca;">MINES</div>
+                    <div class="navFont" style="color:#20db17;">ARMOR</div>
+                    <div class="navFont" style="color:#db8617;">WOOD</div>
+                    </td>
+                    </tr>
+                </table>
+    		</div>
+    
+        </div>
+    
+    </div>
+
+    <canvas id="canvas" style="width: 100%; height: 100%;">
+    </canvas>
+</div>
+
+</body>
+</html>

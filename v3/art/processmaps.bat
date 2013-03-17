@@ -1,0 +1,1 @@
+for /f "delims=" %%a IN ('dir /b /s maps\*.map') do java maptxt "%%a"
