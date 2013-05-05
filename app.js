@@ -86,6 +86,18 @@ io.sockets.on('connection', function (socket) {
         io.sockets.emit('player',players[socket.id]); //Broadcast the changed player nick..
     });
     
+    var g_gameHost=null;
+    socket.on('host', function(){
+        if(!g_gameHost){
+            g_gameHost=socket.id;
+        }
+        socket.emit('host',g_gameHost);
+    });
+    
+    socket.on('ai', function (cmd) {    //Broadcast ai path change
+        socket.broadcast.emit('ai',cmd);
+    });
+    
     socket.on('video', function (data) {
 	//console.log('Got data:'+socket.id);
         socket.broadcast.emit('video', {data:data,id:socket.id});    //Forward video packets...
@@ -192,6 +204,7 @@ io.sockets.on('connection', function (socket) {
     });
     
     socket.on('disconnect', function (data) {//Called when client disconnects
+        
         console.log("Client disconnect from " + address.address + ":" + address.port + " sid:"+socket.id);
         console.log("Discon data:" + data);
         var plyr=players[socket.id];
@@ -209,6 +222,25 @@ io.sockets.on('connection', function (socket) {
 
         io.sockets.emit('players',players); //Broadcast the new player list
         
+        if(socket.id == g_gameHost){        //Host has left the game...
+            var pkeys=Object.keys(players);
+            if(pkeys.length===0){
+                g_gameHost=null;
+            }else{
+                g_gameHost=players[pkeys[0]].id;    //Pick a new host..
+                io.sockets.emit('host',g_gameHost); //Broadcast the new host
+            }
+        }
+        
     });
     
 });
+
+/*
+ *  connect
+ *      
+ * 
+ * 
+ * 
+ * 
+ */

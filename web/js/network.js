@@ -26,7 +26,7 @@ function networkObject(){
     }
 },
 
-rebuildPlayerList:function ()
+rebuildPlayerListUI:function ()
 {
     var elem=document.getElementById("playerListElems");
     if(!elem)return;
@@ -111,12 +111,12 @@ networkAttachClientListeners:function (){
     this.iosocket.on('player', function(playerData) {
         var player=self.g_playerList[playerData.id]=playerData;
         self.g_localPlayer=self.g_playerList[self.g_networkId];
-        self.rebuildPlayerList();
+        self.rebuildPlayerListUI();
     });
     this.iosocket.on('players', function(players) {
         self.g_playerList = players;
         self.g_localPlayer=self.g_playerList[self.g_networkId];
-        self.rebuildPlayerList();
+        self.rebuildPlayerListUI();
     });
     
     if(this.outgoingNickField)this.outgoingNickField.onkeypress=this.outgoingNickKeyPress;    

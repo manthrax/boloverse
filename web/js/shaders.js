@@ -29,9 +29,9 @@ void main() {
 
 SCRIPT='TNDFS';
 
-#ifdef GL_ES
-precision highp float;
-#endif
+//#ifdef GL_ES
+precision mediump float;
+//#endif
 
 uniform sampler2D diffuseSampler;
 varying vec3 v_normal;
@@ -39,12 +39,13 @@ varying vec4 v_position;
 varying vec2 v_texCoord;
 varying float atmosBlend;
 
-uniform float farDepth;
-
+//uniform float farDepth;
+//
 void main() {
     vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
     //vec3 normal = normalize(v_normal);
-    gl_FragColor.rgb = (diffuse.rgb * atmosBlend)+((1.0-atmosBlend)*vec3(0.5, 0.6, 0.9));//v_normal;//diffuse*normal.y;
+    gl_FragColor.rgb = ((v_normal+1.0)*0.5)*0.1*atmosBlend*v_normal.z;//diffuse.rgb;//abs(v_normal);//vec3(1.0,0,0);////(diffuse.rgb * atmosBlend)+((1.0-atmosBlend)*vec3(0.5, 0.6, 0.9));//v_normal;//diffuse*normal.y;
+    //gl_FragColor.rgb = diffuse.rbg*v_normal.z;
 }
 
 SCRIPT='explosionVS';
@@ -68,9 +69,9 @@ void main() {
 
 SCRIPT='explosionFS';
 
-#ifdef GL_ES
-precision highp float;
-#endif
+//#ifdef GL_ES
+precision mediump float;
+//#endif
 
 uniform sampler2D diffuseSampler;
 varying vec3 v_normal;
@@ -125,9 +126,9 @@ SCRIPT='windFS';
 //    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 //}
 
-#ifdef GL_ES
-precision highp float;
-#endif
+//#ifdef GL_ES
+precision mediump float;
+//#endif
 
 uniform sampler2D diffuseSampler;
 varying vec3 v_normal;
@@ -138,6 +139,91 @@ void main() {
     vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
     vec3 normal = normalize(v_normal);
     gl_FragColor.rbg = diffuse.rbg;//v_normal;//diffuse*normal.y;
+}
+
+SCRIPT='additiveSpriteVS';
+
+LINK='noise3D';
+
+attribute vec4 position;
+attribute vec3 normal;
+attribute vec2 texCoord;
+
+uniform mat4 worldViewProjection;
+uniform mat4 world;
+uniform mat4 view;
+uniform mat4 projection;
+uniform mat4 worldInverse;
+uniform mat4 viewInverse;
+uniform mat4 worldInverseTranspose;
+uniform float seconds;
+uniform float aspectRatio;
+
+//varying vec4 v_position;
+varying vec2 v_texCoord;
+varying vec3 v_normal;
+varying vec3 v_color;
+uniform float spriteAlpha;
+varying float v_spriteAlpha;
+//vec3    colors[4];//=vec3[4](vec3(1,1,1),vec3(1,1,1),vec3(1,1,1),vec3(1,1,1));
+
+void main() {
+    //mat4 iview=inverse(view);
+    v_texCoord = texCoord;
+    vec4 v_position = position;
+    
+    v_normal =  (worldInverseTranspose * vec4(normal, 0)).xyz;
+
+    float abv=abs(v_position.x);
+    float cfrac=mod((abv*1000.0),4.0);
+    float cfrac2=mod((abv*1230.0),1.0);
+    
+    v_position = worldViewProjection * v_position;
+    v_position.xyz+=vec3(1,0,0)*((v_texCoord.x-0.5)*1.0);
+    v_position.xyz+=vec3(0,aspectRatio,0)*((v_texCoord.y-0.5)*1.0);
+    v_texCoord.x=v_texCoord.x<0.0?0.0:1.0;
+    v_texCoord.y=v_texCoord.y<0.0?0.0:1.0;
+    
+    
+    v_color=(cfrac>3.0)?vec3(1,1,1):(cfrac>2.0)?vec3(0.3,0.3,1.0):vec3(0.8,0.8,0.2);
+
+    v_spriteAlpha=spriteAlpha*((cfrac2*0.9)+0.1);
+ 
+ //v_color=vec3(1,1,1);
+    
+ //   v_position.x+=;
+//    v_position.z+=(texCoord.y-0.5)*3.0;
+    gl_Position = v_position;
+
+//	vec3 wpos=(world*position).xyz*0.02;
+//	wpos.y+=seconds*1.5;
+//	float nv=snoise(wpos);
+	//if(nv>0.5)nv*=2.0;
+//	gl_Position.y += nv*10.0;
+}
+
+SCRIPT='additiveSpriteFS';
+
+//float rand(vec2 co){
+//    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+//}
+
+//#ifdef GL_ES
+precision mediump float;
+//#endif
+
+uniform sampler2D diffuseSampler;
+varying vec3 v_normal;
+//varying vec4 v_position;
+varying vec2 v_texCoord;
+varying vec3 v_color;
+//uniform float spriteAlpha;
+varying float v_spriteAlpha;
+
+void main() {
+    vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
+    vec3 normal = normalize(v_normal);
+    gl_FragColor.rbg = (diffuse.rbg*v_spriteAlpha)*v_color.rbg;//*-normal.z;//*normal.z;//;//diffuse.rbg;//vec3(0.2,0.2,0.2);// v_normal;//
 }
 
 SCRIPT='endScripts';

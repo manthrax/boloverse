@@ -96,6 +96,8 @@ define( function() {
                             if(elem.id) delete this.byId[elem.id];
                             //elem.next=this.freeList;
                             //this.freeList=elem;
+                            if(elem.destroy)
+                                elem.destroy();
                             if(prv==null)this.activeList=nxt;
                             else prv.next=nxt;
                             elem=nxt;

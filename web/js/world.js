@@ -5,7 +5,7 @@ define([
     "util/util",
     "programs",
     "js/bolomap.js",
-    "js/meshes/testmesh.js",
+    "js/meshes/galaxymesh.js",
     "js/util/gl-matrix.js"
     ], 
     function(displayModule,glUtil,util,programs,bolomap,meshes) {//display, 
@@ -197,21 +197,24 @@ define([
         }
         
         function bindToUnit(unit){
+            if(!this.loaded)
+                return;
             gl.activeTexture(gl.TEXTURE0 + unit);
             gl.bindTexture(gl.TEXTURE_2D, this);
         }
         
         function loadTexture(name){
             var tileTex=glUtil.loadTexture(gl,name,function(glTex){
-                tileTex.bindToUnit=bindToUnit;
-                tileDiffuse=tileTex;
-                objects.iterateActive({
+/*                objects.iterateActive({
                     tex:tileTex,
                     update:function(obj){
                         obj.diffuseSampler=tileTex;
                     }
                 });
+                */
+               tileTex.loaded=true;
             });
+            tileTex.bindToUnit=bindToUnit;
             return tileTex;
         }
         
@@ -224,10 +227,7 @@ define([
             else
                 tileShader=getShader("TND");
             
-            tileDiffuse=glUtil.createSolidTexture(gl,[0,0,0,0]);
-            tileDiffuse.bindToUnit=bindToUnit;
-            
-            var tileTex=loadTexture("tiles.png");
+            tileDiffuse=loadTexture("galaxy.png");
         
         }
 
@@ -300,13 +300,21 @@ define([
             patch.meshRenderer.updateMesh(patch);
         }
         
+        function setObjectMesh(obj,mesh,shader,diffuseSampler){
+            var meshRenderer = display.meshRenderer(gl,mesh,shader?shader:tileShader);
+            obj.addComponent('meshRenderer',meshRenderer);
+            meshRenderer.diffuseSampler=diffuseSampler?diffuseSampler:tileDiffuse;
+            obj.dirty=false;
+            return meshRenderer;
+        }
+        
         function buildRegionPatchObject(x,y,patchRad){
             var mesh=makePatchMesh(x,y,patchRad);
             var meshRenderer = display.meshRenderer(gl,mesh,tileShader);
             
             var obj=objects.allocate();
             obj.addComponent('meshRenderer',meshRenderer);
-            obj.diffuseSampler=tileDiffuse;
+            meshRenderer.diffuseSampler=tileDiffuse;
             obj.dirty=false;
             mat4.identity(obj.matrix);
             //mat4.scale(obj.matrix,[sfrnd(10),sfrnd(10),sfrnd(10)]);
@@ -363,6 +371,7 @@ define([
         function getMap(){
             return currentMap;
         }
+        
         function getCell(x,y){
             return currentMap.map[getCellIndex(x,y)];
         }
@@ -387,24 +396,34 @@ define([
             return obj;
         }
         
+        function newObject(position){
+            var obj=objects.allocate();
+            
+            mat4.identity(obj.matrix);
+            if(position)mat4.translate(obj.matrix,position);
+        }
+        
         function addObject(meshName,position,shader,diffuse){
             var obj=objects.allocate();
-            var batch=display.geomBatch();
-            mat4.identity(obj.matrix);    
-            var scl=tileRad;
-            mat4.scale(obj.matrix,[scl,scl,scl]);
-            display.instanceMesh(meshes[meshName],batch,obj.matrix);
+            
+            if(meshName){
+                var batch=display.geomBatch();
+                mat4.identity(obj.matrix);    
+                var scl=tileRad;
+                mat4.scale(obj.matrix,[scl,scl,scl]);
 
-            var mesh=display.mesh(gl,
-                batch.vertices,
-                batch.indices,
-                batch.normals,
-                batch.uvs);
-            var meshRenderer = display.meshRenderer(gl,mesh,shader?shader:tileShader);
+                display.instanceMesh(meshes[meshName],batch,obj.matrix);
+                var mesh=display.mesh(gl,
+                    batch.vertices,
+                    batch.indices,
+                    batch.normals,
+                    batch.uvs);
 
-            obj.addComponent('meshRenderer',meshRenderer);
-            obj.diffuseSampler=diffuse?diffuse:tileDiffuse;
+                var meshRenderer = display.meshRenderer(gl,mesh,shader?shader:tileShader);
 
+                obj.addComponent('meshRenderer',meshRenderer);
+                meshRenderer.diffuseSampler=diffuse?diffuse:tileDiffuse;
+            }
             mat4.identity(obj.matrix);
             mat4.translate(obj.matrix,position);
             return obj;
@@ -415,6 +434,7 @@ define([
                 obj.cell=null;
             }
         }
+        
         var v3t0=[0,0,0];
         function moveTileObject(obj,fx,fy,fz){
             v3t0[0]=fx;
@@ -564,7 +584,11 @@ define([
             loadRandomMap:loadRandomMap,
             loadMapByName:loadMapByName,
             getMap:getMap,
-            mapOrigin:mapOrigin
+            mapOrigin:mapOrigin,
+            loadTexture:loadTexture,
+            newObject:newObject,
+            setObjectMesh:setObjectMesh,
+            meshes:meshes
         }
     }
     );

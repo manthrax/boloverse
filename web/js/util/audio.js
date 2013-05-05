@@ -1,8 +1,10 @@
 /* Copyright 2011 - Michael A. Schlachter - please contact me if you want to use this code! */
 define([],function() {
     var loggingEnabled=false;
-    var audibleRadius=300;
+    var soundDisabled = false;
+    var audibleRadius=200;
     var g_globalSoundVolume=0.1;
+
     
     var audibleRadius2=audibleRadius*audibleRadius;
 	
@@ -336,16 +338,20 @@ define([],function() {
             snd.currentTime=0.0;
         cachedCount++;
     }
-    var soundDisabled = false;
-
+    
     function play(name,vol,caller,doneCbfn,loop) { 
+        
         if (soundDisabled || playingCount>4)
             return null;
 		
         var rsrc=files[name];
         if(rsrc==undefined){
-            alert("Sound:"+name+" is undefined.");
+            console.log("Sound:"+name+" is undefined.");
+            return;
         }
+        var vol=g_globalSoundVolume*(vol!=undefined?parseFloat(vol):1.0);
+        if(vol<0.0001)
+            return null;
         var snd;
         if(freeChannels[rsrc.src]){
             snd=freeChannels[rsrc.src].pop();
@@ -367,7 +373,7 @@ define([],function() {
         snd.tmDuration=1000*rsrc.duration;
         if(snd.tmDuration<1)snd.tmDuration=1;
         snd.endTime=tm+snd.tmDuration;
-        snd.volume=g_globalSoundVolume*(vol!=undefined?parseFloat(vol):1.0);
+        snd.volume=vol;
         playing[snd.channelIndex]=snd;
         playingCount++;
         /*    endEvents[snd]=function() { ended(name,snd); };

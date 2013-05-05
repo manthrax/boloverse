@@ -6,11 +6,13 @@ define([
     "js/meshes/testmesh.js",
     "js/util/audio.js",
     "js/network.js",
+    "js/brain.js",
     "js/util/gl-matrix.js"
     ],
 
-function(displayModule,bolomap,boloworld,meshes,audio,network) {
-    function nv3(){return [0,0,0]};
+function(displayModule,bolomap,boloworld,meshes,audio,network,brain) {
+    
+    function nv3(){return [0,0,0];}
     var v3t0=nv3();
     var v3t1=nv3();
     var v3t2=nv3();
@@ -29,11 +31,15 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
     var gl;
     var currentMap=null;
     var playerList=[];
+    var aiList=[];
     var playersByObjectId={};
     var playersByNetworkId={};
     var localPlayer=null;
+    var NEUTRAL_TEAM_ID=8;
 
-
+    var ticketBleed = 0.1;
+    var teamTickets={0:500,1:500};
+    
     var tileData={
         "Building":{mesh:meshes.building,speed:0.0},
         "River":{mesh:meshes.river,speed:0.3},
@@ -47,7 +53,10 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
         "RiverWithBoat":{mesh:meshes.river,speed:1.0},
         "Ocean":{mesh:meshes.ocean,speed:0.25},
     }
-
+    
+    for(var v in meshes){
+        meshes[v].name=v;
+    }
     var dirLUT={
         0:["",0],
         1:["0",2],
@@ -70,6 +79,59 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
 
         15:["0123",0],
     }
+    
+    var     pilotRad=boloworld.worldMeter*2;
+    var     pilotSpeed=0.21;
+    
+    var     toolReqs={
+        harvest:["Forest"],
+        road:["Grass","Swamp","River","Rubble"],
+        building:["Grass","Swamp","River","Road"],
+        pillbox:["Grass","Swamp"],
+        mine:["Grass","Swamp","Rubble","Road"]
+    }
+    var roadWoodCost=2;
+    var buildingWoodCost=2;
+    var currentTool="harvest";
+    var explosionShader;
+    
+    
+    var groundPlane={o:[0,0,0],d:[0,0,1]};
+
+    var accel=0.1;
+    var rspeed=0.03;
+
+    var tankRad=4.0*boloworld.worldMeter;
+
+    var barShells=document.getElementById("statColor_shells");
+    var barMines=document.getElementById("statColor_mines");
+    var barArmor=document.getElementById("statColor_armor");
+    var barWood=document.getElementById("statColor_wood");
+    var ticketsDisplay=document.getElementById("ticketDisplay");
+    
+    var healCounter=0.0;
+    var healRate=10.0;
+    var damageCounter=0.0;
+    var damageRate=3.0;
+    var hudUpdateCounter=0;
+    var syncCountdown=0;
+    var mouseWasDown=false;
+    
+    network.on("god",godCommand);
+    
+    var playerControls={
+        up:1,
+        down:2,
+        left:4,
+        right:8,
+        fire:16,
+        hack:32,
+        harvest:64,
+        road:128,
+        building:256,
+        pillbox:512,
+        mine:1024
+    };
     
     function generateTileMesh(mat,mx,my,rand){
         var cell=boloworld.getCell(mx,my);
@@ -251,9 +313,11 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
                         deadTurret.pillboxNumber=obj.pillboxNumber;
                         var cb=document.getElementById("cbox_"+deadTurret.pillboxNumber);
                         cb.style["background-color"]="gray";
+                        cb.style["background-color"]=(this.team==0)?"red":"blue";
+
                         playSound(obj,"big_explosion_far");
                     }
-                    console.log(obj.name+" destroyed.");
+                    //console.log(obj.name+" destroyed.");
                     //cell.length=1;
                     
                 }else
@@ -290,6 +354,8 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
         if(tile.length>1&&(tile[1].name=="turret"||tile[1].name=="tank")){
             if(tile.length==2 && obj.shooter==tile[1])
                 return true;
+//            if(tile[1].team==obj.shooter.team)        //TEam damage
+//                return true;
             return false;
         }
         return true;
@@ -375,32 +441,20 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
         
     }
 
-    var     pilotRad=boloworld.worldMeter*2;
-    var     pilotSpeed=0.21;
-    
-    var     toolReqs={
-        Harvest:["Forest"],
-        Road:["Grass","Swamp","River","Rubble"],
-        Building:["Grass","Swamp","River","Road"],
-        Pillbox:["Grass","Swamp"],
-        Mine:["Grass","Swamp","Rubble","Road"]
-    }
-    var roadWoodCost=2;
-    var buildingWoodCost=2;
     function validPilotTarget(tank,currentTool,cell){
         var validTarget=false;
         var reqs=toolReqs[currentTool];
         if(!reqs)return false;
         var valid=false;
         for(var i=0;i<reqs.length;i++)if(cell[0].name==reqs[i])valid=true;
-        if(currentTool=="Road"&&tank.invWood<roadWoodCost)return false;
-        if(currentTool=="Building"&&tank.invWood<buildingWoodCost)return false;
+        if(currentTool=="road"&&tank.invWood<roadWoodCost)return false;
+        if(currentTool=="building"&&tank.invWood<buildingWoodCost)return false;
+        if(currentTool=="pillbox"&&tank.invTurrets.length==0)return false;
         return valid;
     }
     
     
     
-    var currentTool="Harvest";
     
     
     function updatePilot(){
@@ -419,38 +473,42 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
             if(!this.returning){
                 //Made it to target...
                 var tileDirty=false;
-                if(validPilotTarget(this,currentTool,this.cell)){
-                    if(currentTool=="Harvest"){
+                if(validPilotTarget(this.tank,currentTool,this.cell)){
+                    if(currentTool=="harvest"){
                         this.cell[0]={name:"Grass",hp:255};
                         this.wood=16;   //Harvest tree.. turn it to grass...
                         tileDirty=true;
                         playSound(this,"farming_tree_near");
-                    }else if(currentTool=="Road"){
+                    }else if(currentTool=="road"){
                         if(this.tank.invWood>roadWoodCost){
                             this.cell[0]={name:"Road",hp:255};
                             tileDirty=true;
                             this.tank.invWood-=roadWoodCost;
                             playSound(this,"man_building_near");
                         }
-                    }else if(currentTool=="Building"){
+                    }else if(currentTool=="building"){
                         if(this.tank.invWood>buildingWoodCost){
                             this.cell[0]={name:"Building",hp:255};
                             tileDirty=true;
                             this.tank.invWood-=buildingWoodCost;
                             playSound(this,"man_building_near");
                         }
-                    }else if(currentTool=="Pillbox"){
-                        if(this.tank.invTurrets>0){
+                    }else if(currentTool=="pillbox"){
+                        if(this.tank.invTurrets.length>0){
                             var turret = boloworld.addObject("turret",[this.matrix[12],this.matrix[13],this.matrix[14]]);
                             turret.name="turret";
                             turret.hp=255;
                             turret.update=updatePillbox;
-                            turret.owningPlayer=this.tank.player;
+                            turret.team=this.team;
                             boloworld.addObjectToGrid(turret);
-                            this.tank.invTurrets--;
+                            turret.pillboxNumber = this.tank.invTurrets.pop();
                             playSound(this,"man_building_near");
+                            
+                            var cb=document.getElementById("cbox_"+turret.pillboxNumber);
+                            cb.style["background-color"]=(this.team==0)?"red":"blue";
+
                         }                        
-                    }else if(currentTool=="Mine"){
+                    }else if(currentTool=="mine"){
                         if(this.tank.invMines>0 && (this.cell.length==2)){
                             mat4.getRowV3(this.matrix, 3, v3t0);
                             var mine = boloworld.addObject("mine",v3t0);
@@ -462,6 +520,9 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
                             this.tank.invMines--;
                         }
                     }
+                }else{
+                    //invalid target..
+                    audio.play("bubbles");
                 }
                 if(tileDirty){ 
                     var cc = boloworld.worldToCellCoord(this.target);
@@ -509,7 +570,6 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
         this.alpha+=0.01;
     }
     
-    var explosionShader;
     
     function addExplosionNearObject(obj){
         if(!explosionShader)
@@ -554,39 +614,31 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
         }
     }
     
-    var c=false;
-    var groundPlane={o:[0,0,0],d:[0,0,1]};
-
-    var accel=0.1;
-    var rspeed=0.03;
-
-    var tankRad=4.0*boloworld.worldMeter;
-
-    var barShells=document.getElementById("statColor_shells");
-    var barMines=document.getElementById("statColor_mines");
-    var barArmor=document.getElementById("statColor_armor");
-    var barWood=document.getElementById("statColor_wood");
-    
     function updatePlayerHUD(p){
        barShells.style.width=""+parseInt(p.invShells*100.0/40.0)+"px";
        barMines.style.width=""+parseInt(p.invMines*100.0/40.0)+"px";
        barArmor.style.width=""+parseInt(p.hp*100.0/255.0)+"px";
        barWood.style.width=""+parseInt(p.invWood*100.0/255.0)+"px";
+       
+       var str="TICKETS:";
+       
+       for(var i in teamTickets){
+        for(var b in currentMap.bases){
+            var base=currentMap.bases[b];
+            if(base.body.team!=i&&base.body.team!=NEUTRAL_TEAM_ID)teamTickets[i]-=ticketBleed;
+        }
+        str+=" "+i+":"+parseInt(teamTickets[i]);
+       }
+       ticketsDisplay.innerHTML=str;
     }
-    
-    var healCounter=0.0;
-    var healRate=10.0;
-    var damageCounter=0.0;
-    var damageRate=3.0;
-    var hudUpdateCounter=0;
-    var syncCountdown=0;
-    var mouseWasDown=false;
     
     function changeMap(name){
         currentMap=boloworld.loadMapByName(name);
         display.camera.zoomToPause();
         buildMapObjects();
     }
+    
+    var aiIndexBase=0;
     
     function godCommand(msg){
         console.log("Got god command:"+msg);
@@ -596,10 +648,38 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
         
         }else if(cmd[0]=="startGame"){
             spawnPlayers();
+        }else if(cmd[0]=="addAI"){
+            var ai=addAI();
+            ai.aiIndex=aiIndexBase++;
+            ai.aiModule=cmd[1];
+            ai.team=parseInt(cmd[2]);
+        }else if(cmd[0]=="host"){
+            if(cmd[1]==network.g_networkId){
+                network.g_isHost=true;
+            }else{
+                network.g_isHost=false;
+            }
         }
     }
 
-    network.on("god",godCommand);
+    function invokeGod(msg){
+        console.log("god:"+msg);
+        if(network.connected()){
+            network.emit('god',msg);
+        }else{
+            godCommand(msg);
+        }
+
+    }
+    
+    function invokeHost(msg){
+        console.log("god:"+msg);
+        if(network.connected()){
+            network.emit('god',msg);
+        }else{
+            godCommand(msg);
+        }
+    }
     
     network.onSim=function(cmd){
         for(var t=0;t<cmd.length;){
@@ -616,6 +696,7 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
                     if(go){
                         for(var i=12;i<15;i++)go.matrix[i]=parseFloat(cmd[t++]);
                         go.angle=parseFloat(cmd[t++]);
+                        boloworld.moveTileObject(go,go.matrix[12],go.matrix[13],go.matrix[14])
                     }else
                         t+=4;
                 }
@@ -640,34 +721,23 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
             }
         }
     }
-    
-    var econtrols={
-        up:1,
-        down:2,
-        left:4,
-        right:8,
-        fire:16,
-        hack:32,
-        harvest:64,
-        road:128,
-        building:256,
-        pillbox:512
-    };
-    
-    function getCurrentControls(){
-        
+    function selectToolControl(name){
+        selectTool(name);
+        return playerControls[name];
+    }
+    function getCurrentControls(){        
         var controls=0;
-        if(alphaKeyDown('1'))controls|=econtrols.harvest;
-        if(alphaKeyDown('2'))controls|=econtrols.road;
-        if(alphaKeyDown('3'))controls|=econtrols.building;
-        if(alphaKeyDown('4'))controls|=econtrols.pillbox;
-        if(alphaKeyDown('5'))controls|=econtrols.mine;        
-        if(alphaKeyDown('W')||keyCodeDown(38))controls|=econtrols.up;
-        if(alphaKeyDown('S')||keyCodeDown(40))controls|=econtrols.down;
-        if(alphaKeyDown('A')||keyCodeDown(37))controls|=econtrols.left;
-        if(alphaKeyDown('D')||keyCodeDown(39))controls|=econtrols.right;
-        if(alphaKeyDown('H'))controls|=econtrols.hack;
-        if(alphaKeyDown(' '))controls|=econtrols.fire;
+        if(alphaKeyPressed('1'))controls|=selectToolControl("harvest");
+        if(alphaKeyPressed('2'))controls|=selectToolControl("road");
+        if(alphaKeyPressed('3'))controls|=selectToolControl("building");
+        if(alphaKeyPressed('4'))controls|=selectToolControl("pillbox");
+        if(alphaKeyPressed('5'))controls|=selectToolControl("mine");    
+        if(alphaKeyDown('W')||keyCodeDown(38))controls|=playerControls.up;
+        if(alphaKeyDown('S')||keyCodeDown(40))controls|=playerControls.down;
+        if(alphaKeyDown('A')||keyCodeDown(37))controls|=playerControls.left;
+        if(alphaKeyDown('D')||keyCodeDown(39))controls|=playerControls.right;
+        if(alphaKeyDown('H'))controls|=playerControls.hack;
+        if(alphaKeyDown(' '))controls|=playerControls.fire;
         return controls;
     }
     
@@ -758,15 +828,18 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
                     var targ=[v3t0[0],v3t0[1],v3t0[2]];
                     var targCell=boloworld.getCellAtWorld(v3t0[0],v3t0[1]);
                     
-                    if(validPilotTarget(this,currentTool,targCell)==false)
+                    if(validPilotTarget(this,currentTool,targCell)==false){
                         targetValid=false;
-                    
+                        //invalid target..
+                        audio.play("bubbles");
+                    }
                     else if(targetValid==true){
                         //Deploy pilot
                         var p=this.pilot=boloworld.addObject("pilot",[this.matrix[12],this.matrix[13],0.0]);
                         var pio=this.pilotIndicator=boloworld.addObject("pilotDir",[this.matrix[12],this.matrix[13],0.0]);
                         p.update=updatePilot;
                         p.tank=this;
+                        p.team=this.team;
                         p.name="pilot";
                         p.start=[this.matrix[12],this.matrix[13],0.0];
                         p.target=targ;
@@ -782,31 +855,35 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
             mouseWasDown=false;
         
     }
-
+    
+    function baseHealPlayer(b,p){
+        
+    }
+    
 //25th United Airlines UA 900.. 
     function    updatePlayer(){
 
-        if(localPlayer.avatar==this)
+        if(localPlayer&&localPlayer.avatar==this)
             updateLocalPlayer.call(this);
         
         var controls=this.controls;
-        if(controls&econtrols.harvest){currentTool="Harvest";}
-        if(controls&econtrols.road){currentTool="Road";}
-        if(controls&econtrols.building){currentTool="Building";}
-        if(controls&econtrols.pillbox){currentTool="Pillbox";}
-        if(controls&econtrols.mine){currentTool="Mine";}
-        if(controls&econtrols.up)this.speed+=accel;
-        if(controls&econtrols.down)this.speed-=accel;
-        if(controls&econtrols.left)this.angle+=rspeed;
-        if(controls&econtrols.right)this.angle-=rspeed;
-        if(controls&econtrols.hack){
+        if(controls&playerControls.harvest){currentTool="harvest";}
+        if(controls&playerControls.road){currentTool="road";}
+        if(controls&playerControls.building){currentTool="building";}
+        if(controls&playerControls.pillbox){currentTool="pillbox";}
+        if(controls&playerControls.mine){currentTool="mine";}
+        if(controls&playerControls.up)this.speed+=accel;
+        if(controls&playerControls.down)this.speed-=accel;
+        if(controls&playerControls.left)this.angle+=rspeed;
+        if(controls&playerControls.right)this.angle-=rspeed;
+        if(controls&playerControls.hack){
             this.invMines=40;
             this.invShells=40;
             this.hp=255;
             pilotSpeed=0.7;
         }
         //Tank Firing
-        if(controls&econtrols.fire)this.firing = true;
+        if(controls&playerControls.fire)this.firing = true;
         else this.firing=false;
 
 
@@ -827,17 +904,8 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
         
         if(curCell.length>1){
             if(curCell[1].name=="base"){
-                //On base...
                 base=curCell[1];
-                if(!base.owningPlayer){//Unclaimed base, create a new instance
-                    base.owningPlayer=this.player;
-                    var bpos=mat4.getRowV3(base.matrix, 3,v3t7);
-                    base.flare=boloworld.addObject("flareRed", bpos);
-                    playSound(this,"man_dying_far");
-
-                    var cb=document.getElementById("basebox_"+base.baseNumber);
-                    cb.style["background-color"]="red";
-                }else{
+                if(base.team==this.team){//At friendly base
                     //Heal at base
                     healCounter+=healRate/60.0;
                     var healAmt=parseInt(healCounter);
@@ -912,8 +980,23 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
                             var dtur=curCell[t];
                             dtur.active=false;
                             boloworld.removeTileObject(dtur);
-                            this.invTurrets++;
+                            this.invTurrets.push(dtur.pillboxNumber);
                             playSound(this,"farming_tree_near");
+                        }else if(curCell[t].name=="base"){
+                            //Entered base cell .. on base...
+                            base=curCell[t];
+                            if(base.team!=this.team){//Unclaimed base, create a new instance
+                                base.team=this.team;
+                                var bpos=mat4.getRowV3(base.matrix, 3,v3t7);
+                                if(base.flare)
+                                    base.flare.active=false;
+                                base.flare=boloworld.addObject((this.team==0)?"flareRed":"flareBlue", bpos);
+                                playSound(this,"man_dying_far");
+
+                                var cb=document.getElementById("basebox_"+base.baseNumber);
+                                cb.style["background-color"]=(this.team==0)?"red":"blue";
+                            }
+                            t++;
                         }else
                              t++;
                     }
@@ -952,7 +1035,7 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
             if(this.invShells<0)this.invShells=0;
             if(this.invMines<0)this.invMines=0;
             if(damageAmt>0){
-                playSound(this,"bubbles");
+                //playSound(this,"bubbles");
             }
         }
 
@@ -1002,16 +1085,10 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
         "tank_sinking_near"
     ];
     
-    var toolMap={
-        TREES:"Harvest",
-        ROADS:"Road",
-        BUILDINGS:"Building",
-        TURRETS:"Pillbox",
-        MINES:"Mine"
-    }
     
     function simUIMessage(msg){
-        currentTool=toolMap[msg];
+        currentTool=msg;    
+        audio.play("man_lay_mine_near");
     }
 
     function initSim(){
@@ -1031,25 +1108,46 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
             loadRequests[sounds[si]]={file:sounds[si]};
         audio.loadSounds("js/sounds/",loadRequests);
         audio.startSoundsLoading();
+        
+        startGame("Spay Anything",1,2);
+        
     }
+    
+    
+    function startGame(map,aiCount0,aiCount1){
+        
+        invokeGod("host~"+network.g_networkId);
+        
+        invokeGod("changeMap~"+map);
+        invokeGod("startGame");
+        if(aiCount0)
+        for(var t=0;t<aiCount0;t++)
+            invokeGod("addAI~ai0~"+0);
+        if(aiCount1)
+        for(var t=0;t<aiCount1;t++)
+            invokeGod("addAI~ai0~"+1)
+    }
+    
     
     var cameraPos=[0,0,0]
     function updateSim(){
         
-        if(alphaKeyPressed('8')){
-            console.log("nextmap");
-            var map=bolomap.getRandomMapName();
-            if(network.connected()){
-                network.emit('god',"changeMap"+"~"+map);
-            }else{
-                changeMap(map);
-            }
+        if(alphaKeyPressed('6')){
+            startGame("Spay Anything",1,2);
         }
+        if(alphaKeyPressed('7')){
+            startGame("Empty Carcass",15,16);
+        }
+        if(alphaKeyPressed('8')){
+            invokeGod("addAI"+"~"+"ai0~0")
+        }
+        
         if(alphaKeyPressed('9')){
-            console.log("startGame");
-            if(network.connected()){
-                network.emit('god',"startGame");
-            }
+            var map=bolomap.getRandomMapName();
+            invokeGod("changeMap"+"~"+map);
+        }
+        if(alphaKeyPressed('0')){
+            invokeGod("startGame");
         }
 
         audio.harvestDeadSounds();        
@@ -1057,6 +1155,8 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
         audio.setListenerParams(cameraPos);
         
         updatePlayers();
+
+        updateAIs();
     }
     
     function randElem(arr){
@@ -1084,8 +1184,9 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
     
     function cellIsPillboxTarget(obj,cell){
         for(var t=1;t<cell.length;t++){
-            if(cell[t].name=="tank"&&cell[t].player!=obj.owningPlayer)
+            if(cell[t].name=="tank"&&obj.team!=cell[t].team){
                 return false;
+            }
         }
         return true;
    //     if(cell.length>1 && cell[1].name!="turret" && cell[1].name!="base" && cell[1].name!="boat")
@@ -1093,13 +1194,6 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
      //   return true;
     }
 
-    function nv3(){return [0,0,0];}
-    var v3t0=nv3();
-    var v3t1=nv3();
-    var v3t2=nv3();
-    var v3t3=nv3();
-    var v3t4=nv3();
-    
     function angleBetweenPoints(pa,pb){
         vec3.subtract(pa,pb,v3t2);
         vec3.normalize(v3t2);
@@ -1127,6 +1221,7 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
                         mat4.clearRotation(p.matrix);
                         mat4.rotateZ(p.matrix,angle);
                         fireProjectile(p);
+                        break;
                     }
                 }
             }
@@ -1145,6 +1240,8 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
             base.armor=tbase.armor;
             base.shells=tbase.shells;
             base.mines=tbase.mines;
+            base.team=NEUTRAL_TEAM_ID;
+            tbase.body=base;
         }
         
         for(i=currentMap.bases.length;i<21;i++){
@@ -1157,6 +1254,7 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
             var pObj=boloworld.addTileObject("turret",pill.x,pill.y);
             var bbox=document.getElementById("cbox_"+i);
             pObj.pillboxNumber=i;
+            pObj.team=NEUTRAL_TEAM_ID;
             bbox.style["background-color"]="#14751c";
             pObj.update=updatePillbox;
         }
@@ -1176,24 +1274,41 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
     
     function spawnPlayer(p){
         var spawnpt=randElem(currentMap.starts);
-        p.avatar=boloworld.addTileObject("tank",spawnpt.x,spawnpt.y)
-        p.avatar.currentTool="Harvest";
+        p.avatar=boloworld.addTileObject(p.team?"tankB":"tankA",spawnpt.x,spawnpt.y)
+        p.avatar.name="tank";
+        p.avatar.currentTool="harvest";
         p.avatar.boat = boloworld.addTileObject("boat",spawnpt.x,spawnpt.y);
         p.avatar.invWood=0;
         p.avatar.invShells=40;
         p.avatar.invMines=40;
-        p.avatar.invTurrets=0;
+        p.avatar.invTurrets=[];
         p.avatar.hp=255;
         p.avatar.player=p;
         p.avatar.camTarget=[0,0,0];
         p.avatar.angle=0;
         p.avatar.speed=0;
         p.avatar.controls=0;
-
-        display.camera.setCenter(p.avatar.camTarget);
+        p.avatar.team=p.team;
         p.avatar.update=updatePlayer;
         p.avatar.angle=angleBetweenPoints(mat4.getRowV3(p.avatar.matrix, 3, v3t0),[55.0,0,0]);
         playersByObjectId[p.avatar.id]=p;
+        
+        if(p.aiModule){
+            p.avatar.addComponent("brain",new brain.Brain(bsim,p,p.aiModule));
+        }
+    }
+    
+    function addAI(){
+        var newPlayer={
+            name: "tron",
+            avatar:null,
+            respawnCountdown:1,
+            controlBits:0,
+            team:0
+        };
+        var p=newPlayer;
+        aiList.push(p);
+        return newPlayer;
     }
     
     function addPlayer(){
@@ -1201,24 +1316,33 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
             name: "tron",
             avatar:null,
             respawnCountdown:1,
-            controlBits:0
+            controlBits:0,
+            team:0
         };
         var p=newPlayer;        
         playerList.push(p);
         return newPlayer;
     }
     
-    function spawnPlayers(){
-        //Destroy existing players
-        for(var p in playerList){
-            if(playerList[p].avatar){
-                var pav=playerList[p].avatar;
+    function releaseGameObjects(olist){
+        for(var p in olist){
+            if(olist[p].avatar){
+                var pav=olist[p].avatar;
                 pav.active=false;
                 if(pav.boat)
                     pav.boat.active=false;
             }
-        }
-        //Build new players
+        }    
+    }
+    
+    function spawnAIs(){
+        releaseGameObjects(aiList);
+    }
+    
+    function spawnPlayers(){
+        //Destroy existing players
+        releaseGameObjects(playerList);
+        //Build new player objects for each multiplayer networked game client
         playerList=[];
         playersByObjectId={};
         playersByNetworkId={};
@@ -1230,13 +1354,25 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
             if(p==network.g_networkId)
                 localPlayer=np;
         }
+        if(network.connected()==false){ //no network, so Create a local player for singleplayer game...
+            var np=addPlayer();
+            playersByNetworkId[-1]=np;
+            np.networkId=-1;
+            localPlayer=np;
+        }
+    }
+    
+    function updateAIs(){
+        updatePlayerList(aiList);
     }
     
     function updatePlayers(){
-        var plist=playerList;
+        updatePlayerList(playerList);
+    }
+    
+    function updatePlayerList(plist){
         for(var p in plist){
             var np=plist[p];
-            
             if(np.avatar){
                 if(np.avatar.active==false){
                     np.respawnCountdown=60*3;
@@ -1251,16 +1387,26 @@ function(displayModule,bolomap,boloworld,meshes,audio,network) {
                     np.respawnCountdown--;
                     if(np.respawnCountdown==0){
                         spawnPlayer(np);
-                        if(np==localPlayer)
+                        if(np==localPlayer){
+                            display.camera.setCenter(np.avatar.camTarget);
                             boloworld.localPlayerSpawned();
+                        }
                     }
                 }
             }
         }
     }
 
-    return{
+    bsim=
+    {
         initSim: initSim,
-        updateSim: updateSim
+        updateSim: updateSim,
+        playerControls: playerControls,
+        randElem:randElem,
+        world:boloworld,
+        angleBetweenPoints:angleBetweenPoints,
     }
+    
+    return bsim;
+    
 });

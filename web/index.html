@@ -14,21 +14,28 @@
 
 <script type="text/javascript">
 
-var purpose = "TREES";
-
-function resetPurposeButtons() {
-    document.getElementById("TREES").innerHTML = 'trees';
-    document.getElementById("ROADS").innerHTML = 'roads';
-    document.getElementById("BUILDINGS").innerHTML = 'buildings';
-    document.getElementById("TURRETS").innerHTML = 'turrets';
-    document.getElementById("MINES").innerHTML = 'mines';
-    console.log('asdasd');
+var tools={
+    "harvest":["trees","TREES"],
+    "road":["roads","ROADS"],
+    "building":["buildings","BUILDINGS"],
+    "pillbox":["turrets","TURRETS"],
+    "mine":["mines","MINES"],
 }
 
 
-function alertMe(str){
-    resetPurposeButtons();
-    document.getElementById(str).innerHTML=str;
+function activateToolButton(name){
+    document.getElementById(name).innerHTML=tools[name][1];
+}
+
+function resetToolButtons() {
+    for(var k in tools)
+        document.getElementById(k).innerHTML = tools[k][0];
+}
+
+
+function selectTool(str){
+    resetToolButtons();
+    activateToolButton(str)
     if(window.simUIMessage){
         window.simUIMessage(str);
     }
@@ -57,15 +64,12 @@ function alertMe(str){
     	<div id="container" style="padding:20px;">
     
             <div id="purposeBox" style="padding:12px;">
-                <div class="purposeButton"><a href="#" onclick="alertMe('TREES');" id="TREES">TREES</a></div>
-                <div class="purposeButton"><a href="#" onclick="alertMe('ROADS');" id="ROADS">roads</a></div>
-                <div class="purposeButton"><a href="#" onclick="alertMe('BUILDINGS');" id="BUILDINGS">buildings</a></div>
-                <div class="purposeButton"><a href="#" onclick="alertMe('TURRETS');" id="TURRETS">turrets</a></div>
-                <div class="purposeButton"><a href="#" onclick="alertMe('MINES');" id="MINES">mines</a></div>
-               
+                <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="harvest">TREES</a></div>
+                <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="road">roads</a></div>
+                <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="building">buildings</a></div>
+                <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="pillbox">turrets</a></div>
+                <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="mine">mines</a></div>
             </div>
-    
-    
         </div>
     
     </div>
@@ -138,8 +142,8 @@ function alertMe(str){
             <div class="navFont" style="color:#db17cb;">CHAT</div>
             <div id="incomingChatMessages" style="color:#db17cb;"></div>
             <input id="outgoingChatMessage" class=".selectable"></input>
-            <!--div id="playerListElems">
-            </div-->
+            <div id="playerListElems"></div>
+            <div id="ticketDisplay" class="navFont" style="color:#db17cb;">TICKETS</div>
         </table>
     </div>
     

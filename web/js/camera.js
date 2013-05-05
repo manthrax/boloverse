@@ -36,8 +36,8 @@ define([
         this.mouseX=0;
         this.mouseY=0;
         this.mouseButtonsDown=0;
-        this.orbitX = 0;
-        this.orbitY = 0;
+        this.orbitX = 3.5;
+        this.orbitY = 6.0;
         this._distance = 1;
         this._center = vec3.create();
         this._viewMat = mat4.create();
@@ -64,7 +64,7 @@ define([
         this.zoomValues=[8.0,40.0,100,160];
        // document.onmousewheel = wheel;
         var self=this;
-        window.addEventListener('mousewheel', function (event) {
+        canvas.addEventListener('mousewheel', function (event) {
             var delta = 0;
             if (!event) event = window.event;
             if (event.wheelDelta) {
@@ -161,6 +161,18 @@ define([
         return this._viewMat;
     };
     
+    ModelCamera.prototype.zoomToRandomAngle = function () {
+        this.cameraInTransition=true;
+
+        this.saveDistance=this.distance;
+        this.saveOrbitX=this.orbitX;
+        this.saveOrbitY=this.orbitY;
+        this.zoomTween.to({distance:(Math.random()*this.zoomValues[3]*2)+this.zoomValues[0],orbitY:Math.random()*Math.PI*2.0},//,orbitX:Math.random()*Math.PI*1.5},
+            this.zoomTime*3.0).onUpdate(function(c,v){
+            this._dirty=true;
+            //this.update();
+        }).easing(TWEEN.Easing.Quadratic.InOut).start();        
+    }
     ModelCamera.prototype.zoomToPause = function () {
         
         this.cameraInTransition=true;

@@ -60,7 +60,8 @@ define([
         var worldInverse = new Float32Array(16);
         var worldInverseTranspose = new Float32Array(16);
         var viewInverseTranspose = new Float32Array(16);
-
+        
+        var aspectRatio=1.0;
         var _display;
         
         var display = function (gl, canvas) {
@@ -90,7 +91,8 @@ define([
             canvas.gl = gl;
             
             display.prototype.fov=this.fov;
-            mat4.perspective(this.fov, canvas.width/canvas.height, this.nearDepth, this.farDepth, projection);
+            display.prototype.aspectRatio=canvas.width/canvas.height;
+            mat4.perspective(this.fov, display.prototype.aspectRatio , this.nearDepth, this.farDepth, projection);
 
             gl.clearColor(0.5, 0.6, 0.9, 0.0);
             gl.clearDepth(1.0);
@@ -103,6 +105,7 @@ define([
             loadSession();
         };
 	
+        display.prototype.aspectRatio=aspectRatio;
         display.prototype.world=world;
         display.prototype.view=view;
         display.prototype.projection=projection;
@@ -121,7 +124,8 @@ define([
             }
             
             gl.viewport(0, 0, canvas.width, canvas.height);
-            mat4.perspective(this.fov, canvas.width/canvas.height, _display.nearDepth, _display.farDepth, projection);
+            display.prototype.aspectRatio=canvas.width/canvas.height;
+            mat4.perspective(this.fov, display.prototype.aspectRatio , _display.nearDepth, _display.farDepth, projection);
         };
         
         var tmpRay={d:[0,0,0],o:[0,0,0]};
@@ -150,12 +154,14 @@ define([
             state = JSON.parse(state);
             v3cp(_display.camera._position , state.cameraPosition);
             v3cp(_display.camera._angles , state.cameraAngles);
-            _display.camera.orbitX = state.orbitX;
-            _display.camera.orbitY = state.orbitY;
+      //      _display.camera.orbitX = state.orbitX;
+      //      _display.camera.orbitY = state.orbitY;
         }
         
         window.saveSession=function(){
             console.log('display app closed.');
+            if(!_display)
+                return;
             var state={
                 cameraPosition:v3cp(_display.camera._position),
                 cameraAngles:v3cp(_display.camera._angles),
@@ -215,8 +221,8 @@ define([
 
         function setWorld(nworld){
             mat4.set(nworld,world);
-        //    mat4.inverse(world,worldInverse);
-        //    mat4.transpose(worldInverse,worldInverseTranspose);
+            mat4.inverse(world,worldInverse);
+            mat4.transpose(worldInverse,worldInverseTranspose);
 		
 		
             mat4.multiply(viewProjection, world, worldViewProjection);
@@ -224,7 +230,7 @@ define([
         }
         
         display.prototype.makePlaneBatch=function(r,z){
-            var planeData=display.geomBatch(
+            var planeData=_display.geomBatch(
                 [-r,-r,z,
                 r,-r,z,
                 r, r,z,
@@ -235,6 +241,21 @@ define([
                 0,0,-1,
                 0,0,-1],
                 [0,0, 1,0, 1,1, 0,1]);
+            return planeData;
+        }
+
+        display.prototype.makePlaneSpriteBatch=function(r,z){
+            var planeData=_display.geomBatch(
+                [-r,-r,0.0,
+                r,-r,0.0,
+                r, r,0.0,
+                -r, r,0.0],
+                [0,1,2, 2,3,0],
+                [0,0,-1,
+                0,0,-1,
+                0,0,-1,
+                0,0,-1],
+                [-z,-z, z,-z, z,z, -z,z]);
             return planeData;
         }
 
@@ -319,7 +340,7 @@ define([
         }
         
         display.prototype.renderComponent=function(object,component,shader){
-            var dist=this.farDepth*1.0;
+            var dist=this.farDepth*1.0; //rough distance culling...
             var dx=object.matrix[12]-frustumCenter[0];//+_display.camera._center[0];
             var dy=object.matrix[13]-frustumCenter[1];//+_display.camera._center[1];
             var dz=object.matrix[14]-frustumCenter[2];//+_display.camera._center[1];
@@ -358,6 +379,7 @@ define([
         display.prototype.meshRenderer=function(gl,mesh,shader){
             var disp=this;
             var meshRend = {
+                type:"meshRenderer",
                 vao:this.buildMeshAO(gl,mesh,shader),
                 mesh:mesh,
                 shader:shader,
@@ -367,7 +389,7 @@ define([
                 },
                     
                 render:function(go){
-				
+                    
                     vaoExtension.bindVertexArrayOES(this.vao);
 					
                     disp.setWorld(go.matrix);
