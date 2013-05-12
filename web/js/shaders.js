@@ -44,8 +44,11 @@ varying float atmosBlend;
 void main() {
     vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
     //vec3 normal = normalize(v_normal);
-    gl_FragColor.rgb = ((v_normal+1.0)*0.5)*0.1*atmosBlend*v_normal.z;//diffuse.rgb;//abs(v_normal);//vec3(1.0,0,0);////(diffuse.rgb * atmosBlend)+((1.0-atmosBlend)*vec3(0.5, 0.6, 0.9));//v_normal;//diffuse*normal.y;
-    //gl_FragColor.rgb = diffuse.rbg*v_normal.z;
+//    gl_FragColor.rgb = ((v_normal+1.0)*0.5)*0.1*atmosBlend*v_normal.z;//diffuse.rgb;//abs(v_normal);//vec3(1.0,0,0);////(diffuse.rgb * atmosBlend)+((1.0-atmosBlend)*vec3(0.5, 0.6, 0.9));//v_normal;//diffuse*normal.y;
+    gl_FragColor.rgb = diffuse.rgb*v_normal.z;
+    
+    
+    gl_FragColor.a=1.0;
 }
 
 SCRIPT='explosionVS';
