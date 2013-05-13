@@ -144,7 +144,7 @@ require(["util/domReady!", // Waits for page load
     buildCity(batch);
   //  buildRandomStarVolume(batch);
 
-    spriteTexture=world.loadTexture("tiles.png");
+    spriteTexture=world.loadTexture("galaxy.png");
     var tileShader=world.getShader("TND");
     nmesh=display.mesh(gl,batch.vertices,batch.indices,batch.normals,batch.uvs);
     renderer=world.setObjectMesh(turret,nmesh,tileShader,spriteTexture);
