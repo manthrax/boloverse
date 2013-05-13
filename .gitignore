@@ -164,3 +164,4 @@ pip-log.txt
 /nbproject/private/
 !/web/js/socket.io-client/dist/WebSocketMain.swf
 !/web/js/socket.io-client/dist/
+!/web/js/socket.io-client/bin/
