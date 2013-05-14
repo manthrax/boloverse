@@ -78,7 +78,7 @@ define([
                 if(self.zoomLevel<0)self.zoomLevel=0;
                 if(self.zoomLevel>3)self.zoomLevel=3;
                 var t = new TWEEN.Tween(self);
-                t.to({distance:self.zoomValues[self.zoomLevel]},160).onUpdate(function(c,v){
+                t.to({distance:self.zoomValues[parseInt(self.zoomLevel)]},160).onUpdate(function(c,v){
                     self._dirty=true;
                     //this.update();
                 }).start();

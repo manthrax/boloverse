@@ -387,13 +387,13 @@ define([
             return obj;
         }
         
-        function addObject(meshName,position,shader,diffuse){
+        function addMeshObject(mesh,position,shader,diffuse){
             var obj=objects.allocate();
             var batch=display.geomBatch();
-            mat4.identity(obj.matrix);    
+            mat4.identity(obj.matrix);
             var scl=tileRad;
             mat4.scale(obj.matrix,[scl,scl,scl]);
-            display.instanceMesh(meshes[meshName],batch,obj.matrix);
+            display.instanceMesh(mesh,batch,obj.matrix);
 
             var mesh=display.mesh(gl,
                 batch.vertices,
@@ -406,9 +406,14 @@ define([
             obj.diffuseSampler=diffuse?diffuse:tileDiffuse;
 
             mat4.identity(obj.matrix);
-            mat4.translate(obj.matrix,position);
+            if(position)mat4.translate(obj.matrix,position);
             return obj;
         }
+        
+        function addObject(meshName,position,shader,diffuse){
+            return addMeshObject(meshes[meshName],position,shader,diffuse);
+        }
+        
         function removeTileObject(obj){
             if(obj.cell){
                 obj.cell.splice(obj.cell.indexOf(obj),1);
@@ -544,6 +549,7 @@ define([
             moveTileObject: moveTileObject,
             removeTileObject: removeTileObject,
             addObjectToGrid: addObjectToGrid,
+            addMeshObject: addMeshObject,
             addObject: addObject,
             initWorld: initWorld,
             worldMeter: worldMeter,
