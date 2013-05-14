@@ -2,22 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="75fee114-8e85-48ab-ba13-d74e91610ce2" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/util/audio.js" afterPath="$PROJECT_DIR$/web/js/util/audio.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/bolosim.js" afterPath="$PROJECT_DIR$/web/js/bolosim.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/boloworld.js" afterPath="$PROJECT_DIR$/web/js/boloworld.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/brain.js" afterPath="$PROJECT_DIR$/web/js/brain.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/display.js" afterPath="$PROJECT_DIR$/web/js/display.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/hexmap.js" afterPath="$PROJECT_DIR$/web/js/hexmap.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/shaders.js" afterPath="$PROJECT_DIR$/web/js/shaders.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/index.js" afterPath="$PROJECT_DIR$/web/js/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="bolo.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Dummy.txt" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368503334526" ignored="false" />
     <file path="/app.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368502924538" ignored="false" />
-    <file path="/a.dummy" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368520525107" ignored="false" />
+    <file path="/a.dummy" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368525421460" ignored="false" />
     <file path="/boloworld.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368504139253" ignored="false" />
     <file path="/bolosim.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368518462919" ignored="false" />
     <file path="/display.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368519418283" ignored="false" />
-    <file path="/index.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368520477801" ignored="false" />
+    <file path="/index.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368525914308" ignored="false" />
+    <file path="/brain.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368521330107" ignored="false" />
+    <file path="/hexmap.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368525320042" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,19 +79,28 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="hexmap.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="hexmap.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/hexmap.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="4" selection-start="242" selection-end="242" vertical-scroll-proportion="0.33466136">
+            <state line="93" column="0" selection-start="2542" selection-end="2542" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="boloworld.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="boloworld.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/web/js/boloworld.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="373" column="30" selection-start="12396" selection-end="12396" vertical-scroll-proportion="-6.72">
+            <state line="409" column="39" selection-start="13582" selection-end="13582" vertical-scroll-proportion="0.68115944">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="brain.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/js/brain.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="19" column="6" selection-start="411" selection-end="411" vertical-scroll-proportion="-7.32">
               <folding />
             </state>
           </provider>
@@ -99,7 +109,7 @@
       <file leaf-file-name="bolosim.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/bolosim.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="791" column="10" selection-start="26882" selection-end="26882" vertical-scroll-proportion="0.0">
+            <state line="44" column="28" selection-start="978" selection-end="984" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -119,7 +129,7 @@
       <file leaf-file-name="display.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/display.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="331" column="34" selection-start="12220" selection-end="12220" vertical-scroll-proportion="-4.56">
+            <state line="416" column="59" selection-start="15961" selection-end="15961" vertical-scroll-proportion="33.4">
               <folding />
             </state>
           </provider>
@@ -128,7 +138,7 @@
       <file leaf-file-name="index.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="44" selection-start="2032" selection-end="2032" vertical-scroll-proportion="-1.2">
+            <state line="39" column="26" selection-start="1185" selection-end="1185" vertical-scroll-proportion="-7.56">
               <folding />
             </state>
           </provider>
@@ -146,7 +156,7 @@
       <file leaf-file-name="shaders.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/shaders.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="42" column="2" selection-start="902" selection-end="902" vertical-scroll-proportion="0.0">
+            <state line="38" column="24" selection-start="846" selection-end="846" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -181,21 +191,22 @@
       <list>
         <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/web/js/boloworld.js" />
-        <option value="$PROJECT_DIR$/web/js/shaders.js" />
         <option value="$PROJECT_DIR$/web/js/util/audio.js" />
         <option value="$PROJECT_DIR$/web/js/bolosim.js" />
+        <option value="$PROJECT_DIR$/web/js/brain.js" />
         <option value="$PROJECT_DIR$/web/js/display.js" />
-        <option value="$PROJECT_DIR$/web/js/index.js" />
+        <option value="$PROJECT_DIR$/web/js/shaders.js" />
         <option value="$PROJECT_DIR$/web/js/hexmap.js" />
+        <option value="$PROJECT_DIR$/web/js/index.js" />
       </list>
     </option>
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="34" />
-    <option name="y" value="116" />
+    <option name="x" value="36" />
+    <option name="y" value="37" />
     <option name="width" value="1900" />
-    <option name="height" value="1023" />
+    <option name="height" value="1029" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -315,6 +326,28 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="sounds" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bolo" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="boloverse" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="web" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="meshes" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -501,13 +534,13 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="34" y="116" width="1900" height="1023" extended-state="0" />
+    <frame x="36" y="37" width="1900" height="1029" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.42608696" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.42332613" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.43586957" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -522,7 +555,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18389554" sideWeight="0.57391304" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18389554" sideWeight="0.57667387" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -662,44 +695,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/boloworld.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="373" column="30" selection-start="12396" selection-end="12396" vertical-scroll-proportion="-6.72">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/web/js/camera.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="50" column="27" selection-start="1486" selection-end="1486" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/shaders.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="2" selection-start="902" selection-end="902" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/bolosim.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="791" column="10" selection-start="26882" selection-end="26882" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/display.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="331" column="34" selection-start="12220" selection-end="12220" vertical-scroll-proportion="-4.56">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="44" selection-start="2032" selection-end="2032" vertical-scroll-proportion="-1.2">
           <folding />
         </state>
       </provider>
@@ -711,9 +709,58 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/brain.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="6" selection-start="411" selection-end="411" vertical-scroll-proportion="-7.32">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/shaders.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="38" column="24" selection-start="846" selection-end="846" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/web/js/hexmap.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="4" selection-start="242" selection-end="242" vertical-scroll-proportion="0.33466136">
+        <state line="93" column="0" selection-start="2542" selection-end="2542" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/meshes/testmesh.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/bolosim.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="44" column="28" selection-start="978" selection-end="984" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/display.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="416" column="59" selection-start="15961" selection-end="15961" vertical-scroll-proportion="33.4">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="39" column="26" selection-start="1185" selection-end="1185" vertical-scroll-proportion="-7.56">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/boloworld.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="409" column="39" selection-start="13582" selection-end="13582" vertical-scroll-proportion="0.68115944">
           <folding />
         </state>
       </provider>

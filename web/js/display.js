@@ -87,7 +87,7 @@ define([
             this.fov = 45;
             this.gl = gl;
             this.nearDepth=0.1;
-            this.farDepth=800.0;
+            this.farDepth=400.0;
             canvas.gl = gl;
             
             display.prototype.fov=this.fov;

@@ -24,7 +24,8 @@ define([
         
         if(!network.g_isHost){
             var brain=brainsById[cmd[0]];
-            brain.pathFind(cmd[1],cmd[2],cmd[3],cmd[4]);
+            if(brain)
+                brain.pathFind(cmd[1],cmd[2],cmd[3],cmd[4]);
         }
     });
 
@@ -170,7 +171,8 @@ define([
             if(this.path.length){
                 this.getPathPoint(0);
                 if(this.cursorSprite)mat4.setRowV3(this.cursorSprite.matrix,3,this.pathPoint);
-                mat4.setRowV3(this.player.avatar.matrix,3,this.pathPoint);
+                if(this.player.avatar!=null)
+                    mat4.setRowV3(this.player.avatar.matrix,3,this.pathPoint);
             }
         }
 

@@ -7,7 +7,7 @@ require(["util/domReady!", // Waits for page load
         "js/hexmap.js",
         "js/meshes/testmesh.js",
         "js/util/gl-matrix.js",
-    ], function(doc, display, glUtil,boloworld,bolosim,hexmap) { //bolomap,textures
+    ], function(doc, display, glUtil,boloworld,bolosim,hexmap,meshes) { //bolomap,textures
     "use strict";
     // Create gl context and start the render loop 
     var canvas = document.getElementById("canvas");
@@ -34,10 +34,12 @@ require(["util/domReady!", // Waits for page load
     boloworld.makeScene();
     
     bolosim.initSim();
-    
-    
+
+
     //var mo=boloworld.addMeshObject(hexmap.buildSphere());
-    
+    var mo=boloworld.addMeshObject(meshes.turretd1);
+
+    mat4.scale(mo.matrix, [20,20,20]);
     
     function sfrnd(rng){
         return ((Math.random()*rng)-(rng*0.5));
