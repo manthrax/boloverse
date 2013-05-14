@@ -3,7 +3,7 @@ define([],function() {
     var loggingEnabled=false;
     var soundDisabled = false;
     var audibleRadius=200;
-    var g_globalSoundVolume=0.1;
+    var g_globalSoundVolume=0.01;
 
     
     var audibleRadius2=audibleRadius*audibleRadius;

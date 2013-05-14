@@ -87,7 +87,7 @@ define([
             this.fov = 45;
             this.gl = gl;
             this.nearDepth=0.1;
-            this.farDepth=400.0;
+            this.farDepth=800.0;
             canvas.gl = gl;
             
             display.prototype.fov=this.fov;
@@ -140,7 +140,7 @@ define([
             vec3.scale(v4t0,1.0/v4t0[3]);
             var cameraPos=mat4.getRowV3(viewInverse, 3, outRay.o);
             vec3.subtract(v4t0,cameraPos,outRay.d);
-            vec3.normalize(outRay.d);         
+            vec3.normalize(outRay.d);
             return outRay;
         }
         window.onresize=function(){

@@ -789,7 +789,7 @@ function(displayModule,bolomap,boloworld,meshes,audio,network,brain) {
 
 
         var dcam=display.camera;
-        
+        //console.log(dcam.mouseX+","+dcam.mouseY);
         var ray=display.computePickRay(dcam.mouseX,dcam.mouseY);
 
         if(!cursorSprite)
