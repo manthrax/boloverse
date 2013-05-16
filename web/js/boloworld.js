@@ -1,13 +1,22 @@
 define([
     "display",
+    "js/util/messaging.js",
     "util/gl-util",
     "util/util",
     "programs",
     "js/bolomap.js",
+    "js/boloworld.js",
     "js/meshes/testmesh.js",
     "js/util/gl-matrix.js"
 ],
-    function (displayModule, glUtil, util, programs, bolomap, meshes) {//display,
+    function (displayModule, messaging, glUtil, util, programs, bolomap, boloworld, meshes) {//display,
+
+
+        function onLoad(){
+            //messaging.listen("game",onMessage);
+        }
+        onLoad();
+
         var currentMap = null;//bolomap.loadRandomMap();
         var GameObject = function () {
             var go = {
@@ -230,6 +239,7 @@ define([
             tileDiffuse.bindToUnit = bindToUnit;
 
             var tileTex = loadTexture("tiles.png");
+
 
         }
 

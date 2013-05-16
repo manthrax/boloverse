@@ -1,7 +1,8 @@
 define(function(){
 /*********** NETWORKING *********/
 function networkObject(){
-    return {
+    var self;
+    return self={
         g_playerList:{},
         g_localPlayer:undefined,
         g_networkId:null,
@@ -18,11 +19,11 @@ function networkObject(){
  doPlayerAction:function(playerId,item){
     if(item==2)//Accept request
     {
-        iosocket.emit('joinaccept',playerId);        
+        self.iosocket.emit('joinaccept',playerId);
     }
     else if(item==1)//request game
     {
-        iosocket.emit('joinrequest',playerId);
+        self.iosocket.emit('joinrequest',playerId);
     }
 },
 
@@ -45,7 +46,7 @@ rebuildPlayerListUI:function ()
 outgoingNickKeyPress:function (event){
     if(event.which == 13) {
         event.preventDefault();
-        iosocket.emit('nick',event.target.value);
+        self.iosocket.emit('nick',event.target.value);
         localStorage.nick=event.target.value;
     }
 },
@@ -55,26 +56,27 @@ outgoingChatKeyPress:function (event){
         event.preventDefault();
         //doPreventDefault(event);
 
-        iosocket.emit('chat',outgoingChatElem.value);
+        self.iosocket.emit('chat',self.outgoingChatElem.value);
 
-        var ourPlayer=g_playerList[g_networkId];
+        var ourPlayer=self.g_playerList[self.g_networkId];
                 
         if(ourPlayer){
-            ourPlayer.chat=outgoingChatElem.value;
-            incomingChatElem.innerHTML+='<li>'+ourPlayer.nick+":"+outgoingChatElem.value+'</li>';
+            ourPlayer.chat=self.outgoingChatElem.value;
+            self.incomingChatElem.innerHTML+='<li>'+ourPlayer.nick+":"+self.outgoingChatElem.value+'</li>';
         }else{
-            incomingChatElem.innerHTML+='<li>Not connected:'+outgoingChatElem.value+'</li>';                
+            self.incomingChatElem.innerHTML+='<li>Not connected:'+self.outgoingChatElem.value+'</li>';
         }
-        outgoingChatElem.value='';
-        outgoingChatElem.blur();
+        self.outgoingChatElem.value='';
+        self.outgoingChatElem.blur();
         
-        if(g_remoteVideoEnabled==true){
+        if(self.g_remoteVideoEnabled==true){
             setTimeout(new function(){
                 renderPlayerImage(ourPlayer,getPlayerImageBuffer(ourPlayer.id));
                 updateDynamicTexture();
                 },1000);
         }
     }
+    return self;
 },
 
 

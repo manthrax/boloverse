@@ -66,11 +66,48 @@ varying vec3 v_normal;
 void main() {
     v_texCoord = texCoord;
     v_position = position;
-    v_normal =  (worldInverseTranspose * vec4(normal, 0)).xyz;	
+    v_normal =  (worldInverseTranspose * vec4(normal, 0)).xyz;
     gl_Position = worldViewProjection * vec4((position.xyz*scale*2.0),1.0);
 }
 
 SCRIPT='explosionFS';
+
+//#ifdef GL_ES
+precision mediump float;
+//#endif
+
+uniform sampler2D diffuseSampler;
+varying vec3 v_normal;
+varying vec4 v_position;
+varying vec2 v_texCoord;
+uniform float alpha;
+
+void main() {
+    vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
+    gl_FragColor.rgb = diffuse.rgb;//v_normal;//diffuse*normal.y;
+    gl_FragColor.a=alpha;
+}
+
+SCRIPT='hudVS';
+attribute vec4 position;
+attribute vec3 normal;
+attribute vec2 texCoord;
+uniform mat4 worldInverseTranspose;
+uniform mat4 worldViewProjection;
+uniform float scale;
+uniform vec3 pos;
+varying vec4 v_position;
+varying vec2 v_texCoord;
+varying vec3 v_normal;
+
+void main() {
+    v_texCoord = texCoord;
+    v_position = position;
+    v_normal =  normal;
+    gl_Position = vec4((pos+v_position.xyz)*scale,1);//worldViewProjection * vec4((position.xyz*scale*2.0),1.0);
+}
+
+SCRIPT='hudFS';
 
 //#ifdef GL_ES
 precision mediump float;

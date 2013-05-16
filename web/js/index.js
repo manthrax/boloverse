@@ -1,13 +1,14 @@
 
 require(["util/domReady!", // Waits for page load
         "display",
+        "js/util/messaging.js",
         "util/gl-util",
         "js/boloworld.js",
         "js/bolosim.js",
         "js/hexmap.js",
         "js/meshes/testmesh.js",
         "js/util/gl-matrix.js",
-    ], function(doc, display, glUtil,boloworld,bolosim,hexmap,meshes) { //bolomap,textures
+    ], function(doc, display,messaging,glUtil,boloworld,bolosim,hexmap,meshes) { //bolomap,textures
     "use strict";
     // Create gl context and start the render loop 
     var canvas = document.getElementById("canvas");
@@ -36,14 +37,51 @@ require(["util/domReady!", // Waits for page load
     bolosim.initSim();
 
 
-    //var mo=boloworld.addMeshObject(hexmap.buildSphere());
-    var mo=boloworld.addMeshObject(meshes.turretd1);
 
-    mat4.scale(mo.matrix, [20,20,20]);
-    
-    function sfrnd(rng){
-        return ((Math.random()*rng)-(rng*0.5));
+    var hudShader;
+    function getHUDShader(){
+        if (!hudShader)
+            hudShader = boloworld.getShader("hud");
+        return hudShader;
     }
+
+    function showWinMessage(winTeam){
+        //var exp=boloworld.addMeshObject(hexmap.buildSphere(),undefined,getHUDShader());
+        //mat4.scale(mo.matrix, [20,20,20]);
+
+        var exp = boloworld.addObject((winTeam==0)?"Font":"Font001",undefined,getHUDShader());
+        //mat4.translate(exp.matrix,[sfrnd(1),sfrnd(1),sfrnd(0)]);
+        exp.scale = 0.01;
+        exp.alpha = 0.0;
+        exp.pos=vec3.create();//[sfrnd(1),sfrnd(1),sfrnd(0)]);
+
+        var zoomTween=new TWEEN.Tween(exp);
+        zoomTween.to({scale:0.07,alpha:1.0},3000.0).onComplete(function(c,v){
+            //this.active=false;
+        }).easing(TWEEN.Easing.Quadratic.InOut).start();
+
+        exp.update=function(){
+            //console.log("updating");
+            //this.scale+=0.01;
+        }
+    }
+
+    function onMessage(msg,param){
+        if(msg=="team_won"){
+            showWinMessage(param);
+        }
+        if(msg=="team_lost"){
+            showWinMessage(param);
+        }
+    }
+
+
+
+    function onLoad(){
+        messaging.listen("team_won",onMessage);
+    }
+    onLoad();
+
     display.createFrameRenderer = function(gl,timing){
         return {
             gl:gl,
@@ -95,6 +133,8 @@ require(["util/domReady!", // Waits for page load
             canvas.height = canvasOriginalHeight;
         }
         display.resize(gl, canvas);
+
+
     }
 
     frame.addEventListener("webkitfullscreenchange", fullscreenchange, false);

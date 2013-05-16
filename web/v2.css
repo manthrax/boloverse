@@ -195,6 +195,11 @@ XXbody {
     bottom:0px;
 }
 
+#incomingChatMessage {
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
 #bottomCenterBox {
     z-index:1;
     margin:0px auto;
@@ -202,9 +207,27 @@ XXbody {
     left: 300px;
     bottom:20px;
     padding:12px;
+    height: 100px;
     background-color:rgba(0,0,0, 0.5);
     margin-left: auto;
     margin-right: auto;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+#centerBox {
+    z-index:1;
+    margin:0px auto;
+    position:absolute;
+    left: 300px;
+    top: 200px;
+    padding:12px;
+    background-color:rgba(0,0,0, 0.5);
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    display: none;
 }
 
 
