@@ -2,39 +2,30 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="75fee114-8e85-48ab-ba13-d74e91610ce2" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/js/util/mersenne.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/tiles.png" afterPath="$PROJECT_DIR$/web/tiles.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/bolomap.js" afterPath="$PROJECT_DIR$/web/js/bolomap.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/bolosim.js" afterPath="$PROJECT_DIR$/web/js/bolosim.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/boloworld.js" afterPath="$PROJECT_DIR$/web/js/boloworld.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/camera.js" afterPath="$PROJECT_DIR$/web/js/camera.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/display.js" afterPath="$PROJECT_DIR$/web/js/display.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/index.html" afterPath="$PROJECT_DIR$/web/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/index.js" afterPath="$PROJECT_DIR$/web/js/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/util/messaging.js" afterPath="$PROJECT_DIR$/web/js/util/messaging.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/renderLoop.js" afterPath="$PROJECT_DIR$/web/js/renderLoop.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/shaders.js" afterPath="$PROJECT_DIR$/web/js/shaders.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/meshes/testmesh.js" afterPath="$PROJECT_DIR$/web/js/meshes/testmesh.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/v2.css" afterPath="$PROJECT_DIR$/web/v2.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="bolo.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368927800033" ignored="false" />
+    <file path="/Dummy.txt" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368968861344" ignored="false" />
     <file path="/app.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368502924538" ignored="false" />
     <file path="/a.dummy" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368794939360" ignored="false" />
     <file path="/boloworld.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368963401899" ignored="false" />
-    <file path="/bolosim.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368967901401" ignored="false" />
+    <file path="/bolosim.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368970293012" ignored="false" />
     <file path="/display.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368791418496" ignored="false" />
     <file path="/index.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368799289496" ignored="false" />
     <file path="/brain.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368521330107" ignored="false" />
     <file path="/hexmap.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368525320042" ignored="false" />
-    <file path="/*.regexp" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368966237899" ignored="false" />
+    <file path="/*.regexp" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368970135152" ignored="false" />
     <file path="/util.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368667304224" ignored="false" />
     <file path="/shaders.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368792025624" ignored="false" />
     <file path="/messaging.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368785023863" ignored="false" />
     <file path="/v2.css" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368959135362" ignored="false" />
-    <file path="/index.html" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368967652299" ignored="false" />
+    <file path="/index.html" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368970662331" ignored="false" />
     <file path="/network.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368700984716" ignored="false" />
+    <file path="/bolomap.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368969829800" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,16 +89,16 @@
       <file leaf-file-name="boloworld.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/boloworld.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="448" column="61" selection-start="14860" selection-end="14862" vertical-scroll-proportion="-8.08">
+            <state line="312" column="44" selection-start="10090" selection-end="10094" vertical-scroll-proportion="-7.92">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="bolosim.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="bolosim.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/bolosim.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1181" column="38" selection-start="45820" selection-end="45820" vertical-scroll-proportion="0.3792517">
+            <state line="1142" column="38" selection-start="44658" selection-end="44671" vertical-scroll-proportion="-7.08">
               <folding />
             </state>
           </provider>
@@ -142,31 +133,15 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/web/js/index.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="54" selection-start="530" selection-end="543" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="solipsys_galaxy.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/web/solipsys_galaxy.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="9" selection-start="493" selection-end="493" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="136" column="3" selection-start="6154" selection-end="6154" vertical-scroll-proportion="-3.04">
+            <state line="156" column="69" selection-start="7152" selection-end="7152" vertical-scroll-proportion="-11.16">
               <folding>
                 <element signature="n#style#0;n#div#0;n#div#1;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#2;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#1;n#div#0;n#div#2;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#table#0;n#div#3;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#table#0;n#div#4;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#1;n#table#0;n#div#4;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -187,6 +162,24 @@
                 <element signature="n#style#0;n#div#3;n#td#2;n#tr#0;n#table#0;n#div#0;n#div#0;n#div#5;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#canvas#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="bolomap.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/web/js/bolomap.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="40" column="13" selection-start="800" selection-end="800" vertical-scroll-proportion="0.3294509">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mapcat.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/js/mapcat.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -243,8 +236,9 @@
         <option value="$PROJECT_DIR$/web/js/util/Mersenne.js" />
         <option value="$PROJECT_DIR$/web/js/util/mersenne.js" />
         <option value="$PROJECT_DIR$/web/js/boloworld.js" />
-        <option value="$PROJECT_DIR$/web/index.html" />
+        <option value="$PROJECT_DIR$/web/js/bolomap.js" />
         <option value="$PROJECT_DIR$/web/js/bolosim.js" />
+        <option value="$PROJECT_DIR$/web/index.html" />
       </list>
     </option>
   </component>
@@ -562,17 +556,21 @@
       <created>1368742729201</created>
       <updated>1368742729201</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="fixes and cleanups to ui">
+      <created>1368968877870</created>
+      <updated>1368968877870</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3280757" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3144059" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3491062" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.362776" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.44230768" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -581,17 +579,17 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32942432" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32948583" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18036287" sideWeight="0.6719243" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18036287" sideWeight="0.6855941" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32932693" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32948583" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -638,7 +636,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixes and cleanups to ui and multiplayer" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixes and cleanups to ui" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -653,6 +651,7 @@
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
     <MESSAGE value="fixes and cleanups to ui and multiplayer" />
+    <MESSAGE value="fixes and cleanups to ui" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -664,16 +663,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/web/js/util/util.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="12" selection-start="0" selection-end="36" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/util/gl-util.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/web/js/util/gl-matrix.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="45" column="7" selection-start="1458" selection-end="1462" vertical-scroll-proportion="0.0">
@@ -774,13 +763,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/boloworld.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="448" column="61" selection-start="14860" selection-end="14862" vertical-scroll-proportion="-8.08">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/web/v2.css">
       <provider selected="true" editor-type-id="text-editor">
         <state line="80" column="22" selection-start="1198" selection-end="1204" vertical-scroll-proportion="-8.92">
@@ -795,12 +777,28 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/mapcat.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/boloworld.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="312" column="44" selection-start="10090" selection-end="10094" vertical-scroll-proportion="-7.92">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/web/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="136" column="3" selection-start="6154" selection-end="6154" vertical-scroll-proportion="-3.04">
+        <state line="156" column="69" selection-start="7152" selection-end="7152" vertical-scroll-proportion="-11.16">
           <folding>
             <element signature="n#style#0;n#div#0;n#div#1;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#2;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#0;n#div#2;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#table#0;n#div#3;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#table#0;n#div#4;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#1;n#table#0;n#div#4;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -826,7 +824,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/web/js/bolosim.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1181" column="38" selection-start="45820" selection-end="45820" vertical-scroll-proportion="0.3792517">
+        <state line="1142" column="38" selection-start="44658" selection-end="44671" vertical-scroll-proportion="-7.08">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/bolomap.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="40" column="13" selection-start="800" selection-end="800" vertical-scroll-proportion="0.3294509">
           <folding />
         </state>
       </provider>

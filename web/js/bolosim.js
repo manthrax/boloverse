@@ -39,6 +39,7 @@ define([
         var NEUTRAL_TEAM_ID = 8;
 
         var ticketBleed = 0.1;
+
         var teamTickets = {0: 500, 1: 500};
 
         var gamePaused = false;
@@ -1138,6 +1139,13 @@ define([
 
             window.simUIMessage = simUIMessage;
             window.gameMessage = messaging.send;
+            window.getMapNames = bolomap.getMapNames;
+            window.loadMap = bolomap.loadMapByName;
+
+            var mapNames=getMapNames();
+            var str="";
+            for(var t=0;t<mapNames.length;t++)str+="<option value='"+mapNames[t]+"'>"+mapNames[t]+"</option>";
+            document.getElementById("maps").innerHTML=str;
 
             display = displayModule.getDisplay();
             gl = display.gl;
@@ -1223,14 +1231,16 @@ define([
             messaging.send("game_camera",0);
         });
         keyEventMap={
+             /*
             '6':function(){messaging.send("loadDefault");},
             '7':function(){messaging.send("loadStressTest");},
             '8':function(){messaging.send("addAI");},
             '9':function(){messaging.send("loadRandomMap");},
             '0':function(){messaging.send("startGame");},
-            'P':function(){messaging.send("togglePause");},
             'C':function(){messaging.send("nextCamera");},
             'Y':function(){messaging.send("testHUD");}
+            */
+            'P':function(){messaging.send("togglePause");},
         };
         function updateSim() {
             for(var k in keyEventMap){if(alphaKeyPressed(k))keyEventMap[k]();}

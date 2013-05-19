@@ -142,7 +142,6 @@ function selectTool(str){
         if (e.which == 13)gameMessage('setTickets',parseInt(e.target.value));
     }
 </script>
-
             <div id="centerBox">
         <table cellpadding=0 cellspacing=0 border=0>
         <div class="navFont" style="color:#db17cb;">PLAYERLIST</div>
@@ -153,11 +152,15 @@ function selectTool(str){
             <button onclick="gameMessage('loadStressTest');">Stress Test</button><br/>
 
             Tickets:<br/>
-            <input type="number" name="tickets" value=500 max=50000 maxlength=5 size=5 onkeyup="keyUpHandler(window.event)" class='selectable'>
-
+            <input type="number" name="tickets" value=500 max=50000 maxlength=5 size=5 onkeyup="keyUpHandler(window.event)" class='selectable'><br/>
+            Maps:<br/>
+            <select id="maps" onchange="alert('mooo');window.loadMap(this.value);" class='selectable'>
+            </select>
         <div id="playerListElems"></div>
         </table>
     </div>
+
+
     <div id="bottomCenterBox">
         <table cellpadding=0 cellspacing=0 border=0>
             <div id="ticketDisplay" class="navFont" style="color:#db17cb;">TICKETS</div>

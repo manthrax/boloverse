@@ -30,7 +30,10 @@ define(["js/mapcat.js"],function(mapcat){
     var currentMap=null;
     var mapArray=[];
     for(var v in mapcat)mapArray.push(v);
-    
+
+    function getMapNames(){
+        return mapArray;
+    }
     function getRandomMapName(){
         return mapArray[parseInt(Math.random()*mapArray.length*0.99)];
     }
@@ -283,6 +286,7 @@ define(["js/mapcat.js"],function(mapcat){
         loadRandomMap: loadRandomMap,
         getCurrentMap: function(){return currentMap;},
         getRandomMapName: getRandomMapName,
-        loadMapByName: loadMapByName
+        loadMapByName: loadMapByName,
+        getMapNames: getMapNames
     }
 })
