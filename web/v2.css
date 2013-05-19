@@ -219,8 +219,9 @@ XXbody {
     z-index:1;
     margin:0px auto;
     position:absolute;
-    left: 300px;
-    top: 200px;
+    left: 20px;
+    height: 200px;
+    top: 70px;
     padding:12px;
     background-color:rgba(0,0,0, 0.5);
     margin-left: auto;

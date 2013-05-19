@@ -11,6 +11,7 @@ define( function() {
 
     function send(msg,param){
         var hands=handlers[msg];
+        if(!hands)return;
         console.log("sending:"+msg);
         for(var h =0;h< hands.length;h++)hands[h](msg,param);
     }

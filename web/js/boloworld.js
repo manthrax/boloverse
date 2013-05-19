@@ -5,15 +5,94 @@ define([
     "util/util",
     "programs",
     "js/bolomap.js",
-    "js/boloworld.js",
     "js/meshes/testmesh.js",
     "js/util/gl-matrix.js"
 ],
-    function (displayModule, messaging, glUtil, util, programs, bolomap, boloworld, meshes) {//display,
+    function (displayModule, messaging, glUtil, util, programs, bolomap, meshes) {//display,
 
+        function showWinMessage(winTeam){
+            showHudObject((winTeam==0)?"red_victory":"blue_victory");
+        }
+
+        var hudFGObject=null;
+        var hudShader;
+        function getHUDShader(){
+            if (!hudShader){
+                hudShader = getShader("hud");
+                hudShader.passIndex=1;
+                hudShader.dontCull=true;
+            }
+            return hudShader;
+        }
+
+        function hideHudObject(){
+            var zoomTween=new TWEEN.Tween(getHudObject());
+            hudFGObject=null;
+            zoomTween.to({scale:1.0,alpha:0.0},1000.0).onComplete(function(c,v){
+                this.active=false;
+            }).easing(TWEEN.Easing.Quadratic.Out).start();
+        }
+        function getHudObject(){
+            if(hudFGObject==null)hudFGObject=boloworld.addObject(obj,undefined,getHUDShader());
+            return hudFGObject;
+        }
+
+        function showHudObject(obj){
+            //var exp=boloworld.addMeshObject(hexmap.buildSphere(),undefined,getHUDShader());
+            //mat4.scale(mo.matrix, [20,20,20]);
+
+            if(hudFGObject)hideHudObject();
+            var exp = hudFGObject=addObject(obj,undefined,getHUDShader());
+
+            //mat4.translate(exp.matrix,[sfrnd(1),sfrnd(1),sfrnd(0)]);
+            exp.scale = 0.01;
+            exp.alpha = 0.0;
+            exp.pos=vec3.create();//[sfrnd(1),sfrnd(1),sfrnd(0)]);
+
+            var zoomTween=new TWEEN.Tween(exp);
+            zoomTween.to({scale:0.08,alpha:1.0},1000.0).onComplete(function(c,v){
+                //this.active=false;
+            }).easing(TWEEN.Easing.Quadratic.In).start();
+
+            exp.update=function(){
+                //console.log("updating");
+                //this.scale+=0.01;
+            }
+        }
+
+        function onTeamWon(msg,param){
+            if(msg=="team_won"){
+                showWinMessage(param);
+            }
+            if(msg=="team_lost"){
+                showWinMessage(param);
+            }
+        }
+
+
+        var gamePaused = false;
+
+        function onGamePause(){
+            gamePaused=true;
+            document.getElementById("centerBox").style.display = "BLOCK";
+            showHudObject("BOLO");//Font_courier");//
+        }
+
+        function onGameUnpause(){
+            gamePaused=false;
+            document.getElementById("centerBox").style.display = "NONE";
+            hideHudObject();
+        }
+
+        function onGameCamera(){
+            gamePaused=(gamePaused!=false)?false:true;
+        }
 
         function onLoad(){
-            //messaging.listen("game",onMessage);
+            messaging.listen("game_pause",onGamePause);
+            messaging.listen("game_unpause",onGameUnpause);
+            messaging.listen("game_camera",onGameCamera);
+            messaging.listen("team_won",onTeamWon);
         }
         onLoad();
 
@@ -69,7 +148,6 @@ define([
         var simTime;
         var simFPS = 1000.0 / 60;
         var minFPS = 1000.0 / 15;
-
         function update(gl, display, timing, simUpdate) {
             if (frameRenderer == null)
                 frameRenderer = display.createFrameRenderer(gl, timing);
@@ -83,7 +161,8 @@ define([
                 simTime = timing.time - 1000.0 / simFPS;
             }
             while (simTime < timing.time) {
-                objects.iterateActive(updateGameObject);
+                if(gamePaused==false)
+                    objects.iterateActive(updateGameObject);
                 simUpdate();
                 simTime += simFPS;
             }
@@ -264,9 +343,10 @@ define([
             }
             return true;
         }
-
+        //var random = MersenneTwister();
         function buildPatch(mox, moy, patchRad) {
             Math.seedrandom("" + (mox + (moy * 256)));
+            //random.init_genrand((mox + (moy * 256)));
             var batch = display.geomBatch();
             var meshGen = generateTileMesh;
             for (var x = -patchRad; x < patchRad; x++) {
@@ -281,7 +361,7 @@ define([
                     display.instanceMesh(mesh, batch, mat);
                 }
             }
-            Math.seedrandom();
+            //Math.seedrandom();
             return batch;
         }
 

@@ -64,6 +64,7 @@ function selectTool(str){
     	<div id="container" style="padding:20px;">
     
             <div id="purposeBox" style="padding:12px;">
+
                 <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="harvest">TREES</a></div>
                 <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="road">roads</a></div>
                 <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="building">buildings</a></div>
@@ -135,13 +136,27 @@ function selectTool(str){
         </div>
     
     </div>
+<script type="text/javascript">
 
+    function keyUpHandler(e){
+        if (e.which == 13)gameMessage('setTickets',parseInt(e.target.value));
+    }
+</script>
 
-    <div id="centerBox">
+            <div id="centerBox">
         <table cellpadding=0 cellspacing=0 border=0>
         <div class="navFont" style="color:#db17cb;">PLAYERLIST</div>
+            <button onclick="gameMessage('addAI');">Add AI</button><br/>
+            <button onclick="gameMessage('loadRandomMap');">Random Map</button><br/>
+            <button onclick="gameMessage('showOptions');">Options</button><br/>
+            <button onclick="gameMessage('togglePause');">Unpause</button><br/>
+            <button onclick="gameMessage('loadStressTest');">Stress Test</button><br/>
+
+            Tickets:<br/>
+            <input type="number" name="tickets" value=500 max=50000 maxlength=5 size=5 onkeyup="keyUpHandler(window.event)" class='selectable'>
+
         <div id="playerListElems"></div>
-    </table>
+        </table>
     </div>
     <div id="bottomCenterBox">
         <table cellpadding=0 cellspacing=0 border=0>

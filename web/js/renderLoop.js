@@ -64,7 +64,8 @@ function(camera, display,world, glUtil) {
         world.update(gl,display,timing,updateSim);
         
         display.startRendering();
-        display.renderActiveShaders();          
+        display.renderActiveShaders();
+        display.finishRendering();
     }
     
     glUtil.startRenderLoop(gl, canvas, function(gl, timing) {

@@ -38,47 +38,7 @@ require(["util/domReady!", // Waits for page load
 
 
 
-    var hudShader;
-    function getHUDShader(){
-        if (!hudShader)
-            hudShader = boloworld.getShader("hud");
-        return hudShader;
-    }
-
-    function showWinMessage(winTeam){
-        //var exp=boloworld.addMeshObject(hexmap.buildSphere(),undefined,getHUDShader());
-        //mat4.scale(mo.matrix, [20,20,20]);
-
-        var exp = boloworld.addObject((winTeam==0)?"Font":"Font001",undefined,getHUDShader());
-        //mat4.translate(exp.matrix,[sfrnd(1),sfrnd(1),sfrnd(0)]);
-        exp.scale = 0.01;
-        exp.alpha = 0.0;
-        exp.pos=vec3.create();//[sfrnd(1),sfrnd(1),sfrnd(0)]);
-
-        var zoomTween=new TWEEN.Tween(exp);
-        zoomTween.to({scale:0.07,alpha:1.0},3000.0).onComplete(function(c,v){
-            //this.active=false;
-        }).easing(TWEEN.Easing.Quadratic.InOut).start();
-
-        exp.update=function(){
-            //console.log("updating");
-            //this.scale+=0.01;
-        }
-    }
-
-    function onMessage(msg,param){
-        if(msg=="team_won"){
-            showWinMessage(param);
-        }
-        if(msg=="team_lost"){
-            showWinMessage(param);
-        }
-    }
-
-
-
     function onLoad(){
-        messaging.listen("team_won",onMessage);
     }
     onLoad();
 
@@ -114,7 +74,17 @@ require(["util/domReady!", // Waits for page load
         boloworld.update(gl,display,timing,updateSim);
         
         display.startRendering();
-        display.renderActiveShaders();          
+        display.renderActiveShaders();
+        gl.disable(gl.CULL_FACE);
+        gl.disable(gl.DEPTH_TEST);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+       // gl.blendFunc(gl.ONE,gl.ONE);
+        display.renderActiveShaders(1);
+        gl.disable(gl.BLEND);
+        gl.enable(gl.CULL_FACE);
+        gl.enable(gl.DEPTH_TEST);
+        display.finishRendering();
     }
     
     glUtil.startRenderLoop(gl, canvas, function(gl, timing) {

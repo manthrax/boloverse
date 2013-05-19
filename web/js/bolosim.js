@@ -39,7 +39,9 @@ define([
         var NEUTRAL_TEAM_ID = 8;
 
         var ticketBleed = 0.1;
-        var teamTickets = {0: 50, 1: 50};
+        var teamTickets = {0: 500, 1: 500};
+
+        var gamePaused = false;
 
         var tileData = {
             "Building": {mesh: meshes.building, speed: 0.0},
@@ -248,10 +250,7 @@ define([
             audio.playPositional2d(name, v3t0, volume);
         }
 
-        function dealDamageToMap(proj, collision) {
-            var c = collision[0];
-            var cell = collision[2];
-            var c0 = cell[0];
+        function dealDamageToMapObject(c, cell,c0,proj) {
             var cellDirty = false;
             var shellExploded = false;
             if ((c0.name == "Building" || c0.name == "ShotBuilding") && c0.hp > 0) { //Damage buildigns..
@@ -276,7 +275,8 @@ define([
                         t++;
                         continue;
                     }
-
+                    if(obj.name=="base")    //Don't damage bases!
+                        continue;
 
                     if (!obj.hp)obj.hp = 255;
                     obj.hp -= 25;
@@ -339,6 +339,18 @@ define([
             return shellExploded;
         }
 
+        function dealDamageToMap(proj, collision) {
+            var c = collision[0];
+            var cell = collision[2];
+
+            for(var t=0;t<cell.length;t++){
+                var c0 = cell[t];
+                if(dealDamageToMapObject(c,cell,cell[t],proj))
+                    return true;
+            }
+            return false;
+        }
+
         function projectileCollision(proj, collision) {
             //Shell already exploding so bail
 
@@ -348,13 +360,20 @@ define([
             }
         }
 
+        function cellContains(cell,name){
+            for(var y=0;y<cell.length;y++)
+                if(cell[y].name==name)
+                    return true;
+            return false;
+        }
+
         function projectilePassable(obj, tile) {
             //if(tile.length>1)return false;
             if (tile[0].name == "Building")return false;
             if (tile[0].name == "ShotBuilding")return false;
             if (tile[0].name == "Forest")return false;
-            if (tile.length > 1 && (tile[1].name == "turret" || tile[1].name == "tank")) {
-                if (tile.length == 2 && obj.shooter == tile[1])
+            if (tile.length > 1 && (cellContains(tile,"turret") || cellContains(tile,"tank"))) {
+                if (tile.length == 2 && obj.shooter == tile[1]) //Dont shoot self...
                     return true;
 //            if(tile[1].team==obj.shooter.team)        //TEam damage
 //                return true;
@@ -658,9 +677,12 @@ define([
         }
 
         function changeMap(name) {
-            currentMap = boloworld.loadMapByName(name);
             display.camera.zoomToPause();
+            currentMap = boloworld.loadMapByName(name);
+            messaging.send("game_change_map",0);
             buildMapObjects();
+            teamTickets = {0: 50, 1: 50};
+            display.camera.zoomToGame();
         }
 
         var aiIndexBase = 0;
@@ -1115,6 +1137,7 @@ define([
         function initSim() {
 
             window.simUIMessage = simUIMessage;
+            window.gameMessage = messaging.send;
 
             display = displayModule.getDisplay();
             gl = display.gl;
@@ -1130,7 +1153,7 @@ define([
             audio.loadSounds("js/sounds/", loadRequests);
             audio.startSoundsLoading();
 
-            startGame("Spay Anything", 1, 2);
+            startGame("Spay Anything", 1, 3);
 
         }
 
@@ -1155,30 +1178,67 @@ define([
         function sfrnd(rng){
             return ((Math.random()*rng)-(rng*0.5));
         }
+        messaging.listen("setTickets",function(msg,val){
+            teamTickets={0:val,1:val};
+        });
 
+        messaging.listen("loadDefaultMap",function(){
+            startGame("Spay Anything", 1, 2);
+        });
+
+        messaging.listen("loadStressTest",function(){
+            startGame("Empty Carcass", 15, 16);
+        });
+        messaging.listen("addAI",function(){
+            invokeGod("addAI" + "~" + "ai0~1");
+        });
+
+        messaging.listen("loadRandomMap",function(){
+            var map = bolomap.getRandomMapName();
+            invokeGod("changeMap" + "~" + map);
+        });
+        messaging.listen("startGame",function(){
+        if (alphaKeyPressed('0')) {
+            invokeGod("startGame");
+        }
+        });
+
+
+        messaging.listen("togglePause",function(){
+            if(gamePaused==false){
+                gamePaused=true;
+                messaging.send("game_pause",0);
+                display.camera.zoomToPause();
+            }else{
+                gamePaused=false;
+                messaging.send("game_unpause",0);
+                display.camera.zoomToGame();
+            }
+        });
+
+        messaging.listen("testHUD",function(){
+            messaging.send("team_won",0);
+        });
+        messaging.listen("nextCamera",function(){
+            messaging.send("game_camera",0);
+        });
+        keyEventMap={
+            '6':function(){messaging.send("loadDefault");},
+            '7':function(){messaging.send("loadStressTest");},
+            '8':function(){messaging.send("addAI");},
+            '9':function(){messaging.send("loadRandomMap");},
+            '0':function(){messaging.send("startGame");},
+            'P':function(){messaging.send("togglePause");},
+            'C':function(){messaging.send("nextCamera");},
+            'Y':function(){messaging.send("testHUD");}
+        };
         function updateSim() {
-
-            if (alphaKeyPressed('6')) {
-                startGame("Spay Anything", 1, 2);
-            }
-            if (alphaKeyPressed('7')) {
-                startGame("Empty Carcass", 15, 16);
-            }
-            if (alphaKeyPressed('8')) {
-                invokeGod("addAI" + "~" + "ai0~0")
-            }
-
-            if (alphaKeyPressed('9')) {
-                var map = bolomap.getRandomMapName();
-                invokeGod("changeMap" + "~" + map);
-            }
-            if (alphaKeyPressed('0')) {
-                invokeGod("startGame");
-            }
+            for(var k in keyEventMap){if(alphaKeyPressed(k))keyEventMap[k]();}
 
             if (alphaKeyPressed('Y')) {
                 messaging.send("team_won",0);
             }
+
 
             audio.harvestDeadSounds();
             mat4.getRowV3(displayModule.viewInverse, 3, cameraPos);
@@ -1247,7 +1307,7 @@ define([
                     for (var t = 0; t < targCt; t++) {
                         var cr = cres[t];
                         //console.log("cres:"+cr[2][1].name+" t:"+cr[0][0]+","+cr[0][1]+".");
-                        if (cr[2][1].name == "tank") {
+                        if(cellContains(cr[2],"tank")){
                             var angle = angleToTarget(p, cr[2][1]);
                             mat4.clearRotation(p.matrix);
                             mat4.rotateZ(p.matrix, angle);

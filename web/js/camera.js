@@ -61,7 +61,7 @@ define([
             self.mouseY=event.pageY;
         }, false);
 
-        this.zoomValues=[8.0,40.0,100,160];
+        this.zoomValues=[8.0,30.0,70,100];
        // document.onmousewheel = wheel;
         var self=this;
         canvas.addEventListener('mousewheel', function (event) {
@@ -181,7 +181,7 @@ define([
         this.saveOrbitX=this.orbitX;
         this.saveOrbitY=this.orbitY;
         
-        this.zoomTween.to({distance:this.zoomValues[3]*2,orbitY:Math.PI*2.0,orbitX:Math.PI*1.5},this.zoomTime).onUpdate(function(c,v){
+        this.zoomTween.to({distance:this.zoomValues[3]*1.1,orbitY:Math.PI*2.0,orbitX:Math.PI*1.25},this.zoomTime).onUpdate(function(c,v){
             this._dirty=true;
             //this.update();
         }).start();

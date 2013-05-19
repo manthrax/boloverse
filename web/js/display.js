@@ -87,7 +87,7 @@ define([
             this.fov = 45;
             this.gl = gl;
             this.nearDepth=0.1;
-            this.farDepth=400.0;
+            this.farDepth=200.0;
             canvas.gl = gl;
             
             display.prototype.fov=this.fov;
@@ -322,11 +322,11 @@ define([
 	
         var	renderedShaders=[];
         var renderedShaderTop=0;
-        display.prototype.renderActiveShaders=function(){
+        display.prototype.renderActiveShaders=function(passIndex){
             for(var t=0;t<renderedShaderTop;t++){
-                renderedShaders[t].render();
+                var shd=renderedShaders[t];
+                if(shd.passIndex==passIndex)shd.render();
             }
-            renderedShaderTop=0;
         }
 	
         var frustumCenter=[0,0,0];
@@ -338,15 +338,20 @@ define([
             vec3.add(v3t0,frustumCenter,frustumCenter);
             setViewProjection(this.camera.getViewMat(),projection);
         }
-        
+
+        display.prototype.finishRendering=function(){
+            renderedShaderTop=0;
+        }
+
         display.prototype.renderComponent=function(object,component,shader){
-            var dist=this.farDepth*1.0; //rough distance culling...
-            var dx=object.matrix[12]-frustumCenter[0];//+_display.camera._center[0];
-            var dy=object.matrix[13]-frustumCenter[1];//+_display.camera._center[1];
-            var dz=object.matrix[14]-frustumCenter[2];//+_display.camera._center[1];
-            if((dx*dx)+(dy*dy)+(dz*dz)>(dist*dist))
-                return;
-            
+            if(!shader.dontCull){
+                var dist=this.farDepth*1.0; //rough distance culling...
+                var dx=object.matrix[12]-frustumCenter[0];//+_display.camera._center[0];
+                var dy=object.matrix[13]-frustumCenter[1];//+_display.camera._center[1];
+                var dz=object.matrix[14]-frustumCenter[2];//+_display.camera._center[1];
+                if((dx*dx)+(dy*dy)+(dz*dz)>(dist*dist))
+                    return;
+            }
             if(shader.displayTop==0){
                 if(renderedShaders.length==renderedShaderTop)
                     renderedShaders.push(shader);

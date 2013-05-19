@@ -24,7 +24,7 @@ void main() {
     v_normal =  (worldInverseTranspose * vec4(normal, 0)).xyz;
     gl_Position = v_position;// worldViewProjection * position;
     
-    atmosBlend=1.0-(clamp((v_position.z-300.0),0.0,100.0) / 100.0);
+    atmosBlend=1.0-(clamp((v_position.z-100.0),0.0,100.0) / 100.0);
 }
 
 SCRIPT='TNDFS';
@@ -43,9 +43,10 @@ varying float atmosBlend;
 //
 void main() {
     vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
-    //vec3 normal = normalize(v_normal);
-    //gl_FragColor.rgb = ((v_normal+1.0)*0.5)*0.1*atmosBlend*v_normal.z;//diffuse.rgb;//abs(v_normal);//vec3(1.0,0,0);////(diffuse.rgb * atmosBlend)+((1.0-atmosBlend)*vec3(0.5, 0.6, 0.9));//v_normal;//diffuse*normal.y;
-    gl_FragColor.rgb = diffuse.rgb*v_normal.z;
+    //vec3 normal = normalize(v_normal);tmosB
+    //((v_normal+1.0)*0.5)*0.1*atmosBlend*v_normal.z;//diffuse.rgb;//abs(v_normal);//vec3(1.0,0,0);////
+    gl_FragColor.rgb = ((diffuse.rgb * atmosBlend * v_normal.z)+((1.0-atmosBlend)*vec3(0.5, 0.6, 0.9)));//v_normal;//diffuse*normal.y;
+    //gl_FragColor.rgb = diffuse.rgb*v_normal.z;
     
     
 //    gl_FragColor.a=1.0;
@@ -95,6 +96,7 @@ attribute vec2 texCoord;
 uniform mat4 worldInverseTranspose;
 uniform mat4 worldViewProjection;
 uniform float scale;
+uniform float aspectRatio;
 uniform vec3 pos;
 varying vec4 v_position;
 varying vec2 v_texCoord;
@@ -105,6 +107,7 @@ void main() {
     v_position = position;
     v_normal =  normal;
     gl_Position = vec4((pos+v_position.xyz)*scale,1);//worldViewProjection * vec4((position.xyz*scale*2.0),1.0);
+    gl_Position.y*=aspectRatio;
 }
 
 SCRIPT='hudFS';
