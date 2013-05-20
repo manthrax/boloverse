@@ -2,27 +2,35 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="75fee114-8e85-48ab-ba13-d74e91610ce2" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/util/audio.js" afterPath="$PROJECT_DIR$/web/js/util/audio.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/bolomap.js" afterPath="$PROJECT_DIR$/web/js/bolomap.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/bolosim.js" afterPath="$PROJECT_DIR$/web/js/bolosim.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/boloworld.js" afterPath="$PROJECT_DIR$/web/js/boloworld.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/index.html" afterPath="$PROJECT_DIR$/web/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/util/messaging.js" afterPath="$PROJECT_DIR$/web/js/util/messaging.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="bolo.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Dummy.txt" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368999834240" ignored="false" />
-    <file path="/app.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368502924538" ignored="false" />
+    <file path="/app.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1369011344739" ignored="false" />
     <file path="/a.dummy" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368794939360" ignored="false" />
-    <file path="/boloworld.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368963401899" ignored="false" />
-    <file path="/bolosim.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368970293012" ignored="false" />
+    <file path="/boloworld.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1369017240568" ignored="false" />
+    <file path="/bolosim.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1369042292549" ignored="false" />
     <file path="/display.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368791418496" ignored="false" />
     <file path="/index.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368799289496" ignored="false" />
     <file path="/brain.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368521330107" ignored="false" />
     <file path="/hexmap.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368525320042" ignored="false" />
-    <file path="/*.regexp" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368970135152" ignored="false" />
+    <file path="/*.regexp" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1369040720802" ignored="false" />
     <file path="/util.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368667304224" ignored="false" />
     <file path="/shaders.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368792025624" ignored="false" />
     <file path="/messaging.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368785023863" ignored="false" />
     <file path="/v2.css" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368959135362" ignored="false" />
-    <file path="/index.html" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368970662331" ignored="false" />
+    <file path="/index.html" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1369020957432" ignored="false" />
     <file path="/network.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368700984716" ignored="false" />
-    <file path="/bolomap.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1368969829800" ignored="false" />
+    <file path="/bolomap.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1369024418095" ignored="false" />
+    <file path="/audio.js" changelist="75fee114-8e85-48ab-ba13-d74e91610ce2" time="1369004957787" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,16 +94,43 @@
       <file leaf-file-name="boloworld.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/boloworld.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="312" column="44" selection-start="10090" selection-end="10094" vertical-scroll-proportion="-7.92">
+            <state line="258" column="31" selection-start="8380" selection-end="8380" vertical-scroll-proportion="-2.44">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="bolosim.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="util.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/js/util/util.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="97" column="60" selection-start="3828" selection-end="3828" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="bolosim.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/web/js/bolosim.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1142" column="38" selection-start="44658" selection-end="44671" vertical-scroll-proportion="-7.08">
+            <state line="778" column="25" selection-start="29758" selection-end="29758" vertical-scroll-proportion="0.17863397">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="152" column="0" selection-start="4118" selection-end="4118" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="audio.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/js/util/audio.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="11" column="29" selection-start="361" selection-end="361" vertical-scroll-proportion="-9.24">
               <folding />
             </state>
           </provider>
@@ -110,21 +145,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="seedrandom.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/web/js/util/seedrandom.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="250" column="2" selection-start="9339" selection-end="9339" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="messaging.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/util/messaging.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="36" selection-start="351" selection-end="351" vertical-scroll-proportion="0.0">
+            <state line="15" column="0" selection-start="352" selection-end="352" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -133,7 +157,7 @@
       <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="156" column="69" selection-start="7152" selection-end="7152" vertical-scroll-proportion="-11.16">
+            <state line="153" column="23" selection-start="6908" selection-end="6908" vertical-scroll-proportion="-7.56">
               <folding>
                 <element signature="n#style#0;n#div#0;n#div#1;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -163,19 +187,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="bolomap.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="bolomap.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/bolomap.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="58" column="27" selection-start="1326" selection-end="1326" vertical-scroll-proportion="0.86023295">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="mapcat.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/web/js/mapcat.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <state line="102" column="14" selection-start="2382" selection-end="2383" vertical-scroll-proportion="-8.32">
               <folding />
             </state>
           </provider>
@@ -185,15 +200,6 @@
         <entry file="file://$PROJECT_DIR$/web/v2.css">
           <provider selected="true" editor-type-id="text-editor">
             <state line="80" column="22" selection-start="1198" selection-end="1204" vertical-scroll-proportion="-8.92">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="shaders.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/web/js/shaders.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="121" column="24" selection-start="2900" selection-end="2900" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -217,13 +223,10 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/app.js" />
-        <option value="$PROJECT_DIR$/web/js/util/audio.js" />
         <option value="$PROJECT_DIR$/web/js/brain.js" />
         <option value="$PROJECT_DIR$/web/js/hexmap.js" />
         <option value="$PROJECT_DIR$/web/js/util/util.js" />
         <option value="$PROJECT_DIR$/web/js/network.js" />
-        <option value="$PROJECT_DIR$/web/js/util/messaging.js" />
         <option value="$PROJECT_DIR$/web/js/renderLoop.js" />
         <option value="$PROJECT_DIR$/web/js/display.js" />
         <option value="$PROJECT_DIR$/web/js/camera.js" />
@@ -232,19 +235,22 @@
         <option value="$PROJECT_DIR$/web/v2.css" />
         <option value="$PROJECT_DIR$/web/js/util/Mersenne.js" />
         <option value="$PROJECT_DIR$/web/js/util/mersenne.js" />
-        <option value="$PROJECT_DIR$/web/js/boloworld.js" />
-        <option value="$PROJECT_DIR$/web/js/bolomap.js" />
-        <option value="$PROJECT_DIR$/web/js/bolosim.js" />
+        <option value="$PROJECT_DIR$/web/js/util/messaging.js" />
+        <option value="$PROJECT_DIR$/web/js/util/audio.js" />
+        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/web/index.html" />
+        <option value="$PROJECT_DIR$/web/js/bolomap.js" />
+        <option value="$PROJECT_DIR$/web/js/boloworld.js" />
+        <option value="$PROJECT_DIR$/web/js/bolosim.js" />
       </list>
     </option>
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="x" value="27" />
+    <option name="y" value="17" />
+    <option name="width" value="1900" />
+    <option name="height" value="1011" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -565,16 +571,16 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="27" y="17" width="1900" height="1011" extended-state="0" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3144059" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31346577" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.362776" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4646799" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.44230768" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4415011" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -587,7 +593,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18036287" sideWeight="0.6855941" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18389554" sideWeight="0.6865342" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32932693" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -664,69 +670,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/web/js/util/gl-matrix.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="7" selection-start="1458" selection-end="1462" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/network.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="81" column="0" selection-start="2746" selection-end="2746" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/renderLoop.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="4" selection-start="2018" selection-end="2018" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/world.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="26" selection-start="156" selection-end="156" vertical-scroll-proportion="-6.72">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/camera.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="206" column="33" selection-start="6618" selection-end="6618" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/display.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="395" column="16" selection-start="14910" selection-end="14910" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/galaxy.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="4" selection-start="271" selection-end="271" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/util/tween.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="339" column="8" selection-start="5518" selection-end="5518" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="215" column="34" selection-start="6944" selection-end="6944" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/web/js/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="14" column="54" selection-start="530" selection-end="543" vertical-scroll-proportion="0.0">
@@ -771,13 +714,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/util/messaging.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="36" selection-start="351" selection-end="351" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/web/js/mapcat.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -785,16 +721,50 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/boloworld.js">
+    <entry file="file://$PROJECT_DIR$/node_modules/connect/node_modules/qs/test/browser/jquery.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="312" column="44" selection-start="10090" selection-end="10094" vertical-scroll-proportion="-7.92">
+        <state line="2982" column="39" selection-start="79750" selection-end="79750" vertical-scroll-proportion="0.0">
+          <folding>
+            <marker date="1357133344497" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1357133344497" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1357133344497" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1357133344497" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1357133344497" expanded="false" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/util/messaging.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="0" selection-start="352" selection-end="352" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="152" column="0" selection-start="4118" selection-end="4118" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/world.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="370" column="23" selection-start="12419" selection-end="12425" vertical-scroll-proportion="-8.32">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/util/audio.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="29" selection-start="361" selection-end="361" vertical-scroll-proportion="-9.24">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/web/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="156" column="69" selection-start="7152" selection-end="7152" vertical-scroll-proportion="-11.16">
+        <state line="153" column="23" selection-start="6908" selection-end="6908" vertical-scroll-proportion="-7.56">
           <folding>
             <element signature="n#style#0;n#div#0;n#div#1;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -823,16 +793,58 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/bolosim.js">
+    <entry file="file://$PROJECT_DIR$/web/js/network.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1142" column="38" selection-start="44658" selection-end="44671" vertical-scroll-proportion="-7.08">
+        <state line="164" column="14" selection-start="5836" selection-end="5836" vertical-scroll-proportion="0.33199194">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/util/network.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="170" column="13" selection-start="5362" selection-end="5362" vertical-scroll-proportion="0.6277666">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/express/node_modules/mkdirp/test/sync.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="5" selection-start="119" selection-end="119" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/display.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="91" column="12" selection-start="3142" selection-end="3142" vertical-scroll-proportion="-4.76">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/util/util.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="97" column="60" selection-start="3828" selection-end="3828" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/web/js/bolomap.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="27" selection-start="1326" selection-end="1326" vertical-scroll-proportion="0.86023295">
+        <state line="102" column="14" selection-start="2382" selection-end="2383" vertical-scroll-proportion="-8.32">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/boloworld.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="258" column="31" selection-start="8380" selection-end="8380" vertical-scroll-proportion="-2.44">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/bolosim.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="778" column="25" selection-start="29758" selection-end="29758" vertical-scroll-proportion="0.17863397">
           <folding />
         </state>
       </provider>

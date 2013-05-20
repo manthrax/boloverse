@@ -90,8 +90,8 @@ io.sockets.on('connection', function (socket) {
     socket.on('host', function(){
         if(!g_gameHost){
             g_gameHost=socket.id;
+            socket.emit('host',g_gameHost);
         }
-        socket.emit('host',g_gameHost);
     });
     
     socket.on('ai', function (cmd) {    //Broadcast ai path change
@@ -99,7 +99,7 @@ io.sockets.on('connection', function (socket) {
     });
     
     socket.on('video', function (data) {
-	//console.log('Got data:'+socket.id);
+	    //console.log('Got data:'+socket.id);
         socket.broadcast.emit('video', {data:data,id:socket.id});    //Forward video packets...
     });
     
@@ -144,7 +144,7 @@ io.sockets.on('connection', function (socket) {
     });
     
     socket.on('god', function(data){
-        console.log("Got god command:"+data);
+        console.log("Got god command from host:"+data);
         io.sockets.emit('god',data);
     });
     

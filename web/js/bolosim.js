@@ -39,8 +39,8 @@ define([
         var NEUTRAL_TEAM_ID = 8;
 
         var ticketBleed = 0.1;
-
-        var teamTickets = {0: 500, 1: 500};
+        var startingTickets = 500;
+        var teamTickets = {0: startingTickets, 1: startingTickets};
 
         var gamePaused = false;
 
@@ -464,15 +464,15 @@ define([
 
         }
 
-        function validPilotTarget(tank, currentTool, cell) {
+        function validPilotTarget(tank, tool, cell) {
             var validTarget = false;
-            var reqs = toolReqs[currentTool];
+            var reqs = toolReqs[tool];
             if (!reqs)return false;
             var valid = false;
             for (var i = 0; i < reqs.length; i++)if (cell[0].name == reqs[i])valid = true;
-            if (currentTool == "road" && tank.invWood < roadWoodCost)return false;
-            if (currentTool == "building" && tank.invWood < buildingWoodCost)return false;
-            if (currentTool == "pillbox" && tank.invTurrets.length == 0)return false;
+            if (tool == "road" && tank.invWood < roadWoodCost)return false;
+            if (tool == "building" && tank.invWood < buildingWoodCost)return false;
+            if (tool == "pillbox" && tank.invTurrets.length == 0)return false;
             return valid;
         }
 
@@ -493,27 +493,27 @@ define([
                 if (!this.returning) {
                     //Made it to target...
                     var tileDirty = false;
-                    if (validPilotTarget(this.tank, currentTool, this.cell)) {
-                        if (currentTool == "harvest") {
+                    if (validPilotTarget(this.tank, this.currentTool, this.cell)) {
+                        if (this.currentTool == "harvest") {
                             this.cell[0] = {name: "Grass", hp: 255};
                             this.wood = 16;   //Harvest tree.. turn it to grass...
                             tileDirty = true;
                             playSound(this, "farming_tree_near");
-                        } else if (currentTool == "road") {
+                        } else if (this.currentTool == "road") {
                             if (this.tank.invWood > roadWoodCost) {
                                 this.cell[0] = {name: "Road", hp: 255};
                                 tileDirty = true;
                                 this.tank.invWood -= roadWoodCost;
                                 playSound(this, "man_building_near");
                             }
-                        } else if (currentTool == "building") {
+                        } else if (this.currentTool == "building") {
                             if (this.tank.invWood > buildingWoodCost) {
                                 this.cell[0] = {name: "Building", hp: 255};
                                 tileDirty = true;
                                 this.tank.invWood -= buildingWoodCost;
                                 playSound(this, "man_building_near");
                             }
-                        } else if (currentTool == "pillbox") {
+                        } else if (this.currentTool == "pillbox") {
                             if (this.tank.invTurrets.length > 0) {
                                 var turret = boloworld.addObject("turret", [this.matrix[12], this.matrix[13], this.matrix[14]]);
                                 turret.name = "turret";
@@ -528,7 +528,7 @@ define([
                                 cb.style["background-color"] = (this.team == 0) ? "red" : "blue";
 
                             }
-                        } else if (currentTool == "mine") {
+                        } else if (this.currentTool == "mine") {
                             if (this.tank.invMines > 0 && (this.cell.length == 2)) {
                                 mat4.getRowV3(this.matrix, 3, v3t0);
                                 var mine = boloworld.addObject("mine", v3t0);
@@ -677,12 +677,12 @@ define([
 
         }
 
-        function changeMap(name) {
+        function changeMap(index) {
             display.camera.zoomToPause();
-            currentMap = boloworld.loadMapByName(name);
-            messaging.send("game_change_map",0);
+            currentMap = boloworld.loadMapByName(bolomap.getMapNames()[index]);
+            messaging.send("game_map_changed",0);
             buildMapObjects();
-            teamTickets = {0: 50, 1: 50};
+            teamTickets = {0: startingTickets, 1: startingTickets};
             display.camera.zoomToGame();
         }
 
@@ -692,7 +692,7 @@ define([
             console.log("Got god command:" + msg);
             var cmd = msg.split('~');
             if (cmd[0] == "changeMap") {
-                changeMap(cmd[1]);
+                changeMap(parseInt(cmd[1]));
 
             } else if (cmd[0] == "startGame") {
                 spawnPlayers();
@@ -762,7 +762,34 @@ define([
                             go.controls = parseInt(cmd[t++]);
                         }
                     }
-                } else {
+                } else if (cmd[t] == 'tool') {
+                    t++;
+                    var id = cmd[t++];
+                    var plyr = playersByNetworkId[id];
+
+                    var tool = cmd[t++];
+                    if (!plyr) {
+                        console.log("Invalid player tool!" + id);
+                        t++;
+                    } else {
+                        var go = plyr.avatar;
+                        if (go) {
+                            var targ=[parseFloat(cmd[t++]),parseFloat(cmd[t++]),0.0];
+                            deployPilot.call(plyr.avatar,targ,tool);
+                        }
+                    }
+                } else if (cmd[t] == 'baseTaken') {
+                    t++;
+                    var ccoord=[parseInt(cmd[t++]),parseInt(cmd[t++])];
+                    var cteam = parseInt(cmd[t++]);
+                    var cell=boloworld.getCell(ccoord[0],ccoord[1]);
+
+                    for (var tc = 1; tc < cell.length;tc++) {
+                        if(cell[tc].name=="base"){
+                            takeBase(cell[tc],cteam);
+                        }
+                    }
+                }else{
                     console.log("Invalid sim packet!" + cmd.join());
                     return;
 
@@ -800,12 +827,41 @@ define([
         function createCtrlPacket() {
             return 'ctrl~' + network.g_networkId + "~" + this.controls;
         }
+        var lastSyncPacket="";
+
+        function deployPilot(targ,tool){
+            //Deploy pilot
+
+            var targCell = boloworld.getCellAtWorld(targ[0], targ[1]);
+            var p = this.pilot = boloworld.addObject("pilot", [this.matrix[12], this.matrix[13], 0.0]);
+            var pio = this.pilotIndicator = boloworld.addObject("pilotDir", [this.matrix[12], this.matrix[13], 0.0]);
+            p.update = updatePilot;
+            p.tank = this;
+            p.team = this.team;
+            p.name = "pilot";
+            p.start = [this.matrix[12], this.matrix[13], 0.0];
+            p.target = targ;
+            p.targetCell = targCell;
+            p.targetNormal = vec3.subtract(p.target, p.start, v3t0);
+            p.currentTool = tool;
+            var d = p.targetDist = vec3.length(v3t0);
+            p.targetNormal = [v3t0[0] / d, v3t0[1] / d, v3t0[2] / d];
+            boloworld.addObjectToGrid(p);
+            p.destroy=function(){
+                this.tank.pilot=null;
+                this.tank=null;
+            }
+        }
 
         function updateLocalPlayer() {
 
             if (network.connected()) {
                 if (syncCountdown-- < 0) {
-                    network.emit('sim', createSyncPacket.call(this));
+                    var packet=createSyncPacket.call(this);
+                    if(lastSyncPacket!==packet){
+                        network.emit('sim', createSyncPacket.call(this));
+                        lastSyncPacket=packet
+                    }
                     syncCountdown = 120;
                 }
             }
@@ -827,9 +883,12 @@ define([
             var pmat = this.matrix;
             display.camera.setCenter(this.camTarget);
 
-            if (!crosshairSprite)
+            if (!crosshairSprite){
                 crosshairSprite = boloworld.addObject("crosshair", [pmat[12], pmat[13], 0.0]);
-
+                crosshairSprite.destroy=function(){
+                    crosshairSprite=null;
+                }
+            }
             var cmat = crosshairSprite.matrix;
             mat4.set(pmat, cmat);
             var cursRad = 7 * boloworld.tileDim;//worldMeter;
@@ -841,8 +900,12 @@ define([
             //console.log(dcam.mouseX+","+dcam.mouseY);
             var ray = display.computePickRay(dcam.mouseX, dcam.mouseY);
 
-            if (!cursorSprite)
-                cursorSprite = boloworld.addObject("cursor", ray.o);//[pmat[12],pmat[13],0.0]);        
+            if (!cursorSprite){
+                cursorSprite = boloworld.addObject("cursor", ray.o);//[pmat[12],pmat[13],0.0]);
+                cursorSprite.destroy=function(){
+                    cursorSprite=null;
+                }
+            }
             var cmat = cursorSprite.matrix;
 
             //vec3.add(ray.o,vec3.scale(ray.d,15.0,v3t0),v3t0);
@@ -874,7 +937,7 @@ define([
                             targetValid = false;
 
                         var targ = [v3t0[0], v3t0[1], v3t0[2]];
-                        var targCell = boloworld.getCellAtWorld(v3t0[0], v3t0[1]);
+                        var targCell = boloworld.getCellAtWorld(targ[0], targ[1]);
 
                         if (validPilotTarget(this, currentTool, targCell) == false) {
                             targetValid = false;
@@ -882,20 +945,12 @@ define([
                             audio.play("bubbles");
                         }
                         else if (targetValid == true) {
-                            //Deploy pilot
-                            var p = this.pilot = boloworld.addObject("pilot", [this.matrix[12], this.matrix[13], 0.0]);
-                            var pio = this.pilotIndicator = boloworld.addObject("pilotDir", [this.matrix[12], this.matrix[13], 0.0]);
-                            p.update = updatePilot;
-                            p.tank = this;
-                            p.team = this.team;
-                            p.name = "pilot";
-                            p.start = [this.matrix[12], this.matrix[13], 0.0];
-                            p.target = targ;
-                            p.targetCell = targCell;
-                            p.targetNormal = vec3.subtract(p.target, p.start, v3t0);
-                            var d = p.targetDist = vec3.length(v3t0);
-                            p.targetNormal = [v3t0[0] / d, v3t0[1] / d, v3t0[2] / d];
-                            boloworld.addObjectToGrid(p);
+                            if (network.connected() == true) {
+                                network.emit("sim","tool~"+network.g_networkId+"~"+currentTool+"~"+targ[0]+"~"+targ[1]);
+                                deployPilot.call(this,targ,currentTool);
+                            }else{
+                                deployPilot.call(this,targ,currentTool);
+                            }
                         }
                     }
                 }
@@ -906,6 +961,16 @@ define([
 
         function baseHealPlayer(b, p) {
 
+        }
+        function takeBase(base,team){
+            base.team = team;
+            var bpos = mat4.getRowV3(base.matrix, 3, v3t7);
+            if (base.flare)
+                base.flare.active = false;
+            base.flare = boloworld.addObject((team == 0) ? "flareRed" : "flareBlue", bpos);
+            playSound(base, "spawn_1.mp3");
+            var cb = document.getElementById("basebox_" + base.baseNumber);
+            cb.style["background-color"] = (team == 0) ? "red" : "blue";
         }
 
 //25th United Airlines UA 900.. 
@@ -1029,19 +1094,18 @@ define([
                             } else if (curCell[t].name == "base") {
                                 //Entered base cell .. on base...
                                 base = curCell[t];
-                                if (base.team != this.team) {//Unclaimed base, create a new instance
-                                    base.team = this.team;
-                                    var bpos = mat4.getRowV3(base.matrix, 3, v3t7);
-                                    if (base.flare)
-                                        base.flare.active = false;
-                                    base.flare = boloworld.addObject((this.team == 0) ? "flareRed" : "flareBlue", bpos);
-                                    playSound(this, "man_dying_far");
 
-                                    var cb = document.getElementById("basebox_" + base.baseNumber);
-                                    cb.style["background-color"] = (this.team == 0) ? "red" : "blue";
+                                if (base.team != this.team) {//Unclaimed base, create a new instance
+                                    if(network.connected()){
+                                        if(network.g_isHost==true){
+                                            network.emit("sim","baseTaken~"+base.cellCoord[0]+"~"+base.cellCoord[1]+"~"+this.team);
+                                            takeBase(base,this.team);
+                                        }
+                                    }else
+                                        takeBase(base,this.team);
                                 }
                                 t++;
-                            } else
+                            }else
                                 t++;
                         }
                     }
@@ -1126,7 +1190,10 @@ define([
             "shot_tree_far",
             "shot_tree_near",
             "tank_sinking_far",
-            "tank_sinking_near"
+            "tank_sinking_near",
+            "bolospawn1.mp3",
+            "bolotrack.mp3",
+            "spawn_1.mp3"
         ];
 
 
@@ -1161,8 +1228,14 @@ define([
             audio.loadSounds("js/sounds/", loadRequests);
             audio.startSoundsLoading();
 
-            startGame("Spay Anything", 1, 3);
+            startGame(bolomap.getMapIndex("Spay Anything"), 1, 3);
 
+            messaging.listen("playSound",function(msg,snd){
+                audio.play(snd);
+            });
+            messaging.listen("allSoundsLoaded",function(msg,snd){
+                messaging.send("playSound","bolotrack.mp3");
+            });
         }
 
 
@@ -1172,6 +1245,9 @@ define([
 
             invokeGod("changeMap~" + map);
             invokeGod("startGame");
+
+            //return;
+
             if (aiCount0)
                 for (var t = 0; t < aiCount0; t++)
                     invokeGod("addAI~ai0~" + 0);
@@ -1187,7 +1263,8 @@ define([
             return ((Math.random()*rng)-(rng*0.5));
         }
         messaging.listen("setTickets",function(msg,val){
-            teamTickets={0:val,1:val};
+            startingTickets=val;
+            teamTickets={0:startingTickets,1:startingTickets};
         });
 
         messaging.listen("loadDefaultMap",function(){
@@ -1195,16 +1272,21 @@ define([
         });
 
         messaging.listen("loadStressTest",function(){
-            startGame("Empty Carcass", 15, 16);
+            startGame(bolomap.getMapIndex("Empty Carcass"), 15, 16);
         });
         messaging.listen("addAI",function(){
             invokeGod("addAI" + "~" + "ai0~1");
         });
 
         messaging.listen("loadRandomMap",function(){
-            var map = bolomap.getRandomMapName();
+            var map = bolomap.getRandomMapIndex();
             invokeGod("changeMap" + "~" + map);
         });
+
+        messaging.listen("changeMap",function(msg,map){
+            invokeGod("changeMap" + "~" + map);
+        });
+
         messaging.listen("startGame",function(){
         if (alphaKeyPressed('0')) {
             invokeGod("startGame");

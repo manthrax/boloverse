@@ -89,10 +89,13 @@ define([
         }
 
         function onLoad(){
+
+
             messaging.listen("game_pause",onGamePause);
             messaging.listen("game_unpause",onGameUnpause);
             messaging.listen("game_camera",onGameCamera);
             messaging.listen("team_won",onTeamWon);
+
         }
         onLoad();
 
@@ -449,11 +452,16 @@ define([
             document.getElementById('logoBox').innerHTML = "BOLO | UNIVERSE : " + mapName;
 
             objects.iterateActive({update: function (go) {go.active = false;}});
+
+
             for (var r in regionGrid)regionGrid[r] = null;
             regionBuildTop = 0;
             currentMap = bolomap.loadMapByName(mapName);
             makeScene();
             return currentMap;
+        }
+        function loadMapByIndex(index) {
+            loadMapByName(bolomap.getMapNames()[index]);
         }
 
         function loadRandomMap() {

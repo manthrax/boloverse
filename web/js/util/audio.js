@@ -1,5 +1,5 @@
 /* Copyright 2011 - Michael A. Schlachter - please contact me if you want to use this code! */
-define([],function() {
+define(["js/util/messaging.js"],function(messaging) {
     var loggingEnabled=false;
     var soundDisabled = false;
     var audibleRadius=200;
@@ -118,8 +118,10 @@ define([],function() {
     function waitSoundsLoaded(){
         if(soundLoadedCount!=soundLoadRequests)
             setTimeout(waitSoundsLoaded,1000);
-        else
+        else{
             soundsLoaded=true;
+            messaging.send("allSoundsLoaded");
+        }
     }
     function loadedPercentage(){
         if(soundLoadRequests==soundLoadedCount)return 100.0;
@@ -234,8 +236,11 @@ define([],function() {
         var ext='.ogg';
         arr=[];
         for(key in earr){
-            var elm=earr[key];
-            arr.push([key,root+elm.file+ext]);
+            var elm=earr[key];//Paul Headhunter: 6082037473
+            var fn=elm.file;
+            if(fn.indexOf('.')<0)
+                fn+=ext;
+            arr.push([key,root+fn]);
         }
         soundEvents=arr;
         soundLoadRequests=soundEvents.length;

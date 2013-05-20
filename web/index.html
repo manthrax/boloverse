@@ -154,7 +154,7 @@ function selectTool(str){
             Tickets:<br/>
             <input type="number" name="tickets" value=500 max=50000 maxlength=5 size=5 onkeyup="keyUpHandler(window.event)" class='selectable'><br/>
             Maps:<br/>
-            <select id="maps" onchange="alert('mooo');window.loadMap(this.value);" class='selectable'>
+            <select id="maps" onchange="gameMessage('changeMap',this.selectedIndex);this.blur();" class='selectable'>
             </select>
         <div id="playerListElems"></div>
         </table>

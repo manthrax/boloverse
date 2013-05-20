@@ -34,15 +34,21 @@ define(["js/mapcat.js"],function(mapcat){
     function getMapNames(){
         return mapArray;
     }
-    function getRandomMapName(){
-        return mapArray[parseInt(Math.random()*mapArray.length*0.99)];
+    function getRandomMapIndex(){
+        return parseInt(Math.random()*mapArray.length*0.99);
     }
-    
+    function getMapIndex(name){
+        return mapArray.indexOf(name);
+    }
+    function getRandomMapName(){
+        return mapArray[getRandomMapIndex()];
+    }
+
     function loadMapByName(name){
         ascmap=mapcat[name];
         return loadMap(ascmap);
     }
-    
+
     function loadRandomMap(){
         //pick a random map
         ascmap=mapcat[getRandomMapName()];
@@ -50,7 +56,6 @@ define(["js/mapcat.js"],function(mapcat){
     }
     
     function loadMap(ascmap){
-
         var imap=new Array(ascmap.length/2);
         var mi=0;
         var hexStr="0123456789abcdef";
@@ -286,7 +291,9 @@ define(["js/mapcat.js"],function(mapcat){
         loadRandomMap: loadRandomMap,
         getCurrentMap: function(){return currentMap;},
         getRandomMapName: getRandomMapName,
+        getRandomMapIndex: getRandomMapIndex,
         loadMapByName: loadMapByName,
-        getMapNames: getMapNames
+        getMapNames: getMapNames,
+        getMapIndex: getMapIndex
     }
 })
