@@ -6,9 +6,10 @@ define([
     "programs",
     "js/bolomap.js",
     "js/meshes/testmesh.js",
+    "js/fontMesh.js",
     "js/util/gl-matrix.js"
 ],
-    function (displayModule, messaging, glUtil, util, programs, bolomap, meshes) {//display,
+    function (displayModule, messaging, glUtil, util, programs, bolomap, meshes,fontMesh) {//display,
 
         function showWinMessage(winTeam){
             showHudObject((winTeam==0)?"red_victory":"blue_victory");
@@ -16,6 +17,11 @@ define([
 
         var hudFGObject=null;
         var hudShader;
+
+        /**
+         * @function getHUDShader Returns the shader for Heads up display objects, loading it if necessary.
+         * @returns Shader
+         */
         function getHUDShader(){
             if (!hudShader){
                 hudShader = getShader("hud");
@@ -322,7 +328,7 @@ define([
 
             var tileTex = loadTexture("tiles.png");
 
-
+            fontMesh.createFontFromMesh(meshes["Font_courier"]);
         }
 
         var meshList = []

@@ -365,6 +365,13 @@ define([
             }
         }
 
+        function findObjectInCell(cell,name){
+            for(var y=0;y<cell.length;y++)
+                if(cell[y].name==name)
+                    return y;
+            return -1;
+        }
+
         function cellContains(cell,name){
             for(var y=0;y<cell.length;y++)
                 if(cell[y].name==name)
@@ -377,7 +384,7 @@ define([
             if (tile[0].name == "Building")return false;
             if (tile[0].name == "ShotBuilding")return false;
             if (tile[0].name == "Forest")return false;
-            if (tile.length > 1 && (cellContains(tile,"turret") || cellContains(tile,"tank"))) {
+            if (tile.length > 1 && (cellContains(tile,"turret") || cellContains(tile,"tank") || cellContains(tile,"pilot")|| cellContains(tile,"boat"))) {
                 if (tile.length == 2 && obj.shooter == tile[1]) //Dont shoot self...
                     return true;
 //            if(tile[1].team==obj.shooter.team)        //TEam damage
@@ -445,10 +452,16 @@ define([
             if (tile[0].name == "Building" || tile[0].name == "ShotBuilding")
                 return false;
             if(tile.length>1){
-
-           //     if(cellContains(tile,"tank")){
-           //         return false;
-           //     }
+                //Don't move into other tanks, unless we are already in a cell with other tanks, in which case, go ahead and move out...
+                var fidx=findObjectInCell(tile,"tank");
+                if(fidx>0){
+                    for(var t=0;t<tile.length;t++)
+                    {
+                        if(tile[t]==obj)
+                            return true;
+                    }
+                    return false;
+                }
             }
             return true;
         }
@@ -864,6 +877,7 @@ define([
             p.tank = this;
             p.team = this.team;
             p.name = "pilot";
+            p.hp = 1;
             p.start = [this.matrix[12], this.matrix[13], 0.0];
             p.target = targ;
             p.targetCell = targCell;
@@ -874,6 +888,10 @@ define([
             boloworld.addObjectToGrid(p);
             p.destroy=function(){
                 this.tank.pilot=null;
+                if(this.tank.pilotIndicator){
+                    this.tank.pilotIndicator.active=false;
+                    this.tank.pilotIndicator=null;
+                }
                 this.tank=null;
             }
         }
@@ -993,7 +1011,7 @@ define([
             if (base.flare)
                 base.flare.active = false;
             base.flare = boloworld.addObject((team == 0) ? "flareRed" : "flareBlue", bpos);
-            playSound(base, "spawn_1.mp3");
+            //playSound(base, "spawn_1.mp3");
             var cb = document.getElementById("basebox_" + base.baseNumber);
             cb.style["background-color"] = (team == 0) ? "red" : "blue";
         }
@@ -1259,7 +1277,7 @@ define([
                 audio.play(snd);
             });
             messaging.listen("allSoundsLoaded",function(msg,snd){
-                messaging.send("playSound","bolotrack.mp3");
+                //messaging.send("playSound","bolotrack.mp3");
             });
         }
 
@@ -1489,6 +1507,25 @@ define([
             p.avatar.name = "tank";
             p.avatar.currentTool = "harvest";
             p.avatar.boat = boloworld.addTileObject("boat", spawnpt.x, spawnpt.y);
+            p.avatar.boat.hp=1;
+            p.avatar.boat.owner=p;
+
+            //Only retain 2 boats per player
+            if(!p.boats){    //Keep a list of player boats
+                p.boats=[p.avatar.boat];
+            }else{
+                if(p.boats.length>1){
+                    p.boats[0].active=false;
+                    p.boats.splice(0,1);//Ditch earliest boat...
+                }
+                p.boats.push(p.avatar.boat);//Add new boat to list
+            }
+
+            p.avatar.boat.destroy=function(){
+                if(this.owner.avatar)
+                    this.owner.avatar.boat=null;
+                this.owner.boats.splice(this.owner.boats.indexOf(this),1);  //Remove the boat from the players boat list...
+            }
             p.avatar.invWood = 0;
             p.avatar.invShells = 40;
             p.avatar.invMines = 40;

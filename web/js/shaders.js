@@ -125,7 +125,7 @@ uniform float alpha;
 void main() {
     vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
     gl_FragColor.rgb = diffuse.rgb;//v_normal;//diffuse*normal.y;
-    gl_FragColor.a=alpha;
+    gl_FragColor.a=(1.0-diffuse.r);
 }
 
 SCRIPT='windVS';
