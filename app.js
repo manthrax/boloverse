@@ -1,6 +1,7 @@
 var express = require('express'),
     sio = require('socket.io'),
     os=require('os'),
+    moment=require('moment'),
     util=require('util'),
     colors=require('colors'),
     http = require('http');
@@ -10,6 +11,8 @@ app.use(express.static(__dirname+"/web"));
 var port = 3000;
 
 
+util.puts('WELCOME to '.blue + 'BOLO '.red + 'v0.1.9.666.x');
+util.puts(' server time: '.blue moment().format('Y-m-d h:i:s').green);
 
 httpServer.listen(port);
 
