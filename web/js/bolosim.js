@@ -340,9 +340,9 @@ define([
             return shellExploded;
         }
 
-        function dealDamageToMap(proj, collision) {
-            var c = collision[0];
-            var cell = collision[2];
+        function dealDamageToMap(proj, c, cell) {
+            //var c = cell.cellCoord;//collision[0];
+            //var cell = collision[2];
 
             for(var t=0;t<cell.length;t++){
                 var c0 = cell[t];
@@ -355,7 +355,11 @@ define([
         function projectileCollision(proj, collision) {
             //Shell already exploding so bail
 
-            if (dealDamageToMap(proj, collision) == true) {
+            if (dealDamageToMap(proj, collision[0],collision[2]) == true)
+            {
+                proj.colCellCoord=collision[0];
+                proj.colCell=collision[2];
+
                 proj.life = 0;
                 proj.velocity[0] = proj.velocity[1] = 0.0;
             }
@@ -391,7 +395,15 @@ define([
             this.life--;
             if (this.life <= 0) {
                 this.active = false; //Die.
-                addExplosionNearObject(this);
+                var exp = addExplosionNearObject(this);
+                exp.proj = this;
+                if(this.colCell){
+                    exp.colCell=this.colCell;
+                    exp.colCellCoord=this.colCellCoord;
+                    exp.destroy=function(){
+                     //   dealDamageToMap(this.proj,this.colCellCoord,this.colCell);
+                    };
+                }
                 playSound(this, "shooting_near");
             }
 //        else{
@@ -585,8 +597,10 @@ define([
 
         var explosionShader;
         function getExplosionShader(){
-            if (!explosionShader)
+            if (!explosionShader){
                 explosionShader = boloworld.getShader("explosion");
+                explosionShader.passIndex = 1;
+            }
             return explosionShader;
         }
 
@@ -595,7 +609,7 @@ define([
             if (this.countdown-- < 0)
                 this.active = false;
             this.scale *= 1.25;
-            this.alpha += 0.01;
+            this.alpha *= 0.95;
         }
 
 
@@ -605,7 +619,8 @@ define([
             exp.update = updateExplosion;
             exp.countdown = 20;
             exp.scale = 0.01;
-            exp.alpha = 0;
+            exp.alpha = 1.0;
+            return exp;
         }
 
 
@@ -614,7 +629,7 @@ define([
             if (cell.length > 1 && cell[1].name == "mine" && (cell[1].fuse == undefined)) {
                 cell[1].fuse = 15;
                 cell[1].update = updateMine;
-                dealDamageToMap(mine, collision);
+                dealDamageToMap(mine, collision[2]);
             }
         }
 
@@ -678,12 +693,12 @@ define([
         }
 
         function changeMap(index) {
-            display.camera.zoomToPause();
+            //display.camera.zoomToPause();
             currentMap = boloworld.loadMapByName(bolomap.getMapNames()[index]);
             messaging.send("game_map_changed",0);
             buildMapObjects();
             teamTickets = {0: startingTickets, 1: startingTickets};
-            display.camera.zoomToGame();
+            //display.camera.zoomToGame();
         }
 
         var aiIndexBase = 0;
@@ -789,6 +804,10 @@ define([
                             takeBase(cell[tc],cteam);
                         }
                     }
+                } else if (cmd[t] == 'setTickets') {
+                    t++;
+                    var tickval=[parseInt(cmd[t++])];
+                    messaging.send('setTickets',parseInt(tickval));
                 }else{
                     console.log("Invalid sim packet!" + cmd.join());
                     return;
@@ -1265,6 +1284,9 @@ define([
         messaging.listen("setTickets",function(msg,val){
             startingTickets=val;
             teamTickets={0:startingTickets,1:startingTickets};
+            if(network.connected() && network.g_isHost){
+                network.emit("sim","setTickets~"+startingTickets);
+            }
         });
 
         messaging.listen("loadDefaultMap",function(){
@@ -1272,7 +1294,7 @@ define([
         });
 
         messaging.listen("loadStressTest",function(){
-            startGame(bolomap.getMapIndex("Empty Carcass"), 15, 16);
+            startGame(bolomap.getMapIndex("Empty Carcass"), 61, 62);
         });
         messaging.listen("addAI",function(){
             invokeGod("addAI" + "~" + "ai0~1");

@@ -19,7 +19,7 @@ define([
         function getHUDShader(){
             if (!hudShader){
                 hudShader = getShader("hud");
-                hudShader.passIndex=1;
+                hudShader.passIndex=2;
                 hudShader.dontCull=true;
             }
             return hudShader;
@@ -640,11 +640,11 @@ define([
         }
 
         function localPlayerDied() {
-            display.camera.zoomToPause();
+            //display.camera.zoomToPause();
         }
 
         function localPlayerSpawned() {
-            display.camera.zoomToGame();
+            //display.camera.zoomToGame();
         }
 
         function getObject(id) {

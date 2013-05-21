@@ -75,12 +75,15 @@ require(["util/domReady!", // Waits for page load
         
         display.startRendering();
         display.renderActiveShaders();
-        gl.disable(gl.CULL_FACE);
-        gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+        //gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+        gl.blendFunc(gl.ONE,gl.SRC_ALPHA);
        // gl.blendFunc(gl.ONE,gl.ONE);
         display.renderActiveShaders(1);
+        gl.disable(gl.CULL_FACE);
+        gl.disable(gl.DEPTH_TEST);
+        gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);//);
+        display.renderActiveShaders(2);
         gl.disable(gl.BLEND);
         gl.enable(gl.CULL_FACE);
         gl.enable(gl.DEPTH_TEST);
