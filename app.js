@@ -1,10 +1,15 @@
 var express = require('express'),
     sio = require('socket.io'),
-	http = require('http');
+    os=require('os'),
+    util=require('util'),
+    colors=require('colors'),
+    http = require('http');
 var app = express();
 var httpServer = http.createServer(app);
 app.use(express.static(__dirname+"/web"));
-var port = (process.env.PORT || 3000)
+var port = 3000;
+
+
 
 httpServer.listen(port);
 
