@@ -1,0 +1,24 @@
+#!/bin/bash
+
+echo "BOLO SERVER LIVES"
+
+control_c() {
+   echo "TRAPPED SIGINT: Exiting"
+   exit 0;  
+}
+
+
+
+#
+# cd boloverse
+#
+
+trap control_c SIGINT
+RC=1
+  while [ $RC -ne 0 ];
+  do
+	node app.js
+	RC=$?
+	sleep 1
+  done
+
