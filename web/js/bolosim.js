@@ -446,9 +446,9 @@ define([
                 return false;
             if(tile.length>1){
 
-                if(cellContains(tile,"tank")){
-                    return false;
-                }
+           //     if(cellContains(tile,"tank")){
+           //         return false;
+           //     }
             }
             return true;
         }
