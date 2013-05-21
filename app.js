@@ -10,10 +10,10 @@ var httpServer = http.createServer(app);
 app.use(express.static(__dirname+"/web"));
 var port = 3000;
 
-util.puts(' x x x '.orange);
-util.puts('WELCOME to '.blue + 'BOLO '.red + 'v0.1.9.666.x'.orange);
+util.puts(' x x x '.green);
+util.puts('WELCOME to '.blue + 'BOLO '.red + 'v0.1.9.666.x'.yellow);
 util.puts(' server time: '.blue + moment().format('Y-m-d h:i:s').green);
-util.puts(' x x x '.orange);
+util.puts(' x x x '.green);
 util.puts('    happy hunting');
 httpServer.listen(port);
 
