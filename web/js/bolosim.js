@@ -444,6 +444,12 @@ define([
         function playerTilePassable(obj, tile) {
             if (tile[0].name == "Building" || tile[0].name == "ShotBuilding")
                 return false;
+            if(tile.length>1){
+
+                //if(cellContains(tile,"tank")){
+                //    return false;
+               // }
+            }
             return true;
         }
 
