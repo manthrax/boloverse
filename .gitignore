@@ -1,5 +1,9 @@
 
+#
+# NODE modules that require NATIVE
+#
 socket.io/
+express/
 
 #
 # NO IDEA!
