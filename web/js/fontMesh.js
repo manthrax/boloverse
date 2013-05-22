@@ -50,16 +50,30 @@ function createFontFromMesh(mesh){
         centroid[1]/=gridDimY;
         var kx=parseInt(Math.abs(centroid[0]));
         var ky=parseInt(Math.abs(centroid[1]));
+
+        var co=[kx*gridDimX,ky*gridDimY,0.0];
+        //for(i=0;i<3;i++)vec3.sub(vts[i],co);
+
         var key=""+kx+","+ky;
+
         if(maxx<kx)maxx=kx;
         if(maxy<ky)maxy=ky;
         if(!charMap[key])charMap[key]=[inds[t],inds[t+1],inds[t+2]];
         else{for(i=0;i<3;i++)charMap[key].push(inds[t+i]);}
+
+
     }
     var cct=0;
     for(var k in charMap){
         console.log(k);
         cct++;
+        var idxs=charMap[k];
+        var usedVerts={};
+
+   /*     for(i=0;i<idxs.length;i++)
+            usedVerts[idxs[i]]=vec3.create()
+            setMeshVertex(mesh,inds[t+i],vts[i]);
+            */
     }
     console.log("kx:"+maxx+"ky:"+maxy);
     console.log("cct:"+cct);

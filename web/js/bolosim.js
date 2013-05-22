@@ -1502,8 +1502,8 @@ define([
         }
 
         function spawnPlayer(p) {
-            var spawnpt = randElem(currentMap.starts);
-            p.avatar = boloworld.addTileObject(p.team ? "tankB" : "tankA", spawnpt.x, spawnpt.y)
+            var spawnpt = randElem(currentMap.starts);//B A
+            p.avatar = boloworld.addTileObject(p.team ? "tankC" : "tankC", spawnpt.x, spawnpt.y);
             p.avatar.name = "tank";
             p.avatar.currentTool = "harvest";
             p.avatar.boat = boloworld.addTileObject("boat", spawnpt.x, spawnpt.y);
