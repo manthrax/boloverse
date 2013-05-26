@@ -457,10 +457,10 @@ define([
                 if(fidx>0){
                     for(var t=0;t<tile.length;t++)
                     {
-                        if(tile[t]==obj)
-                            return true;
+                    //    if(tile[t]==obj)
+                     //       return true;
                     }
-                    return false;
+                    //return false;
                 }
             }
             return true;
@@ -648,7 +648,7 @@ define([
             if (cell.length > 1 && cell[1].name == "mine" && (cell[1].fuse == undefined)) {
                 cell[1].fuse = 15;
                 cell[1].update = updateMine;
-                dealDamageToMap(mine, collision[2]);
+                dealDamageToMap(mine,collsion[0], collision[2]);
             }
         }
 
@@ -772,7 +772,7 @@ define([
                     var plyr = playersByNetworkId[id];
                     if (!plyr) {
                         console.log("Invalid player sync!" + id);
-
+                        t += 4;
                     } else {
                         var go = plyr.avatar;
                         if (go) {
@@ -789,7 +789,7 @@ define([
                     var plyr = playersByNetworkId[id];
                     if (!plyr) {
                         console.log("Invalid player ctrl!" + id);
-                        t++;
+                        t+=2;
                     } else {
                         var go = plyr.avatar;
                         if (go) {
@@ -925,6 +925,9 @@ define([
 
             var pmat = this.matrix;
             display.camera.setCenter(this.camTarget);
+
+            if(display.radarCamera)
+                display.radarCamera.setCenter(this.camTarget);
 
             if (!crosshairSprite){
                 crosshairSprite = boloworld.addObject("crosshair", [pmat[12], pmat[13], 0.0]);

@@ -131,7 +131,7 @@ define([
 
         var mapOrigin = [128, 128];
 
-        var regionCellRad = 5;
+        var regionCellRad = 4;
         var regionCellDim = regionCellRad * 2;
         var regionGridRad = parseInt(256 / regionCellDim);
         var regionGridDim = regionGridRad * 2;
@@ -298,18 +298,23 @@ define([
         function bindToUnit(unit) {
             gl.activeTexture(gl.TEXTURE0 + unit);
             gl.bindTexture(gl.TEXTURE_2D, this);
+//            if(!this.src){
+//                console.log("got rtt");
+//            }
         }
 
         function loadTexture(name) {
             var tileTex = glUtil.loadTexture(gl, name, function (glTex) {
                 tileTex.bindToUnit = bindToUnit;
-                tileDiffuse = tileTex;
+                tileTex.src=name;
                 objects.iterateActive({
                     tex: tileTex,
                     update: function (obj) {
-                        obj.diffuseSampler = tileTex;
+                        if(obj.diffuseSampler==tileDiffuse)
+                            obj.diffuseSampler = tileTex;
                     }
                 });
+                tileDiffuse = tileTex;
             });
             return tileTex;
         }
@@ -323,12 +328,13 @@ define([
             else
                 tileShader = getShader("TND");
 
-            tileDiffuse = glUtil.createSolidTexture(gl, [0, 0, 0, 0]);
+            tileDiffuse = glUtil.createSolidTexture(gl,
+                [0,0,0,255,0,255,0,255,0,255,0,255,0,0,0,255],2);
             tileDiffuse.bindToUnit = bindToUnit;
 
             var tileTex = loadTexture("tiles.png");
 
-            fontMesh.createFontFromMesh(meshes["Font_courier"]);
+           // fontMesh.createFontFromMesh(meshes["Font_courier"]);
         }
 
         var meshList = []
@@ -457,7 +463,7 @@ define([
         function loadMapByName(mapName) {
             document.getElementById('logoBox').innerHTML = "BOLO | UNIVERSE : " + mapName;
 
-            objects.iterateActive({update: function (go) {go.active = false;}});
+            objects.iterateActive({update: function (go) {if(!go.dontDestroy)go.active = false;}});
 
 
             for (var r in regionGrid)regionGrid[r] = null;
@@ -682,6 +688,7 @@ define([
             tileDim: tileDim,
             tileDim2: tileDim2,
             getShader: getShader,
+            bindToUnit: bindToUnit,
             //tileData: tileData,
             tileShader: tileShader,
             createSingleMeshRenderer: createSingleMeshRenderer,

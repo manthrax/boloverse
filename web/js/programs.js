@@ -178,15 +178,19 @@ define([
 		// Also make a plain table of the locs.
 		var attribLocs = {
 		};
-		
-		programs.Program.prototype.render=function(){
+
+        programs.Program.prototype.renderImmediate=function(){
+            gl.useProgram(this.program);
+
+        }
+        programs.Program.prototype.render=function(){
 			gl.useProgram(this.program);
 			for(var t=0;t<this.displayTop;t++){
 				var elem=this.displayList[t];
 				elem[1].render(elem[0]);
 				
 			}
-			this.displayTop=0;
+//			this.displayTop=0;
 		}
 		
 		programs.Program.prototype.addToDisplayList = function (object,component){
@@ -195,8 +199,8 @@ define([
 				var slot=this.displayList[this.displayTop];
 				slot[0]=object;
 				slot[1]=component;
-			}			
-			this.displayTop++
+			}
+			this.displayTop++;
 		}
 		
 		function createAttribSetter(info, index) {

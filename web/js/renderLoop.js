@@ -38,16 +38,18 @@ function(camera, display,world, glUtil) {
             timing:timing,
             update:function (gobj){	//render
                 //console.log("rendering.");
-                var comps=gobj.components;
-                display.setWorld(gobj.matrix);
                 
                 for(var ci in gobj.components){
                     var c=gobj.components[ci];
                     if(c.type=="meshRenderer")
                         display.renderComponent(gobj,c,c.shader);
                 }
+                /*
+                var comps=gobj.components;
+                display.setWorld(gobj.matrix);
              //  var c=gobj.meshRenderer;
              //    if(c)display.renderComponent(gobj,c,c.shader);
+             */
             }
         }
     }
@@ -59,6 +61,7 @@ function(camera, display,world, glUtil) {
     
     display.renderFrame=function(gl,timing){
 
+        alert("Should override display.renderframe!");
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         world.update(gl,display,timing,updateSim);

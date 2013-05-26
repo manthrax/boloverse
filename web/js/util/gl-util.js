@@ -126,29 +126,30 @@ define(function() {
             return shader;
         },
     
-        createSolidTexture: function(gl, color) {
+        createSolidTexture: function(gl, color, dim) {
             var data = new Uint8Array(color);
             var texture = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D, texture);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, data);
+            var tdim=dim?dim:1;
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, tdim, tdim, 0, gl.RGB, gl.UNSIGNED_BYTE, data);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
             return texture;
         },
     
-        loadTexture: function(gl, src, callback) {
+        loadTexture: function(gl, src, callback,genMipMaps) {
             var texture = gl.createTexture();
             var image = new Image();
             image.addEventListener("load", function() {
                 gl.bindTexture(gl.TEXTURE_2D, texture);
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                var genMipMaps=false;
+                var genMipMaps=true;
                 if(genMipMaps){
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
                     gl.generateMipmap(gl.TEXTURE_2D);
                 }else{
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);                    
                 }
                 if(callback) { callback(texture); }

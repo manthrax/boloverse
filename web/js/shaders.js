@@ -23,7 +23,7 @@ void main() {
 
     v_normal =  (worldInverseTranspose * vec4(normal, 0)).xyz;
     gl_Position = v_position;// worldViewProjection * position;
-    
+
     atmosBlend=1.0-(clamp((v_position.z-100.0),0.0,100.0) / 100.0);
 }
 
@@ -43,12 +43,15 @@ varying float atmosBlend;
 //
 void main() {
     vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
+    if(diffuse.a<0.5)
+        discard;
     //vec3 normal = normalize(v_normal);tmosB
     //((v_normal+1.0)*0.5)*0.1*atmosBlend*v_normal.z;//diffuse.rgb;//abs(v_normal);//vec3(1.0,0,0);////
     gl_FragColor.rgb = ((diffuse.rgb * atmosBlend * v_normal.z)+((1.0-atmosBlend)*vec3(0.5, 0.6, 0.9)));//v_normal;//diffuse*normal.y;
+
     //gl_FragColor.rgb = diffuse.rgb*v_normal.z;
-    
-    
+
+
 //    gl_FragColor.a=1.0;
 }
 
@@ -87,6 +90,9 @@ void main() {
     vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
     gl_FragColor.rgb = diffuse.rgb;//v_normal;//diffuse*normal.y;
     gl_FragColor.a=alpha;
+
+    if(diffuse.g>0.5)
+        discard;
 }
 
 SCRIPT='hudVS';
@@ -267,6 +273,57 @@ void main() {
     vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
     vec3 normal = normalize(v_normal);
     gl_FragColor.rbg = (diffuse.rbg*v_spriteAlpha)*v_color.rbg;//*-normal.z;//*normal.z;//;//diffuse.rbg;//vec3(0.2,0.2,0.2);// v_normal;//
+}
+SCRIPT='debugSwatchVS';
+
+attribute vec4 position;
+attribute vec3 normal;
+attribute vec2 texCoord;
+
+varying vec4 v_position;
+varying vec2 v_texCoord;
+varying vec3 v_normal;
+
+//uniform sampler2D diffuseSampler;
+uniform vec3 scale;
+uniform float aspectRatio;
+uniform vec3 pos;
+
+void main() {
+
+    v_texCoord = texCoord;
+    v_position = position;
+    v_position.w=1.0;
+    v_normal =  normal;
+
+    //vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
+    //if(diffuse.a<1.0)
+    //    v_position.y = v_position.y*0.1;
+
+    gl_Position = vec4(
+        (pos.x+v_position.x)*scale.x,
+        (pos.y+v_position.y)*scale.y,//*aspectRatio,
+        (pos.z+v_position.z)*scale.z,
+        1);//worldViewProjection * vec4((position.xyz*scale*2.0),1.0);
+    //gl_Position.y*=aspectRatio;
+}
+
+
+SCRIPT='debugSwatchFS';
+
+//#ifdef GL_ES
+precision mediump float;
+//#endif
+
+uniform sampler2D diffuseSampler;
+varying vec3 v_normal;
+varying vec4 v_position;
+varying vec2 v_texCoord;
+
+void main() {
+    vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
+    diffuse.a=5.0-(length(v_texCoord-vec2(0.5,0.5))*10.0);
+    gl_FragColor = diffuse;//vec4(1,0,0,1);//
 }
 
 SCRIPT='endScripts';

@@ -79,7 +79,8 @@ define([
             _display=this;
             //this.camera = new camera.FlyingCamera(canvas);
             this.cameraModule=camera;
-            this.camera = new camera.ModelCamera(canvas);
+            this.camera = new camera.ModelCamera();
+            this.camera.addMouseControls(canvas);
             this.camera.distance = 2;//80
             this.camera.setCenter([0, 0, 1]);
 
@@ -223,8 +224,6 @@ define([
             mat4.set(nworld,world);
             mat4.inverse(world,worldInverse);
             mat4.transpose(worldInverse,worldInverseTranspose);
-		
-		
             mat4.multiply(viewProjection, world, worldViewProjection);
         //    mat4.inverse(worldViewProjection,worldViewProjectionInverse);
         }
@@ -271,7 +270,7 @@ define([
             var vtop=vbase/3;
             for(var t=ibase;t<iend;t++){
                 onto.indices[t]+=vtop;
-            }
+            }//451 2058
             if(mat)
             for(var t=vbase;t<vend;t+=3){
                 for(var i=0;i<3;i++)
@@ -318,8 +317,7 @@ define([
             gl.bindBuffer(gl.ARRAY_BUFFER,buf);
             gl.vertexAttribPointer(attrib, ecount, gl.FLOAT, false, stride,0);
         }
-	
-	
+
         var	renderedShaders=[];
         var renderedShaderTop=0;
         display.prototype.renderActiveShaders=function(passIndex){
@@ -327,21 +325,26 @@ define([
                 var shd=renderedShaders[t];
                 if(shd.passIndex==passIndex)shd.render();
             }
-        }
+        };
 	
         var frustumCenter=[0,0,0];
         
-        display.prototype.startRendering=function(){
-            vec3.scale(_display.camera._center,-1.0,frustumCenter);
-            mat4.getColV3(_display.camera._viewMat,2,v3t0);
+        display.prototype.startRendering=function(viewCamera){
+            var camera=viewCamera?viewCamera:this.camera;
+            vec3.scale(camera._center,-1.0,frustumCenter);
+            mat4.getColV3(camera._viewMat,2,v3t0);
             vec3.scale(v3t0,this.farDepth/-2,v3t0);
             vec3.add(v3t0,frustumCenter,frustumCenter);
-            setViewProjection(this.camera.getViewMat(),projection);
-        }
+            setViewProjection(camera.getViewMat(),projection);
+        };
 
         display.prototype.finishRendering=function(){
+            for(var t=0;t<renderedShaderTop;t++){
+                var shd=renderedShaders[t];
+                shd.displayTop=0;
+            }
             renderedShaderTop=0;
-        }
+        };
 
         display.prototype.renderComponent=function(object,component,shader){
             if(!shader.dontCull){
@@ -360,42 +363,96 @@ define([
                 renderedShaderTop++;
             }
             shader.addToDisplayList(object,component);
-        }
-	
-        display.prototype.updateMeshAO=function(gl,mesh,shader,vao){
-            vaoExtension.bindVertexArrayOES(vao);
-            if(mesh.vertices)
-                bindVAABuffer(gl,mesh.vertices,shader.attribLoc.position,3,12);
-            if(mesh.normals)
-                bindVAABuffer(gl,mesh.normals,shader.attribLoc.normal,3,12);
-            if(mesh.uvs)
-                bindVAABuffer(gl,mesh.uvs,shader.attribLoc.texCoord,2,8);
-            if(mesh.indices)
-                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indices);
+        };
+
+        display.prototype.rttFrameBuffer;
+        display.prototype.rttTexture;
+        display.prototype.rttRenderBuffer;
+
+        display.prototype.bindRTTForRendering=function(gl){
+            //Bind the buffers for rendering>..
+            gl.bindFramebuffer(gl.FRAMEBUFFER,this.rttFrameBuffer);
+            gl.bindRenderbuffer(gl.RENDERBUFFER, this.rttRenderBuffer);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.rttTexture, 0);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this.rttRenderBuffer);
+        };
+
+        display.prototype.unbindRTT=function(gl){
+            //Unbind everything
+            gl.bindTexture(gl.TEXTURE_2D, null);
+            gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        };
+
+        display.prototype.initRTT=function(gl){
+
+            //Create the FBO
+            this.rttFrameBuffer = gl.createFramebuffer();
+            gl.bindFramebuffer(gl.FRAMEBUFFER,this.rttFrameBuffer);
+            this.rttFrameBuffer.width=512;
+            this.rttFrameBuffer.height=512;
+
+            //Create the color output texture
+            this.rttTexture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D,this.rttTexture);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);//LINEAR);//LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);//LINEAR_MIPMAP_NEAREST);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.rttFrameBuffer.width, this.rttFrameBuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+            //gl.generateMipmap(gl.TEXTURE_2D);
+
+
+            //Create the render buffer
+            this.rttRenderBuffer = gl.createRenderbuffer();
+            gl.bindRenderbuffer(gl.RENDERBUFFER, this.rttRenderBuffer);
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.rttFrameBuffer.width, this.rttFrameBuffer.height);
+            this.unbindRTT(gl);
+        };
+
+        display.prototype.updateMeshAOs=function(gl,mesh,shader,vaos){
+            for(var vi=0;vi<vaos.length;vi++){
+                vaoExtension.bindVertexArrayOES(vaos[vi]);
+                if(mesh.vertices)
+                    bindVAABuffer(gl,mesh.vertices,shader.attribLoc.position,3,12);
+                if(mesh.normals)
+                    bindVAABuffer(gl,mesh.normals,shader.attribLoc.normal,3,12);
+                if(mesh.uvs)
+                    bindVAABuffer(gl,mesh.uvs,shader.attribLoc.texCoord,2,8);
+                if(mesh.faceGroups){
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.faceGroups[vi]);
+                }else if(mesh.indices)
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indices);
+            }
             vaoExtension.bindVertexArrayOES(null);            
-        }
+        };
         
-        display.prototype.buildMeshAO=function(gl,mesh,shader){		
-            var vao=vaoExtension.createVertexArrayOES();
-            this.updateMeshAO(gl,mesh,shader,vao);
-            return vao;
-        }
+        display.prototype.buildMeshAOs=function(gl,mesh,shader){
+            if(mesh.faceGroups){
+                var gpct=0;
+                var gpmsk=mesh.faceGroups;
+                var vaos=[];
+                while(gpmsk){gpmsk<<=1;gpct++;vaos.push(vaoExtension.createVertexArrayOES());}
+
+            }else
+                vaos=[vaoExtension.createVertexArrayOES()];
+            this.updateMeshAOs(gl,mesh,shader,vaos);
+            return vaos;
+        };
 	
         display.prototype.meshRenderer=function(gl,mesh,shader){
             var disp=this;
             var meshRend = {
                 type:"meshRenderer",
-                vao:this.buildMeshAO(gl,mesh,shader),
+                vaos:this.buildMeshAOs(gl,mesh,shader),
                 mesh:mesh,
                 shader:shader,
                 updateMesh:function()
                 {
-                    disp.updateMeshAO(gl,this.mesh,this.shader,this.vao);
+                    disp.updateMeshAOs(gl,this.mesh,this.shader,this.vaos);
                 },
                     
                 render:function(go){
                     
-                    vaoExtension.bindVertexArrayOES(this.vao);
+                    vaoExtension.bindVertexArrayOES(this.vaos[0]);
 					
                     disp.setWorld(go.matrix);
                     //Bind our uniforms...
@@ -422,17 +479,17 @@ define([
                     //this.renderComponent(go,this,shader);
                     vaoExtension.bindVertexArrayOES(null);
                 }
-            }
+            };
 		
             return meshRend;
-        }
+        };
 	
         display.prototype.destroyMesh=function(gl,m){
             if(m.vertices)gl.deleteBuffer(m.vertices);
             if(m.normals)gl.deleteBuffer(m.normals);
             if(m.uvs)gl.deleteBuffer(m.uvs);
             if(m.indices)gl.deleteBuffer(m.indices);
-        }
+        };
         
         display.prototype.mesh=function(gl,vertices,indices,normals,uvs){
             var m = {};
@@ -444,13 +501,13 @@ define([
                 m.elemCount=indices.length/3;
             }
             return m;
-        }
+        };
         
         display.prototype.alphaKeyDown = function(k){
             if(this.cameraModule.KeyboardState._pressedKeys[k.charCodeAt(0)])
                 return true;
             return false;
-        }
+        };
     
         display.prototype.alphaKeyPressed = function(k){
             var ck=k.charCodeAt(0);
@@ -460,13 +517,13 @@ define([
                     return true;
             }
             return false;
-        }
+        };
 
         display.prototype.keyCodeDown = function(kc){
             if(this.cameraModule.KeyboardState._pressedKeys[kc])
                 return true;
             return false;
-        }
+        };
         
         return {
             display: display,

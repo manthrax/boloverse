@@ -176,7 +176,7 @@ define([
             }
         }
 
-        this.determineNearestTarget=function(obj){
+        this.determineBestTarget=function(obj){
             var queue=new PriorityQueue();
             
             var map=world.getMap();
@@ -207,6 +207,12 @@ define([
                 queue.push(base,prior);
             }
             base=queue.top();
+            if(this.currentTarget){
+                if(this.currentTarget==base){
+                    if(queue.length>1){base = queue[gueue.length-1];}
+                }
+            }
+            this.currentTarget=base;
             this.pathFind(obj.cellCoord[0],obj.cellCoord[1],base.x-mo[0],base.y-mo[1]);
         }
         
@@ -222,7 +228,7 @@ define([
                 if(this.cursorSprite)mat4.setRowV3(this.cursorSprite.matrix,3,this.pathPoint);
             }
         }
-        this.determineTarget=this.determineNearestTarget;
+        this.determineTarget=this.determineBestTarget;
     }
     
     

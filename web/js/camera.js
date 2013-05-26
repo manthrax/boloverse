@@ -47,85 +47,86 @@ define([
         this.zoomTime=2000;
         this.zoomTween=new TWEEN.Tween(this);
         this.spinTween=new TWEEN.Tween(this);
-        
-        addKeyEventHooks();
-        // Set up the appropriate event hooks
-        canvas.addEventListener('mousedown', function (event) {
-            self.mouseButtonsDown|=(1<<event.which);
-            if (event.which === 1) {
-                moving = true;
-            }
-            self.lastX = event.pageX;
-            self.lastY = event.pageY;
-            self.mouseX=event.pageX;
-            self.mouseY=event.pageY;
-        }, false);
 
         this.zoomValues=[8.0,30.0,70,100];
        // document.onmousewheel = wheel;
-        var self=this;
-        canvas.addEventListener('mousewheel', function (event) {
-            var delta = 0;
-            if (!event) event = window.event;
-            if (event.wheelDelta) {
-                delta = event.wheelDelta/120; 
-                if (window.opera) delta = -delta;
-            } else if (event.detail) {
-                delta = -event.detail/3;
-            }
-            if (delta){
-                self.zoomLevel-=delta;
-                if(self.zoomLevel<0)self.zoomLevel=0;
-                if(self.zoomLevel>3)self.zoomLevel=3;
-                var t = new TWEEN.Tween(self);
-                t.to({distance:self.zoomValues[parseInt(self.zoomLevel)]},160).onUpdate(function(c,v){
-                    self._dirty=true;
-                    //this.update();
-                }).start();
-            }
-        });
-
-        function angleClamp(val){
-            while (val < 0) {
-                val += Math.PI * 2;
-            }
-            while (val >= Math.PI * 2) {
-                val -= Math.PI * 2;
-            }
-            return val;
-        }
-        canvas.addEventListener('mousemove', function (event) {
-            if (moving) {
-                var xDelta = event.pageX  - self.lastX,
-                    yDelta = event.pageY  - self.lastY;
-
+        this.addMouseControls = function(canvas){
+            var self=this;
+            addKeyEventHooks();
+            // Set up the appropriate event hooks
+            canvas.addEventListener('mousedown', function (event) {
+                self.mouseButtonsDown|=(1<<event.which);
+                if (event.which === 1) {
+                    moving = true;
+                }
                 self.lastX = event.pageX;
                 self.lastY = event.pageY;
+                self.mouseX=event.pageX;
+                self.mouseY=event.pageY;
+            }, false);
 
-                var nx=self.orbitX;
-                var ny=self.orbitY;
-                ny += xDelta * 0.025;
-                nx += yDelta * 0.025;
-                
+            canvas.addEventListener('mousewheel', function (event) {
+                var delta = 0;
+                if (!event) event = window.event;
+                if (event.wheelDelta) {
+                    delta = event.wheelDelta/120;
+                    if (window.opera) delta = -delta;
+                } else if (event.detail) {
+                    delta = -event.detail/3;
+                }
+                if (delta){
+                    self.zoomLevel-=delta;
+                    if(self.zoomLevel<0)self.zoomLevel=0;
+                    if(self.zoomLevel>3)self.zoomLevel=3;
+                    var t = new TWEEN.Tween(self);
+                    t.to({distance:self.zoomValues[parseInt(self.zoomLevel)]},160).onUpdate(function(c,v){
+                        self._dirty=true;
+                        //this.update();
+                    }).start();
+                }
+            });
 
-                nx=angleClamp(nx);
-                ny=angleClamp(ny);
-                if(nx<3.3)nx=3.3;
-                if(nx>4.6)nx=4.6;
-                self.orbitX=nx;
-                self.orbitY=ny;
-                self._dirty = true;
+            function angleClamp(val){
+                while (val < 0) {
+                    val += Math.PI * 2;
+                }
+                while (val >= Math.PI * 2) {
+                    val -= Math.PI * 2;
+                }
+                return val;
             }
-            self.mouseX=event.pageX;
-            self.mouseY=event.pageY;
+            canvas.addEventListener('mousemove', function (event) {
+                if (moving) {
+                    var xDelta = event.pageX  - self.lastX,
+                        yDelta = event.pageY  - self.lastY;
 
-        }, false);
+                    self.lastX = event.pageX;
+                    self.lastY = event.pageY;
 
-        canvas.addEventListener('mouseup', function (event) {
-            moving = false;
-            self.mouseButtonsDown&=~(1<<event.which);
-        }, false);
+                    var nx=self.orbitX;
+                    var ny=self.orbitY;
+                    ny += xDelta * 0.025;
+                    nx += yDelta * 0.025;
 
+
+                    nx=angleClamp(nx);
+                    ny=angleClamp(ny);
+                    if(nx<3.3)nx=3.3;
+                    if(nx>4.6)nx=4.6;
+                    self.orbitX=nx;
+                    self.orbitY=ny;
+                    self._dirty = true;
+                }
+                self.mouseX=event.pageX;
+                self.mouseY=event.pageY;
+
+            }, false);
+
+            canvas.addEventListener('mouseup', function (event) {
+                moving = false;
+                self.mouseButtonsDown&=~(1<<event.which);
+            }, false);
+        }
         return this;
     };
 
@@ -213,6 +214,59 @@ define([
      * This type of camera is good for displaying large scenes
      */
     var cursorPos=[0,0];
+     function camMouseMove(event) {
+        if (moving) {
+            var xDelta = event.pageX  - self.lastX,
+                yDelta = event.pageY  - self.lastY;
+
+            self.lastX = event.pageX;
+            self.lastY = event.pageY;
+
+            var sensitivity=0.005;
+
+            var nx=self._angles[0];
+            var ny=self._angles[1];
+            ny += xDelta * -sensitivity;
+            while (ny < 0) {
+                ny += Math.PI * 2.0;
+            }
+            while (ny >= Math.PI * 2.0) {
+                ny -= Math.PI * 2.0;
+            }
+
+
+            nx += yDelta * sensitivity;
+            if (nx < -Math.PI * 0.45) {
+                nx = -Math.PI * 0.45;
+            }
+            if (nx > Math.PI * 0.45) {
+                nx = Math.PI * 0.45;
+            }
+
+            self._angles[0]=nx;
+            self._angles[1]=ny;
+
+            self._dirty = true;
+        }
+        self.mouseX=event.pageX;
+        self.mouseY=event.pageY;
+    }
+
+    function camMouseDown (event) {
+        if (event.which === 1) {
+            moving = true;
+        }
+        self.lastX = event.pageX;
+        self.lastY = event.pageY;
+        self.mouseX=event.pageX;
+        self.mouseY=event.pageY;
+    }
+
+
+    function camMouseUp() {
+        moving = false;
+    }
+
     FlyingCamera = function (canvas) {
         var self = this, moving = false;
         this.lastX=0;
@@ -231,58 +285,11 @@ define([
         this.zoomTween=new TWEEN.Tween(this);
         this.spinTween=new TWEEN.Tween(this);
         addKeyEventHooks();
-        
-        canvas.addEventListener('mousedown', function (event) {
-            if (event.which === 1) {
-                moving = true;
-            }
-            self.lastX = event.pageX;
-            self.lastY = event.pageY;
-            self.mouseX=event.pageX;
-            self.mouseY=event.pageY;
-        }, false);
-
-        canvas.addEventListener('mousemove', function (event) {
-            if (moving) {
-                var xDelta = event.pageX  - self.lastX,
-                    yDelta = event.pageY  - self.lastY;
-
-                self.lastX = event.pageX;
-                self.lastY = event.pageY;
-                
-                var sensitivity=0.005;
-                
-                var nx=self._angles[0];
-                var ny=self._angles[1];
-                ny += xDelta * -sensitivity;
-                while (ny < 0) {
-                    ny += Math.PI * 2.0;
-                }
-                while (ny >= Math.PI * 2.0) {
-                    ny -= Math.PI * 2.0;
-                }
-                
-
-                nx += yDelta * sensitivity;
-                if (nx < -Math.PI * 0.45) {
-                    nx = -Math.PI * 0.45;
-                }
-                if (nx > Math.PI * 0.45) {
-                    nx = Math.PI * 0.45;
-                }
-                
-                self._angles[0]=nx;
-                self._angles[1]=ny;
-
-                self._dirty = true;
-            }
-            self.mouseX=event.pageX;
-            self.mouseY=event.pageY;
-        }, false);
-
-        canvas.addEventListener('mouseup', function () {
-            moving = false;
-        }, false);
+        this.attachMouseControls=function(canvas){
+            canvas.addEventListener('mousedown',  camMouseDown, false);
+            canvas.addEventListener('mousemove',  camMouseMove, false);
+            canvas.addEventListener('mouseup',  camMouseUp, false);
+        };
 
         return this;
     };
