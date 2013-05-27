@@ -301,7 +301,7 @@ void main() {
     //    v_position.y = v_position.y*0.1;
 
     gl_Position = vec4(
-        (pos.x+v_position.x)*scale.x,
+        (pos.x+v_position.x)*scale.x,// /aspectRatio))*scale.x),
         (pos.y+v_position.y)*scale.y,//*aspectRatio,
         (pos.z+v_position.z)*scale.z,
         1);//worldViewProjection * vec4((position.xyz*scale*2.0),1.0);

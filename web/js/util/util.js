@@ -12,6 +12,8 @@ define( function() {
                 pendingList:null,
                 byId:{},
                 inIterator:false,
+                iterCount:0,
+                updateSum:0,
                 add:function(elem){
                     elem.next=this.pendingList;
                     this.pendingList=elem;
@@ -87,12 +89,15 @@ define( function() {
                     this.pendingList=null;                    
                 },
                 iterateActive:function (updater){
+                    var upct=0;
                     this.addPending();
                     var elem=this.activeList;
                     var prv=null;
                     while(elem!=null){
-                        if(elem.active)
+                        if(elem.active){
                             updater.update(elem);
+                            upct++;
+                        }
                         if(elem.active==false){
                             var nxt=elem.next;
                             if(elem.id) delete this.byId[elem.id];
@@ -109,6 +114,8 @@ define( function() {
                         }
                     }
                     this.addPending();
+                    this.updateSum+=upct;
+                    this.iterCount++;
                 }
             }
         }

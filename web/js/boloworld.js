@@ -131,7 +131,7 @@ define([
 
         var mapOrigin = [128, 128];
 
-        var regionCellRad = 4;
+        var regionCellRad = 3;
         var regionCellDim = regionCellRad * 2;
         var regionGridRad = parseInt(256 / regionCellDim);
         var regionGridDim = regionGridRad * 2;
@@ -170,8 +170,13 @@ define([
                 simTime = timing.time - 1000.0 / simFPS;
             }
             while (simTime < timing.time) {
-                if(gamePaused==false)
+                if(gamePaused==false){
+                    objects.iterCount=0;
+                    objects.iterSum=0;
+
                     objects.iterateActive(updateGameObject);
+
+                }
                 simUpdate();
                 simTime += simFPS;
             }
@@ -607,12 +612,15 @@ define([
 //                bq[1]=rc[1]-regionGridRad;
 //            }
             if (!region || (region && region.dirty == false)) {
-                if (region)region.dirty = true;
-                var bq = regionBuildQueue[regionBuildTop++];
-                bq[0] = rc[0] - regionGridRad;
-                bq[1] = rc[1] - regionGridRad;
+                if (region){
+                    region.dirty = true;
+                    if(regionBuildQueue.length==regionBuildTop)
+                        regionBuildQueue.push([0,0]);
+                    var bq = regionBuildQueue[regionBuildTop++];
+                    bq[0] = rc[0] - regionGridRad;
+                    bq[1] = rc[1] - regionGridRad;
+                }
             }
-
         }
 
         function makeScene() {//display
@@ -627,6 +635,9 @@ define([
 
             regionBuildQueue = [];
             regionBuildTop = 0;
+
+
+            //Fill the rebuild cache with all tiles
             for (var rad = patchRad; rad >= 1; rad--) {
                 for (var x = -rad; x <= rad; x++) {
                     regionBuildQueue.push([x, -rad]);
@@ -641,6 +652,7 @@ define([
             }
             regionBuildQueue.push([0, 0]);
             regionBuildTop++;
+
 
             /*
              for(var x=-patchRad;x<patchRad;x++)
@@ -670,7 +682,7 @@ define([
             getNeighborsOfName: getNeighborsOfName,
             setCell: setCell,
             getCell: getCell,
-
+            objects:objects,
             radiusPassable: radiusPassable,
             getCellsInRadius: getCellsInRadius,
             getCollisionResult: getCollisionResult,

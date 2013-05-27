@@ -115,6 +115,20 @@ define([
         display.prototype.worldViewProjection=worldViewProjection;
 	
         display.prototype.seconds=0.0;
+
+        display.prototype.setOrthoViewport = function (gl, canvas, width,height) {
+
+            gl.viewport(0, 0, width, height);
+            display.prototype.aspectRatio=width/height;
+            mat4.perspective(0, display.prototype.aspectRatio , _display.nearDepth, _display.farDepth, projection);
+        };
+
+        display.prototype.setScreenViewport = function (gl, canvas) {
+            gl.viewport(0, 0, canvas.width, canvas.height);
+            display.prototype.aspectRatio=canvas.width/canvas.height;
+            mat4.perspective(this.fov, display.prototype.aspectRatio , _display.nearDepth, _display.farDepth, projection);
+
+        };
         display.prototype.resize = function (gl, canvas) {
             
             if (canvas.width != window.innerWidth ||
@@ -123,10 +137,7 @@ define([
               canvas.width = window.innerWidth;
               canvas.height = window.innerHeight;
             }
-            
-            gl.viewport(0, 0, canvas.width, canvas.height);
-            display.prototype.aspectRatio=canvas.width/canvas.height;
-            mat4.perspective(this.fov, display.prototype.aspectRatio , _display.nearDepth, _display.farDepth, projection);
+            this.setScreenViewport(gl,canvas);
         };
         
         var tmpRay={d:[0,0,0],o:[0,0,0]};
@@ -365,16 +376,13 @@ define([
             shader.addToDisplayList(object,component);
         };
 
-        display.prototype.rttFrameBuffer;
-        display.prototype.rttTexture;
-        display.prototype.rttRenderBuffer;
 
-        display.prototype.bindRTTForRendering=function(gl){
+        var bindRTTForRendering=function(gl){
             //Bind the buffers for rendering>..
-            gl.bindFramebuffer(gl.FRAMEBUFFER,this.rttFrameBuffer);
-            gl.bindRenderbuffer(gl.RENDERBUFFER, this.rttRenderBuffer);
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.rttTexture, 0);
-            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this.rttRenderBuffer);
+            gl.bindFramebuffer(gl.FRAMEBUFFER,this.frameBuffer);
+            if(this.depthBuffer)gl.bindRenderbuffer(gl.RENDERBUFFER, this.depthBuffer);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
+            if(this.depthBuffer)gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this.depthBuffer);
         };
 
         display.prototype.unbindRTT=function(gl){
@@ -384,28 +392,33 @@ define([
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         };
 
-        display.prototype.initRTT=function(gl){
-
+        display.prototype.initRTT=function(gl,width,height,noDepth){
             //Create the FBO
-            this.rttFrameBuffer = gl.createFramebuffer();
-            gl.bindFramebuffer(gl.FRAMEBUFFER,this.rttFrameBuffer);
-            this.rttFrameBuffer.width=512;
-            this.rttFrameBuffer.height=512;
+            var rtn={};
+            var rttFrameBuffer = rtn.frameBuffer = gl.createFramebuffer();
+            gl.bindFramebuffer(gl.FRAMEBUFFER,rttFrameBuffer);
+            rttFrameBuffer.width=width?width:256;
+            rttFrameBuffer.height=height?height:256;
 
             //Create the color output texture
-            this.rttTexture = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D,this.rttTexture);
+            var rttTexture = rtn.texture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D,rttTexture);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);//LINEAR);//LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);//LINEAR_MIPMAP_NEAREST);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.rttFrameBuffer.width, this.rttFrameBuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, rttFrameBuffer.width, rttFrameBuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
             //gl.generateMipmap(gl.TEXTURE_2D);
 
+            if(!noDepth){
+                //Create the depth output buffer
+                var rttDepthBuffer =  rtn.depthBuffer = gl.createRenderbuffer();
+                gl.bindRenderbuffer(gl.RENDERBUFFER, rttDepthBuffer);
+                gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, rttFrameBuffer.width, rttFrameBuffer.height);
+            }
 
-            //Create the render buffer
-            this.rttRenderBuffer = gl.createRenderbuffer();
-            gl.bindRenderbuffer(gl.RENDERBUFFER, this.rttRenderBuffer);
-            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.rttFrameBuffer.width, this.rttFrameBuffer.height);
+            rtn.bindRTTForRendering = bindRTTForRendering;
+
             this.unbindRTT(gl);
+            return rtn;
         };
 
         display.prototype.updateMeshAOs=function(gl,mesh,shader,vaos){

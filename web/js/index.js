@@ -67,9 +67,9 @@ require(["util/domReady!", // Waits for page load
         display.camera.update();
     }
 
-    display.initRTT(gl);
+    display.radarRTT = display.initRTT(gl,512,512);
 
-    display.rttTexture.bindToUnit = boloworld.bindToUnit;
+    display.radarRTT.texture.bindToUnit = boloworld.bindToUnit;
 
     display.debugTexShader=null;
     display.debugTexObject=null;
@@ -86,7 +86,7 @@ require(["util/domReady!", // Waits for page load
     display.getDebugTexObject = function (){
         if(this.debugTexObject==null){
 
-            this.debugTexObject= boloworld.addObject("quad1x1",undefined,this.getDebugTexShader(),display.rttTexture);
+            this.debugTexObject= boloworld.addObject("quad1x1",undefined,this.getDebugTexShader(),this.radarRTT.texture);
             var bscl=0.13;
             var bpos=5.0;
             this.debugTexObject.scale = [bscl,bscl,bscl];
@@ -116,53 +116,56 @@ require(["util/domReady!", // Waits for page load
 
     display.renderFrame=function(gl,timing){
 
-        boloworld.update(gl,display,timing,updateSim);
-
-        display.startRendering(this.radarCamera);
-
-
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    //Clear window framebuffer
 
-        display.bindRTTForRendering(gl);
+        this.radarRTT.bindRTTForRendering(gl);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    //Clear RTT buffer
 
-        display.renderActiveShaders();  //Pass 0 Render solid geometry to deferred buffer
-        display.unbindRTT(gl);
+
+        boloworld.update(gl,display,timing,updateSim);
+
+        this.startRendering(this.radarCamera);
+        this.setOrthoViewport(gl,canvas,display.radarRTT.frameBuffer.width,display.radarRTT.frameBuffer.height);
+        this.renderActiveShaders();  //Pass 0 Render solid geometry to deferred buffer
+        display.setScreenViewport(gl,canvas);
+
+        this.unbindRTT(gl);
 
 
         var renderFullRes=true;
         var renderRTTView=true;
 
-        display.startRendering();
-        if(renderFullRes)display.renderActiveShaders();  //Pass 0 Render solid geometry
+        this.startRendering();
+        if(renderFullRes)this.renderActiveShaders();  //Pass 0 Render solid geometry
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.ONE,gl.ONE);                                                    //gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
-        if(renderFullRes)display.renderActiveShaders(1); //Pass 1.. render ADDITIVE blend stuff
+        gl.cullFace(gl.FRONT);
+        if(renderFullRes)this.renderActiveShaders(1); //Pass 1.. render ADDITIVE blend stuff backfaces
+        gl.cullFace(gl.BACK);
+        if(renderFullRes)this.renderActiveShaders(1); //Pass 1.. render ADDITIVE blend stuff frontfaces
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
+
         gl.blendFunc(gl.SRC_COLOR,gl.ONE_MINUS_SRC_ALPHA);// Pass 2.. render alpha blended/alpha test geometry / no culling... UI Layer
-        if(renderFullRes)display.renderActiveShaders(2);
+        if(renderFullRes)this.renderActiveShaders(2);
         //gl.disable(gl.BLEND);
 
         // render debug textures...
         gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
-        if(renderRTTView)display.renderActiveShaders(3);
+        if(renderRTTView)this.renderActiveShaders(3);
         gl.disable(gl.BLEND);
-
 
         gl.enable(gl.CULL_FACE);
         gl.enable(gl.DEPTH_TEST);
 
+        this.finishRendering();
 
-        display.finishRendering();
-
-
-    }
+    };
     
     glUtil.startRenderLoop(gl, canvas, function(gl, timing) {
-        fpsCounter.innerHTML = timing.framesPerSecond;		
+        fpsCounter.innerHTML = ""+timing.framesPerSecond+":"+((boloworld.objects.iterCount>0)?boloworld.objects.updateSum/boloworld.objects.iterCount:0);
         //gl.clearColor(1.0, 0.0, 0.1, 1.0);
-        
+        boloworld.objects.iterCount=boloworld.objects.updateSum=0;
         display.renderLoop(gl, timing);
     });
 	

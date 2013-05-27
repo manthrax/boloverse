@@ -648,7 +648,7 @@ define([
             if (cell.length > 1 && cell[1].name == "mine" && (cell[1].fuse == undefined)) {
                 cell[1].fuse = 15;
                 cell[1].update = updateMine;
-                dealDamageToMap(mine,collsion[0], collision[2]);
+                dealDamageToMap(mine,collision[0], collision[2]);
             }
         }
 
@@ -656,7 +656,7 @@ define([
             var nmct = boloworld.getCellsInRadius(obj, obj.matrix[12], obj.matrix[13], radius);
             var collisions = boloworld.getCollisionResult();
             for (var cr = 0; cr < nmct; cr++) {
-                fn(this, collisions[cr]);
+                fn(obj, collisions[cr]);
             }
         }
 
