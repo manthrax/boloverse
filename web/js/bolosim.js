@@ -1292,7 +1292,7 @@ define([
             invokeGod("changeMap~" + map);
             invokeGod("startGame");
 
-            //return;
+            return;
 
             if (aiCount0)
                 for (var t = 0; t < aiCount0; t++)
