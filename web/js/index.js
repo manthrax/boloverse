@@ -118,22 +118,23 @@ require(["util/domReady!", // Waits for page load
 
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    //Clear window framebuffer
 
-        this.radarRTT.bindRTTForRendering(gl);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    //Clear RTT buffer
 
 
         boloworld.update(gl,display,timing,updateSim);
 
-        this.startRendering(this.radarCamera);
-        this.setOrthoViewport(gl,canvas,display.radarRTT.frameBuffer.width,display.radarRTT.frameBuffer.height);
-        this.renderActiveShaders();  //Pass 0 Render solid geometry to deferred buffer
-        display.setScreenViewport(gl,canvas);
-
-        this.unbindRTT(gl);
-
+        var renderRadar=true;
+        if(renderRadar){
+            this.radarRTT.bindRTTForRendering(gl);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    //Clear RTT buffer
+            this.startRendering(this.radarCamera);
+            this.setOrthoViewport(gl,canvas,display.radarRTT.frameBuffer.width,display.radarRTT.frameBuffer.height);
+            this.renderActiveShaders();  //Pass 0 Render solid geometry to deferred buffer
+            display.setScreenViewport(gl,canvas);
+            this.unbindRTT(gl);
+        }
 
         var renderFullRes=true;
-        var renderRTTView=true;
+        var renderRTTRadarView=renderRadar;
 
         this.startRendering();
         if(renderFullRes)this.renderActiveShaders();  //Pass 0 Render solid geometry
@@ -146,13 +147,14 @@ require(["util/domReady!", // Waits for page load
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
 
+
         gl.blendFunc(gl.SRC_COLOR,gl.ONE_MINUS_SRC_ALPHA);// Pass 2.. render alpha blended/alpha test geometry / no culling... UI Layer
         if(renderFullRes)this.renderActiveShaders(2);
         //gl.disable(gl.BLEND);
 
         // render debug textures...
         gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
-        if(renderRTTView)this.renderActiveShaders(3);
+        if(renderRTTRadarView)this.renderActiveShaders(3);
         gl.disable(gl.BLEND);
 
         gl.enable(gl.CULL_FACE);
@@ -163,9 +165,13 @@ require(["util/domReady!", // Waits for page load
     };
     
     glUtil.startRenderLoop(gl, canvas, function(gl, timing) {
-        fpsCounter.innerHTML = ""+timing.framesPerSecond+":"+((boloworld.objects.iterCount>0)?boloworld.objects.updateSum/boloworld.objects.iterCount:0);
+        fpsCounter.innerHTML = "hz:"+timing.framesPerSecond+"<br/>o:"+(((boloworld.objects.iterCount>0)?boloworld.objects.updateSum/boloworld.objects.iterCount:0))+"<br/>m:"+display.renderedMeshes+"<br/>t:"+display.renderedTriangles;
+
         //gl.clearColor(1.0, 0.0, 0.1, 1.0);
-        boloworld.objects.iterCount=boloworld.objects.updateSum=0;
+        boloworld.objects.iterCount=0;
+        boloworld.objects.updateSum=0;
+        display.renderedTriangles=0;
+        display.renderedMeshes=0;
         display.renderLoop(gl, timing);
     });
 	

@@ -11,6 +11,8 @@ define([
 ],
     function (displayModule, messaging, glUtil, util, programs, bolomap, meshes,fontMesh) {//display,
 
+    //    util.testDLL();
+
         function showWinMessage(winTeam){
             showHudObject((winTeam==0)?"red_victory":"blue_victory");
         }
@@ -105,25 +107,6 @@ define([
         }
         onLoad();
 
-        var currentMap = null;//bolomap.loadRandomMap();
-        var GameObject = function () {
-            var go = {
-                id: objIdBase++,
-                matrix: mat4.identity(mat4.create()),
-                components: [],
-                removeComponent: function (comp) {
-                    this.components.splice(this.components.indexOf(comp), 1);
-                    delete this[name];
-                },
-                addComponent: function (name, comp) {
-                    this[name] = comp;
-                    this.components.push(comp);
-                }
-            }
-            return go;
-        }
-        var objIdBase = 0;
-        var objects = util.ObjectPool(GameObject);
         var frameRenderer = null;
         var worldMeter = 1.0;
         var worldMeter2 = worldMeter * worldMeter;
@@ -143,6 +126,31 @@ define([
         var tileDim2 = tileDim * tileDim;
         var tileRad = tileDim / 2.0;
 
+        var simTime;
+        var simFPS = 1000.0 / 60;
+        var minFPS = 1000.0 / 15;
+        var currentMap = null;//bolomap.loadRandomMap();
+
+        var GameObject = function () {
+            var go = {
+                id: objIdBase++,
+                matrix: mat4.identity(mat4.create()),
+                components: [],
+                removeComponent: function (comp) {
+                    this.components.splice(this.components.indexOf(comp), 1);
+                    delete this[name];
+                },
+                addComponent: function (name, comp) {
+                    this[name] = comp;
+                    this.components.push(comp);
+                }
+            }
+            return go;
+        }
+
+        var objIdBase = 0;
+        var objects = util.ObjectPool(GameObject);
+
         var updateGameObject = {
             update: function (go) {
                 if (go.update)go.update();
@@ -154,9 +162,6 @@ define([
             }
         }
 
-        var simTime;
-        var simFPS = 1000.0 / 60;
-        var minFPS = 1000.0 / 15;
         function update(gl, display, timing, simUpdate) {
             if (frameRenderer == null)
                 frameRenderer = display.createFrameRenderer(gl, timing);
@@ -181,6 +186,8 @@ define([
                 simTime += simFPS;
             }
 
+            display.renderedTriangles=0;
+            display.renderedMeshes=0;
             objects.iterateActive(frameRenderer);
 
 
@@ -309,6 +316,8 @@ define([
         }
 
         function loadTexture(name) {
+     //       name = "grid.png";
+
             var tileTex = glUtil.loadTexture(gl, name, function (glTex) {
                 tileTex.bindToUnit = bindToUnit;
                 tileTex.src=name;

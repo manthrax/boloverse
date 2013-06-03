@@ -5,7 +5,23 @@ define([
     "js/util/gl-matrix.js" //    "js/bolomap.js"
     ], function(camera, glUtil) {
         "use strict";
+/*
+render light depths
 
+render depth buffer to depth texture mrt
+
+bind depth texture
+
+render color+gloss rgb a... with depthfunc equals
+gloss is a function of specular*light facing + 4 nearest lights...
+velocity
+
+
+bind render buffer...
+deferred pass... screenspace render fx effects
+ * shadow...
+
+ */
         var vaoExtension=null;
 
         function v3cp(to,from){
@@ -84,7 +100,8 @@ define([
             this.camera.distance = 2;//80
             this.camera.setCenter([0, 0, 1]);
 
-		
+            this.renderedMeshes=0;
+            this.renderedTriangles=0;
             this.fov = 45;
             this.gl = gl;
             this.nearDepth=0.1;
@@ -416,7 +433,6 @@ define([
             }
 
             rtn.bindRTTForRendering = bindRTTForRendering;
-
             this.unbindRTT(gl);
             return rtn;
         };
@@ -464,7 +480,9 @@ define([
                 },
                     
                 render:function(go){
-                    
+                    var elemCount=this.mesh.elemCount;
+                    disp.renderedTriangles+=elemCount;
+                    disp.renderedMeshes++;
                     vaoExtension.bindVertexArrayOES(this.vaos[0]);
 					
                     disp.setWorld(go.matrix);
@@ -488,7 +506,7 @@ define([
                     }
                     //Render our submeshes...
 				
-                    gl.drawElements(gl.TRIANGLES,this.mesh.elemCount*3,gl.UNSIGNED_SHORT,0);
+                    gl.drawElements(gl.TRIANGLES,elemCount*3,gl.UNSIGNED_SHORT,0);
                     //this.renderComponent(go,this,shader);
                     vaoExtension.bindVertexArrayOES(null);
                 }

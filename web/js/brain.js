@@ -60,6 +60,8 @@ define([
         this.pathRetryCountdown=200;
         this.pathIndex=0;
         this.pathPoint=[0,0,0];
+        this.cursorPathIndex=0;
+        this.cursorPathPoint=[0,0,0];
         this.player=player;
         this.progress=1.0;
         this.lastDist2=0.0;
@@ -73,11 +75,11 @@ define([
         
        
         this.pathPtCtr=0;
-        this.getPathPoint=function(idx){
+        this.getPathPoint=function(idx,outPt){
             var ppt=this.path[idx];
             v3t0[0]=ppt.x;
             v3t0[1]=ppt.y;
-            world.cellCoordToWorld(v3t0,this.pathPoint);
+            world.cellCoordToWorld(v3t0,outPt);
         }
         
         this.rotateToward=function(obj,targetPt){
@@ -118,10 +120,24 @@ define([
                     //Target aquired.
                     this.path.length=0;
                 }else{
-                    this.getPathPoint(this.pathIndex);
-                    if(this.cursorSprite)mat4.setRowV3(this.cursorSprite.matrix,3,this.pathPoint);
+                    this.getPathPoint(this.pathIndex,this.pathPoint);
+                }
+                if(this.cursorSprite){
+                    this.cursorPathIndex=this.pathIndex;
+                    mat4.setRowV3(this.cursorSprite.matrix,3,this.pathPoint);
                 }
             }else{
+
+                if(this.cursorSprite){
+
+                    this.cursorPathIndex++;
+                    if(this.cursorPathIndex>=this.path.length)this.cursorPathIndex=this.pathIndex;
+                    this.getPathPoint(this.cursorPathIndex,this.cursorPathPoint);
+                    mat4.setRowV3(this.cursorSprite.matrix,3,this.cursorPathPoint);
+                }
+
+
+
                 if(targDist2>=(this.lastDist2*0.95)){  //Check for making progress
                     this.progress*=0.97;//Not making progress..
                     this.controls=playerControls.down;
@@ -158,6 +174,9 @@ define([
                                 var pl=this.path.length-1;
                                 network.emit("ai",[this.brainId,this.path[0].x,this.path[0].y,this.path[pl].x,this.path[pl].y]);
                             }
+                        }else{
+                            //No good path...
+                            this.pathRetryCountdown=(60*5)+(Math.random()*(60*5));
                         }
                     }
                 }
@@ -169,7 +188,7 @@ define([
             if(!this.path)this.path=[];
             this.pathIndex=0;
             if(this.path.length){
-                this.getPathPoint(0);
+                this.getPathPoint(0,this.pathPoint);
                 if(this.cursorSprite)mat4.setRowV3(this.cursorSprite.matrix,3,this.pathPoint);
                 if(this.player.avatar!=null)
                     mat4.setRowV3(this.player.avatar.matrix,3,this.pathPoint);
@@ -209,12 +228,14 @@ define([
             base=queue.top();
             if(this.currentTarget){
                 if(this.currentTarget==base){
-                    if(queue.length>1){base = queue[gueue.length-1];}
+                    if(queue.length>1){base = queue[(gueue.length-1)-parseInt(Math.random()*(queue.length/3))];}
                 }
             }
             this.currentTarget=base;
-            this.pathFind(obj.cellCoord[0],obj.cellCoord[1],base.x-mo[0],base.y-mo[1]);
-        }
+            if(!this.pathFind(obj.cellCoord[0],obj.cellCoord[1],base.x-mo[0],base.y-mo[1])){
+                //this.currentTarget=null;
+            }
+        };
         
         this.determineRandomTarget=function(obj){
             var map=world.getMap();
@@ -223,8 +244,9 @@ define([
             this.path=this.pathFinder.getPath(obj.cellCoord[0],obj.cellCoord[1],base.x-mo[0],base.y-mo[1]);
             if(!this.path)this.path=[];                    
             this.pathIndex=0;
+            this.cursorPathIndex=0;
             if(this.path.length){
-                this.getPathPoint(0);
+                this.getPathPoint(0,this.pathPoint);
                 if(this.cursorSprite)mat4.setRowV3(this.cursorSprite.matrix,3,this.pathPoint);
             }
         }
