@@ -48,7 +48,7 @@ define([
         this.zoomTween=new TWEEN.Tween(this);
         this.spinTween=new TWEEN.Tween(this);
 
-        this.zoomValues=[8.0,50.0,100,200];
+        this.zoomValues=[8.0,30.0,70,100];
        // document.onmousewheel = wheel;
         this.addMouseControls = function(canvas){
             var self=this;
