@@ -122,7 +122,8 @@ require(["util/domReady!", // Waits for page load
 
         boloworld.update(gl,display,timing,updateSim);
 
-        var renderRadar=true;
+        var renderRadar = false;
+
         if(renderRadar){
             this.radarRTT.bindRTTForRendering(gl);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    //Clear RTT buffer
@@ -163,7 +164,7 @@ require(["util/domReady!", // Waits for page load
         this.finishRendering();
 
     };
-    
+
     glUtil.startRenderLoop(gl, canvas, function(gl, timing) {
         fpsCounter.innerHTML = "hz:"+timing.framesPerSecond+"<br/>o:"+(((boloworld.objects.iterCount>0)?boloworld.objects.updateSum/boloworld.objects.iterCount:0))+"<br/>m:"+display.renderedMeshes+"<br/>t:"+display.renderedTriangles;
 
