@@ -507,7 +507,9 @@ define([
             return valid;
         }
 
+        function setupUnitShader(unit){
 
+        }
         function updatePilot() {
             if (!this.velocity)
                 this.velocity = [0, 0, 0];
@@ -547,6 +549,8 @@ define([
                         } else if (this.currentTool == "pillbox") {
                             if (this.tank.invTurrets.length > 0) {
                                 var turret = boloworld.addObject("turret", [this.matrix[12], this.matrix[13], this.matrix[14]]);
+                                turret.shader=boloworld.getShader("Unit");
+                                turret.tint = this.team==0?[0.5,0,0,0]:[0,0,0.5,0];
                                 turret.name = "turret";
                                 turret.hp = 255;
                                 turret.update = updatePillbox;
@@ -1294,7 +1298,7 @@ define([
             invokeGod("changeMap~" + map);
             invokeGod("startGame");
 
-            return;
+            //return;
 
             if (aiCount0)
                 for (var t = 0; t < aiCount0; t++)
@@ -1400,21 +1404,6 @@ define([
             return parseInt(Math.random() * arr.length * 0.999);
         }
 
-
-        function updateList(listObj, nextField, updateFn) {
-            var prv = null;
-            for (var p = listObj.list; p != null;) {
-                if (p.active == false) {
-                    if (prv == null)listObj.list = p[nextField];
-                    prv[nextField] = p[nextField];
-                } else {
-                    updateFn(p);
-                    prv = p;
-                    p = p[nextField];
-                }
-            }
-        }
-
         function cellIsPillboxTarget(obj, cell) {
             for (var t = 1; t < cell.length; t++) {
                 if (cell[t].name == "tank" && obj.team != cell[t].team) {
@@ -1509,6 +1498,8 @@ define([
         function spawnPlayer(p) {
             var spawnpt = randElem(currentMap.starts);//B A
             p.avatar = boloworld.addTileObject(p.team ? "tankC" : "tankC", spawnpt.x, spawnpt.y);
+            p.avatar.meshRenderer.shader = boloworld.getShader("Unit");
+            p.avatar.tint = p.team==0?[0.5,0,0,0]:[0,0,0.5,0];
             p.avatar.name = "tank";
             p.avatar.currentTool = "harvest";
             p.avatar.boat = boloworld.addTileObject("boat", spawnpt.x, spawnpt.y);

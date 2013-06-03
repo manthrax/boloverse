@@ -190,9 +190,17 @@ define([
         var display=null;
         var tileDiffuse=null;
         var tileShader=null;
-        
+
+        var shaderCache={};
+
+        var textureCache={};
+
         function getShader(baseName){
-            var shdr=programs.createProgramFromTags(gl,baseName+'VS',baseName+'FS');
+            var shdr=shaderCache[baseName];
+            if(!shdr){
+                shdr={shader:programs.createProgramFromTags(gl,baseName+'VS',baseName+'FS'),name:baseName};
+                shaderCache[baseName]=shdr;
+            }
             return shdr;
         }
         

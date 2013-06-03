@@ -191,7 +191,8 @@ define([
             objects.iterateActive(frameRenderer);
 
 
-            if (currentMap != null)updateRegions();
+            if (currentMap != null)
+                updateRegions();
 
         }
 
@@ -302,12 +303,16 @@ define([
         var tileDiffuse = null;
         var tileShader = null;
 
-        function getShader(baseName) {
-            var shdr = programs.createProgramFromTags(gl, baseName + 'VS', baseName + 'FS');
-            return shdr;
+        var shaderCache={};
+
+        var textureCache={};
+
+        function getShader(baseName){
+            return programs.createProgramFromTags(gl,baseName+'VS',baseName+'FS');
         }
 
         function bindToUnit(unit) {
+
             gl.activeTexture(gl.TEXTURE0 + unit);
             gl.bindTexture(gl.TEXTURE_2D, this);
 //            if(!this.src){

@@ -55,6 +55,68 @@ void main() {
 //    gl_FragColor.a=1.0;
 }
 
+SCRIPT='UnitVS';
+
+attribute vec4 position;
+attribute vec3 normal;
+attribute vec2 texCoord;
+
+uniform mat4 worldViewProjection;
+uniform mat4 world;
+uniform mat4 view;
+uniform mat4 projection;
+uniform mat4 worldInverse;
+uniform mat4 viewInverse;
+uniform mat4 worldInverseTranspose;
+uniform vec4 tint;
+
+varying vec4 v_position;
+varying vec2 v_texCoord;
+varying vec3 v_normal;
+varying vec4 v_tint;
+varying float atmosBlend;
+
+void main() {
+    v_texCoord = texCoord;
+    v_position = worldViewProjection * position;
+
+    v_normal =  (worldInverseTranspose * vec4(normal, 0)).xyz;
+    gl_Position = v_position;// worldViewProjection * position;
+
+    atmosBlend=1.0-(clamp((v_position.z-100.0),0.0,100.0) / 100.0);
+    v_tint = tint;
+}
+
+SCRIPT='UnitFS';
+
+//#ifdef GL_ES
+precision mediump float;
+//#endif
+
+uniform sampler2D diffuseSampler;
+varying vec3 v_normal;
+varying vec4 v_position;
+varying vec4 v_tint;
+varying vec2 v_texCoord;
+varying float atmosBlend;
+
+//uniform float farDepth;
+//
+void main() {
+    vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
+    if(diffuse.a<0.5)
+        discard;
+    //vec3 normal = normalize(v_normal);tmosB
+    //((v_normal+1.0)*0.5)*0.1*atmosBlend*v_normal.z;//diffuse.rgb;//abs(v_normal);//vec3(1.0,0,0);////
+    gl_FragColor.rgb = ((diffuse.rgb * atmosBlend * v_normal.z)+((1.0-atmosBlend)*vec3(0.5, 0.6, 0.9)));//v_normal;//diffuse*normal.y;
+
+    gl_FragColor += v_tint;
+    //gl_FragColor.rgb = diffuse.rgb*v_normal.z;
+
+
+//    gl_FragColor.a=1.0;
+}
+
 SCRIPT='explosionVS';
 attribute vec4 position;
 attribute vec3 normal;
