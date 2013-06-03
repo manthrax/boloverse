@@ -40,6 +40,11 @@ var mapIndex=0;
 //    socket.broadcast.emit('message', msg);
 //});
 
+var log = function(msg){
+    console.log(msg);
+};
+
+
 function sanitize(val){
     return val.replace(/[^a-z 0-9]+/gi,'');
 }
@@ -93,18 +98,23 @@ io.sockets.on('connection', function (socket) {
     socket.on('nick', function (nnick) {    //Change user nickname
         players[socket.id].nick = sanitize(nnick);
         io.sockets.emit('player',players[socket.id]); //Broadcast the changed player nick..
+        log("nick:"+nnick);
     });
     
     var g_gameHost=null;
     socket.on('host', function(){
+
         if(!g_gameHost){
             g_gameHost=socket.id;
             socket.emit('host',g_gameHost);
+            log("host:"+g_gameHost);
         }
+
     });
     
     socket.on('ai', function (cmd) {    //Broadcast ai path change
         socket.broadcast.emit('ai',cmd);
+        log("ai:"+cmd);
     });
     
     socket.on('video', function (data) {
@@ -121,6 +131,7 @@ io.sockets.on('connection', function (socket) {
                 pav.lastState=msg;
         }
         socket.broadcast.emit('sim', {data:msg,id:socket.id});   //Forward chat/game data
+        log("sim:"+msg);
     });
     
     socket.on('chat', function (msg) {
@@ -210,6 +221,8 @@ io.sockets.on('connection', function (socket) {
         }
         var state={id:plr.id,spectating:plr.spectating,avatar:plr.avatar};
         io.sockets.emit('playerState',{id:plr.id,spectating:plr.spectating,avatar:plr.avatar});   //Send the player state change to everyone.
+
+        log("control plr:"+plr+" fix:"+fixtureId);
     });
     
     socket.on('disconnect', function (data) {//Called when client disconnects
