@@ -772,15 +772,16 @@ define([
                     var plyr = playersByNetworkId[id];
                     if (!plyr) {
                         console.log("Invalid player sync!" + id);
-                        t += 4;
+                        t += 5;
                     } else {
                         var go = plyr.avatar;
                         if (go) {
                             for (var i = 12; i < 15; i++)go.matrix[i] = parseFloat(cmd[t++]);
                             go.angle = parseFloat(cmd[t++]);
+                            go.speed = parseFloat(cmd[t++]);
                             boloworld.moveTileObject(go, go.matrix[12], go.matrix[13], go.matrix[14])
                         } else
-                            t += 4;
+                            t += 5;
                     }
                 } else if (cmd[t] == 'ctrl') {
                     console.log('got ctrl' + cmd.join());
@@ -859,6 +860,7 @@ define([
             var sync = 'sync~' + network.g_networkId;
             for (var t = 12; t < 15; t++)sync += '~' + this.matrix[t];
             sync += '~' + this.angle;
+            sync += '~' + this.speed;
             return sync;
         }
 
