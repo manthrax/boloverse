@@ -108,6 +108,8 @@ define([
         onLoad();
 
         var frameRenderer = null;
+
+
         var worldMeter = 1.0;
         var worldMeter2 = worldMeter * worldMeter;
 

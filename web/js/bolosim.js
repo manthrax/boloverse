@@ -24,12 +24,7 @@ define([
         var v3t7 = nv3();
         var v3t8 = nv3();
         var v3t9 = nv3();
-        var explosionMesh;
-        var explosionRenderer;
-        var crosshairSprite;
-        var cursorSprite;
-        var display;
-        var gl;
+
         var currentMap = null;
         var playerList = [];
         var aiList = [];
@@ -116,9 +111,17 @@ define([
         var healRate = 10.0;
         var damageCounter = 0.0;
         var damageRate = 3.0;
-        var hudUpdateCounter = 0;
         var syncCountdown = 0;
         var mouseWasDown = false;
+
+
+        var hudUpdateCounter = 0;
+        var explosionMesh;
+        var explosionRenderer;
+        var crosshairSprite;
+        var cursorSprite;
+        var display;
+        var gl;
 
         network.on("god", godCommand);
 
@@ -508,8 +511,16 @@ define([
         }
 
         function setupUnitShader(unit){
-
+            if(unit.shader){
+                unit.shader=boloworld.getShader("Unit");
+            }else if(unit.meshRenderer){
+                unit.meshRenderer.shader=boloworld.getShader("Unit");
+            }else{
+                console.log("Unit does not have visible shaders!");
+            }
+            unit.tint = unit.team==0?[0.5,0,0,0]:[0,0,0.5,0];
         }
+
         function updatePilot() {
             if (!this.velocity)
                 this.velocity = [0, 0, 0];
@@ -549,8 +560,6 @@ define([
                         } else if (this.currentTool == "pillbox") {
                             if (this.tank.invTurrets.length > 0) {
                                 var turret = boloworld.addObject("turret", [this.matrix[12], this.matrix[13], this.matrix[14]]);
-                                turret.shader=boloworld.getShader("Unit");
-                                turret.tint = this.team==0?[0.5,0,0,0]:[0,0,0.5,0];
                                 turret.name = "turret";
                                 turret.hp = 255;
                                 turret.update = updatePillbox;
@@ -558,6 +567,9 @@ define([
                                 boloworld.addObjectToGrid(turret);
                                 turret.pillboxNumber = this.tank.invTurrets.pop();
                                 playSound(this, "man_building_near");
+
+
+                                setupUnitShader(turret);
 
                                 var cb = document.getElementById("cbox_" + turret.pillboxNumber);
                                 cb.style["background-color"] = (this.team == 0) ? "red" : "blue";
@@ -573,6 +585,9 @@ define([
                                 boloworld.addObjectToGrid(mine);
                                 playSound(this, "man_lay_mine_near");
                                 this.tank.invMines--;
+
+                                mine.team = this.team;
+                                setupUnitShader(mine);
                             }
                         }
                     } else {
@@ -1290,6 +1305,8 @@ define([
             });
         }
 
+        messaging.listen("initSim",initSim);
+
 
         function startGame(map, aiCount0, aiCount1) {
 
@@ -1499,7 +1516,6 @@ define([
             var spawnpt = randElem(currentMap.starts);//B A
             p.avatar = boloworld.addTileObject(p.team ? "tankC" : "tankC", spawnpt.x, spawnpt.y);
             p.avatar.meshRenderer.shader = boloworld.getShader("Unit");
-            p.avatar.tint = p.team==0?[0.5,0,0,0]:[0,0,0.5,0];
             p.avatar.name = "tank";
             p.avatar.currentTool = "harvest";
             p.avatar.boat = boloworld.addTileObject("boat", spawnpt.x, spawnpt.y);
@@ -1540,6 +1556,8 @@ define([
             if (p.aiModule) {
                 p.avatar.addComponent("brain", new brain.Brain(bsim, p, p.aiModule));
             }
+
+            setupUnitShader(p.avatar);
         }
 
         function addAI() {

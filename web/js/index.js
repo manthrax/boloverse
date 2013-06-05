@@ -34,8 +34,8 @@ require(["util/domReady!", // Waits for page load
     boloworld.initWorld();
     
     boloworld.makeScene();
-    
-    bolosim.initSim();
+
+    messaging.send("initSim");
 
 
     function onLoad(){
