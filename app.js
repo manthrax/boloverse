@@ -41,7 +41,7 @@ var mapIndex=0;
 //});
 
 var log = function(msg){
-    console.log(msg);
+    //console.log(msg);
 };
 
 
@@ -80,7 +80,7 @@ io.sockets.on('connection', function (socket) {
     
     var client=addClient(socket.id);
 
-    console.log("Clients:"+JSON.stringify(clients));
+    log("clients:"+JSON.stringify(clients));
 
   //  socket.on('join', function (data) {
     var player=addPlayer(socket);
@@ -89,7 +89,7 @@ io.sockets.on('connection', function (socket) {
     var i=0;
     for( var k in players)  //Renumber the players
         players[k].index=i++;
-    console.log("players:"+JSON.stringify(players));
+    log("players:"+JSON.stringify(players));
 
     socket.emit('welcome',socket.id); //Send the joining players id
     
@@ -164,7 +164,7 @@ io.sockets.on('connection', function (socket) {
     });
     
     socket.on('god', function(data){
-        console.log("Got god command from host:"+data);
+        log("Got god command from host:"+data);
         io.sockets.emit('god',data);
     });
     
@@ -172,7 +172,7 @@ io.sockets.on('connection', function (socket) {
         var plr=players[socket.id];
         var plr2=players[playerId];
 
-        console.log("Got join request from "+plr.nick+" to "+plr2.nick+" "+playerId);
+        log("Got join request from "+plr.nick+" to "+plr2.nick+" "+playerId);
         if(joinRequests[playerId]){
             if(joinRequests[playerId].contains(plr.id)==false)
                 joinRequests[playerId].push(plr.id);
@@ -184,11 +184,11 @@ io.sockets.on('connection', function (socket) {
     socket.on('joinaccept', function(playerId){
         var plr=players[socket.id];
         var plr2=players[playerId];
-        console.log("Got join accept from "+plr.nick+" to "+plr2.nick+" "+playerId);
+        log("Got join accept from "+plr.nick+" to "+plr2.nick+" "+playerId);
         if(joinRequests[plr.id].contains(playerId))
         {   //Set up game
             joinRequests[plr.id].remove(playerId);
-            console.log("Setting up game between "+plr.nick+" and "+plr2.nick+"");
+            log("Setting up game between "+plr.nick+" and "+plr2.nick+"");
             var room=""+socket.id+playerId;
             addRoom(room);
             socket.join(room);//Join both players into the room that is the combination of thier names..
@@ -226,7 +226,7 @@ io.sockets.on('connection', function (socket) {
     });
     
     socket.on('disconnect', function (data) {//Called when client disconnects
-        
+
         console.log("Client disconnect from " + address.address + ":" + address.port + " sid:"+socket.id);
         console.log("Discon data:" + data);
         var plyr=players[socket.id];
@@ -239,8 +239,8 @@ io.sockets.on('connection', function (socket) {
         delete playerSockets[socket.id];
         var i=0;
         for( var k in players) players[k].index=i++;  //Reindex the players
-        console.log("players:"+JSON.stringify(clients));
-        console.log("occupiedFixtures:"+JSON.stringify(occupiedFixtures));
+        log("players:"+JSON.stringify(clients));
+        log("occupiedFixtures:"+JSON.stringify(occupiedFixtures));
 
         io.sockets.emit('players',players); //Broadcast the new player list
         

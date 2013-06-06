@@ -358,7 +358,7 @@ define([
            // fontMesh.createFontFromMesh(meshes["Font_courier"]);
         }
 
-        var meshList = []
+        var meshList = [];
         for (var me in meshes)
             meshList.push(me);
         var generateTileMesh = function (mat, mx, my, rand) {
