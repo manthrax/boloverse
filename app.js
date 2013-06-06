@@ -75,6 +75,7 @@ function addClient(sockId){
 console.log("started!");
 
 io.sockets.on('connection', function (socket) {
+
     var address = socket.handshake.address;
     log("New connection from " + address.address + ":" + address.port + " sid:"+socket.id);
 
