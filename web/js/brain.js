@@ -232,8 +232,12 @@ define([
                 }
             }
             this.currentTarget=base;
-            if(!this.pathFind(obj.cellCoord[0],obj.cellCoord[1],base.x-mo[0],base.y-mo[1])){
-                //this.currentTarget=null;
+            if(this.currentTarget){
+                if(!this.pathFind(obj.cellCoord[0],obj.cellCoord[1],base.x-mo[0],base.y-mo[1])){
+                    //this.currentTarget=null;
+                }
+            }else{
+                console.log("No valid target bases found.");
             }
         };
         

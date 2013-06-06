@@ -609,8 +609,11 @@ define([
                             this.tank.invWood = 255;
                     }
                     this.tank.pilot = null;
-                    this.tank.pilotIndicator.active = false;
-                    this.tank.pilotIndicator = null;
+
+                    if(this.tank.pilotIndicator){
+                        this.tank.pilotIndicator.active = false;
+                        this.tank.pilotIndicator = null;
+                    }
                     this.active = false;
                     boloworld.removeTileObject(this);
 
@@ -785,7 +788,7 @@ define([
         network.onSim = function (cmd) {
             for (var t = 0; t < cmd.length;) {
                 if (cmd[t] == 'sync') {
-                    console.log('got sync' + cmd.join());
+                    //console.log('got sync' + cmd.join());
                     t++;
                     var id = cmd[t++];
                     var plyr = playersByNetworkId[id];
@@ -803,7 +806,7 @@ define([
                             t += 5;
                     }
                 } else if (cmd[t] == 'ctrl') {
-                    console.log('got ctrl' + cmd.join());
+                    //console.log('got ctrl' + cmd.join());
                     t++;
                     var id = cmd[t++];
                     var plyr = playersByNetworkId[id];
@@ -833,6 +836,7 @@ define([
                         }
                     }
                 } else if (cmd[t] == 'baseTaken') {
+                    console.log('got baseTaken' + cmd.join());
                     t++;
                     var ccoord=[parseInt(cmd[t++]),parseInt(cmd[t++])];
                     var cteam = parseInt(cmd[t++]);

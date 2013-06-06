@@ -19,7 +19,7 @@ httpServer.listen(port);
 
 var io = sio.listen(httpServer);
 
-io.set('log level',2);
+io.set('log level',0);
 
 var clients={};
 var players={};
@@ -73,11 +73,11 @@ function addClient(sockId){
 }
 
 console.log("started!");
+
 io.sockets.on('connection', function (socket) {
     var address = socket.handshake.address;
-    console.log("New connection from " + address.address + ":" + address.port + " sid:"+socket.id);
-    //console.log('Connect Received: ');
-    
+    log("New connection from " + address.address + ":" + address.port + " sid:"+socket.id);
+
     var client=addClient(socket.id);
 
     log("clients:"+JSON.stringify(clients));
@@ -109,7 +109,6 @@ io.sockets.on('connection', function (socket) {
             socket.emit('host',g_gameHost);
             log("host:"+g_gameHost);
         }
-
     });
     
     socket.on('ai', function (cmd) {    //Broadcast ai path change
@@ -227,8 +226,8 @@ io.sockets.on('connection', function (socket) {
     
     socket.on('disconnect', function (data) {//Called when client disconnects
 
-        console.log("Client disconnect from " + address.address + ":" + address.port + " sid:"+socket.id);
-        console.log("Discon data:" + data);
+        log("Client disconnect from " + address.address + ":" + address.port + " sid:"+socket.id);
+        log("Disconnect data:" + data);
         var plyr=players[socket.id];
         if(plyr.avatar && occupiedFixtures[plyr.avatar]==socket.id){//plyr.spectating==false){    //If we are controlling something already...
             delete occupiedFixtures[plyr.avatar]; //Disengage from it..
@@ -253,16 +252,5 @@ io.sockets.on('connection', function (socket) {
                 io.sockets.emit('host',g_gameHost); //Broadcast the new host
             }
         }
-        
     });
-    
 });
-
-/*
- *  connect
- *      
- * 
- * 
- * 
- * 
- */

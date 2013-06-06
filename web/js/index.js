@@ -1,4 +1,8 @@
+/*
+TURRET DISPLAY IS NOT SYNCED BETWEEN CLIENTS, ON MAPCHANGE
 
+
+ */
 require(["util/domReady!", // Waits for page load
         "display",
         "js/util/messaging.js",
