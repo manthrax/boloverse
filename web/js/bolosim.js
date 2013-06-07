@@ -3,14 +3,12 @@ define([
     "js/util/messaging.js",
     "js/bolomap.js",
     "js/boloworld.js",
-    "js/meshes/testmesh.js",
-    "js/util/audio.js",
     "js/network.js",
     "js/brain.js",
     "js/util/gl-matrix.js"
 ],
 
-    function (displayModule, messaging, bolomap, boloworld, meshes, audio, network, brain) {
+    function (displayModule, messaging, bolomap, boloworld, network, brain) {
 
         function nv3() {return [0, 0, 0];}
 
@@ -39,45 +37,21 @@ define([
 
         var gamePaused = false;
 
-        var tileData = {
-            "Building": {mesh: meshes.building, speed: 0.0},
-            "River": {mesh: meshes.river, speed: 0.3},
-            "Swamp": {mesh: meshes.swamp, speed: 0.5},
-            "Crater": {mesh: meshes.grass, speed: 0.8},
-            "Road": {mesh: meshes.road, speed: 1.0},
-            "Forest": {mesh: meshes.forest, speed: 0.8},
-            "Rubble": {mesh: meshes.crater, speed: 0.4},
-            "Grass": {mesh: meshes.grass, speed: 0.8},
-            "ShotBuilding": {mesh: meshes.buildingd2, speed: 0.0},
-            "RiverWithBoat": {mesh: meshes.river, speed: 1.0},
-            "Ocean": {mesh: meshes.ocean, speed: 0.25},
-        }
 
-        for (var v in meshes) {
-            meshes[v].name = v;
-        }
-        var dirLUT = {
-            0: ["", 0],
-            1: ["0", 2],
-            2: ["0", 3],
-            4: ["0", 0],
-            8: ["0", 1],
+        var tileSpeeds = {
+            "Building":  0.0,
+            "River": 0.3,
+            "Swamp":  0.5,
+            "Crater":  0.8,
+            "Road":  1.0,
+            "Forest":  0.8,
+            "Rubble": 0.4,
+            "Grass":  0.8,
+            "ShotBuilding":  0.0,
+            "RiverWithBoat":  1.0,
+            "Ocean":  0.25
+        };
 
-            3: ["01", 3],
-            6: ["01", 0],
-            12: ["01", 1],
-            9: ["01", 2],
-
-            5: ["02", 0],
-            10: ["02", 1],
-
-            7: ["012", 0],
-            14: ["012", 1],
-            13: ["012", 2],
-            11: ["012", 3],
-
-            15: ["0123", 0],
-        }
 
         var pilotRad = boloworld.worldMeter * 2;
         var pilotSpeed = 0.21;
@@ -101,11 +75,6 @@ define([
 
         var tankRad = 4.0 * boloworld.worldMeter;
 
-        var barShells = document.getElementById("statColor_shells");
-        var barMines = document.getElementById("statColor_mines");
-        var barArmor = document.getElementById("statColor_armor");
-        var barWood = document.getElementById("statColor_wood");
-        var ticketsDisplay = document.getElementById("ticketDisplay");
 
         var healCounter = 0.0;
         var healRate = 10.0;
@@ -116,8 +85,9 @@ define([
 
 
         var hudUpdateCounter = 0;
-        var explosionMesh;
-        var explosionRenderer;
+
+
+
         var crosshairSprite;
         var cursorSprite;
         var display;
@@ -138,50 +108,6 @@ define([
             pillbox: 512,
             mine: 1024
         };
-
-        function generateTileMesh(mat, mx, my, rand) {
-            var cell = boloworld.getCell(mx, my);
-            var tid = cell[0].name;
-            var mesh = tileData[tid].mesh;
-            var directional = false;
-            var meshBase = "";
-            if (tid == "Road") {
-                // instanceMesh(meshes.crater,mat,batch);
-                directional = true;
-                meshBase = "road";
-            } else if (tid == "River") {
-                directional = true;
-                meshBase = "river";
-            } else if (tid == "Building") {
-                directional = true;
-                meshBase = "building";
-            }
-            if (directional) {
-                var dbits = boloworld.getNeighborsOfName(mx, my, tid);
-                if (tid == "River") {
-                    dbits |= boloworld.getNeighborsOfName(mx, my, "Ocean");
-                }
-                var tdata = dirLUT[dbits];
-                var meshName = meshBase + tdata[0];
-                if (tid == "Building") {
-                    if (tdata[0] != "02")meshName = "building";
-                    if (cell[0].hp < 255) {
-                        meshName = "buildingd" + parseInt((3 - (cell[0].hp * 2 / 255)));
-                    }
-                }
-                else if (tid == "River" && tdata[0] == "0123")meshName = "river";
-                else if (tid == "Road" && tdata[0] == "0123")meshName = "road";
-                mesh = meshes[meshName];
-                mat4.rotateZ(mat, tdata[1] * Math.PI * 0.5);
-            } else {
-                mat4.rotateZ(mat, parseInt(rand * 3.99) * Math.PI * 0.5);
-            }
-            if (!mesh) {
-                console.log("Mesh:" + meshName + " not found.");
-                debugger;
-            }
-            return mesh;
-        }
 
         function v3set(v, vx, vy, vz) {
             v[0] = vx;
@@ -249,10 +175,6 @@ define([
 
         }
 
-        function playSound(obj, name, volume) {
-            mat4.getRowV3(obj.matrix, 3, v3t0);
-            audio.playPositional2d(name, v3t0, volume);
-        }
 
         function dealDamageToMapObject(c, cell,c0,proj) {
             var cellDirty = false;
@@ -592,7 +514,7 @@ define([
                         }
                     } else {
                         //invalid target..
-                        audio.play("bubbles");
+                        playUISound("bubbles");
                     }
                     if (tileDirty) {
                         var cc = boloworld.worldToCellCoord(this.target);
@@ -697,12 +619,6 @@ define([
         }
 
         function updatePlayerHUD(p) {
-            barShells.style.width = "" + parseInt(p.invShells * 100.0 / 40.0) + "px";
-            barMines.style.width = "" + parseInt(p.invMines * 100.0 / 40.0) + "px";
-            barArmor.style.width = "" + parseInt(p.hp * 100.0 / 255.0) + "px";
-            barWood.style.width = "" + parseInt(p.invWood * 100.0 / 255.0) + "px";
-
-            var str = "TICKETS:";
 
             var liveTeams=0;
             for (var i in teamTickets) {
@@ -722,23 +638,25 @@ define([
                         livep=i;
                         nlive++;
                     }
-                    str += " " + i + ":" + parseInt(teamTickets[i]);
+
                 }
                 if(nlive==1&&liveTeams>1){
                     //Victory
                     messaging.send("team_won",livep);
+                    playUISound("win");
                 }
-                ticketsDisplay.innerHTML = str;
             }
-
+            messaging.send("updatePlayerHUD",p);
         }
+
 
         function changeMap(index) {
             //display.camera.zoomToPause();
             currentMap = boloworld.loadMapByName(bolomap.getMapNames()[index]);
             messaging.send("game_map_changed",0);
             buildMapObjects();
-            teamTickets = {0: startingTickets, 1: startingTickets};
+            for(var i in teamTickets)
+                teamTickets[i]= startingTickets;
             //display.camera.zoomToGame();
         }
 
@@ -934,8 +852,6 @@ define([
                 }
             }
 
-            if ((hudUpdateCounter++ % 30) == 0)
-                updatePlayerHUD(this);
             //boloworld.getRegionCoordAtWorld(mat[12],mat[13]);
 
             var lastControls = this.controls;
@@ -947,6 +863,10 @@ define([
                 this.controls = controls;
                 network.emit('sim', createCtrlPacket.call(this));
             }
+
+
+            if ((hudUpdateCounter++ % 30) == 0)
+                updatePlayerHUD(this);
 
             var pmat = this.matrix;
             display.camera.setCenter(this.camTarget);
@@ -982,7 +902,6 @@ define([
             //vec3.add(ray.o,vec3.scale(ray.d,15.0,v3t0),v3t0);
             //mat4.setRowV3(cmat,3,v3t0);
 
-
             //mat4.scale(cmat,15.0);
             var gotValidCursor = false;
             if (rayPlaneIntersect(ray.o, ray.d, groundPlane.o, groundPlane.d, v3t0)) {
@@ -1013,7 +932,7 @@ define([
                         if (validPilotTarget(this, currentTool, targCell) == false) {
                             targetValid = false;
                             //invalid target..
-                            audio.play("bubbles");
+                            playUISound("bubbles");
                         }
                         else if (targetValid == true) {
                             if (network.connected() == true) {
@@ -1039,9 +958,8 @@ define([
             if (base.flare)
                 base.flare.active = false;
             base.flare = boloworld.addObject((team == 0) ? "flareRed" : "flareBlue", bpos);
-            //playSound(base, "spawn_1.mp3");
-            var cb = document.getElementById("basebox_" + base.baseNumber);
-            cb.style["background-color"] = (team == 0) ? "red" : "blue";
+
+            messaging.send("baseTaken",{baseNumber:base.baseNumber,team:team});
         }
 
 //25th United Airlines UA 900.. 
@@ -1128,7 +1046,7 @@ define([
                     }
                 }
                 if (!this.boat) {
-                    groundSpeed *= tileData[curCell[0].name].speed;
+                    groundSpeed *= tileSpeeds[curCell[0].name];
                 }
             }
             if (this.boat) {
@@ -1237,40 +1155,19 @@ define([
             }
         }
 
-        var sounds = [
-            "big_explosion_far",
-            "big_explosion_near",
-            "bubbles",
-            "farming_tree_far",
-            "farming_tree_near",
-            "hit_tank_far",
-            "hit_tank_near",
-            "hit_tank_self",
-            "man_building_far",
-            "man_building_near",
-            "man_dying_far",
-            "man_dying_near",
-            "man_lay_mine_near",
-            "mine_explosion_far",
-            "mine_explosion_near",
-            "shooting_far",
-            "shooting_near",
-            "shooting_self",
-            "shot_building_far",
-            "shot_building_near",
-            "shot_tree_far",
-            "shot_tree_near",
-            "tank_sinking_far",
-            "tank_sinking_near",
-            "bolospawn1.mp3",
-            "bolotrack.mp3",
-            "spawn_1.mp3"
-        ];
 
+        function playSound(obj, name, volume) {
+            mat4.getRowV3(obj.matrix, 3, v3t0);
+            messaging.send("playPositionalSound2d",{name:name,position:v3t0,volume:volume});
+        }
+
+        function playUISound(snd){
+            messaging.send("playSound",snd);
+        }
 
         function simUIMessage(msg) {
             currentTool = msg;
-            audio.play("man_lay_mine_near");
+            playUISound("man_lay_mine_near");
         }
 
         function initSim() {
@@ -1280,33 +1177,14 @@ define([
             window.getMapNames = bolomap.getMapNames;
             window.loadMap = bolomap.loadMapByName;
 
-            var mapNames=getMapNames();
-            var str="";
-            for(var t=0;t<mapNames.length;t++)str+="<option value='"+mapNames[t]+"'>"+mapNames[t]+"</option>";
-            document.getElementById("maps").innerHTML=str;
 
             display = displayModule.getDisplay();
             gl = display.gl;
-            explosionMesh = display.mesh(gl, meshes.explosion)
-            explosionRenderer = boloworld.createSingleMeshRenderer("explosion");
-
-            boloworld.setTileMeshGenerator(generateTileMesh);
 
 
-            var loadRequests = {};
-            for (var si in sounds)
-                loadRequests[sounds[si]] = {file: sounds[si]};
-            audio.loadSounds("js/sounds/", loadRequests);
-            audio.startSoundsLoading();
 
             startGame(bolomap.getMapIndex("Spay Anything"), 1, 3);
 
-            messaging.listen("playSound",function(msg,snd){
-                audio.play(snd);
-            });
-            messaging.listen("allSoundsLoaded",function(msg,snd){
-                //messaging.send("playSound","bolotrack.mp3");
-            });
         }
 
         messaging.listen("initSim",initSim);
@@ -1330,11 +1208,11 @@ define([
         }
 
 
-        var cameraPos = [0, 0, 0];
 
         function sfrnd(rng){
             return ((Math.random()*rng)-(rng*0.5));
         }
+
         messaging.listen("setTickets",function(msg,val){
             startingTickets=val;
             teamTickets={0:startingTickets,1:startingTickets};
@@ -1364,9 +1242,9 @@ define([
         });
 
         messaging.listen("startGame",function(){
-        if (alphaKeyPressed('0')) {
-            invokeGod("startGame");
-        }
+            if (alphaKeyPressed('0')) {
+                invokeGod("startGame");
+            }
         });
 
 
@@ -1407,10 +1285,6 @@ define([
                 messaging.send("team_won",0);
             }
 
-
-            audio.harvestDeadSounds();
-            mat4.getRowV3(displayModule.viewInverse, 3, cameraPos);
-            audio.setListenerParams(cameraPos);
 
             updatePlayers();
 
@@ -1478,8 +1352,8 @@ define([
             for (var i in currentMap.bases) {
                 var tbase = currentMap.bases[i];
                 var base = boloworld.addTileObject("base", tbase.x, tbase.y);
-                var bbox = document.getElementById("basebox_" + i);
-                bbox.style["background-color"] = "#bb9878";
+
+                messaging.send("activateBaseHUD",i);
                 base.baseNumber = i;
                 base.armor = tbase.armor;
                 base.shells = tbase.shells;
@@ -1489,24 +1363,22 @@ define([
             }
 
             for (i = currentMap.bases.length; i < 21; i++) {
-                var bbox = document.getElementById("basebox_" + i);
-                bbox.style.display = "none";
+                messaging.send("deactivateBaseHUD",i);
             }
 
             for (var i in currentMap.pillboxes) {
                 var pill = currentMap.pillboxes[i];
                 var pObj = boloworld.addTileObject("turret", pill.x, pill.y);
-                var bbox = document.getElementById("cbox_" + i);
+
+                messaging.send("activatePillHUD",i);
                 pObj.pillboxNumber = i;
                 pObj.team = NEUTRAL_TEAM_ID;
-                bbox.style["background-color"] = "#14751c";
                 pObj.update = updatePillbox;
             }
 
 
             for (i = currentMap.pillboxes.length; i < 21; i++) {
-                var bbox = document.getElementById("cbox_" + i);
-                bbox.style.display = "none";
+                messaging.send("deactivatePillHUD",i);
             }
 
 
@@ -1671,6 +1543,7 @@ define([
             randElem: randElem,
             world: boloworld,
             angleBetweenPoints: angleBetweenPoints,
+            teamTickets: teamTickets
         }
 
         return bsim;
