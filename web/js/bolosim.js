@@ -1,5 +1,13 @@
+if (typeof define !== 'function') {
+    console.log("Not loaded with require.js.. is this a node module now?");
+}
+
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
 define([
-    "js/util/messaging.js",
+    "./util/messaging.js",
     "js/bolomap.js",
     "js/boloworld.js",
     "js/network.js",
@@ -330,7 +338,7 @@ define([
                     exp.colCell=this.colCell;
                     exp.colCellCoord=this.colCellCoord;
                     exp.destroy=function(){
-                     //   dealDamageToMap(this.proj,this.colCellCoord,this.colCell);
+                        //   dealDamageToMap(this.proj,this.colCellCoord,this.colCell);
                     };
                 }
                 playSound(this, "shooting_near");
@@ -379,8 +387,8 @@ define([
                 if(fidx>0){
                     for(var t=0;t<tile.length;t++)
                     {
-                    //    if(tile[t]==obj)
-                     //       return true;
+                        //    if(tile[t]==obj)
+                        //       return true;
                     }
                     //return false;
                 }
@@ -855,7 +863,7 @@ define([
             //Arrow key movement
             var controls = getCurrentControls();
             if (lastControls != controls) {
-                //Send controls changed message           
+                //Send controls changed message
                 this.controls = controls;
                 network.emit('sim', createCtrlPacket.call(this));
             }
@@ -1257,15 +1265,15 @@ define([
             messaging.send("game_camera",0);
         });
         keyEventMap={
-             /*
-            '6':function(){messaging.send("loadDefault");},
-            '7':function(){messaging.send("loadStressTest");},
-            '8':function(){messaging.send("addAI");},
-            '9':function(){messaging.send("loadRandomMap");},
-            '0':function(){messaging.send("startGame");},
-            'C':function(){messaging.send("nextCamera");},
-            'Y':function(){messaging.send("testHUD");}
-            */
+            /*
+             '6':function(){messaging.send("loadDefault");},
+             '7':function(){messaging.send("loadStressTest");},
+             '8':function(){messaging.send("addAI");},
+             '9':function(){messaging.send("loadRandomMap");},
+             '0':function(){messaging.send("startGame");},
+             'C':function(){messaging.send("nextCamera");},
+             'Y':function(){messaging.send("testHUD");}
+             */
             'P':function(){messaging.send("togglePause");},
         };
         function updateSim() {

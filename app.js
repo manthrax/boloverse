@@ -4,7 +4,12 @@ var express = require('express'),
     moment=require('moment'),
     util=require('util'),
     colors=require('colors'),
-    http = require('http');
+    http = require('http');//,bolosim = require('./web/js/bolosim');
+
+
+
+
+
 var app = express();
 var httpServer = http.createServer(app);
 app.use(express.static(__dirname+"/web"));
