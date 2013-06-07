@@ -56,6 +56,12 @@ define([
 
         ];
 
+        messaging.listen("getClientDisplay",function(msg,param){
+            param.display = displayModule.getDisplay();
+        });
+        window.gameMessage = messaging.send;
+        window.getMapNames = bolomap.getMapNames;
+        window.loadMap = bolomap.loadMapByName;
 
         var tileMeshNames = {
             "Building": "building",
@@ -165,6 +171,17 @@ define([
         messaging.listen("activatePillHUD",function (msg,id){
             var bbox = document.getElementById("cbox_" + id);
             bbox.style["background-color"] = "#14751c";
+        });
+
+        messaging.listen("turretDestroyed",function(msg,param){
+            var cb = document.getElementById("cbox_" + param.turret.pillboxNumber);
+            cb.style["background-color"] = "gray";
+            //cb.style["background-color"] = (param.player.team == 0) ? "red" : "blue";
+        });
+
+        messaging.listen("turretDeployed",function(msg,param){
+            var cb = document.getElementById("cbox_" + param.turret.pillboxNumber);
+            cb.style["background-color"] = (param.player.team == 0) ? "red" : "blue";
         });
 
         messaging.listen("initSim",function (){

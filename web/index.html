@@ -36,8 +36,8 @@ function resetToolButtons() {
 function selectTool(str){
     resetToolButtons();
     activateToolButton(str)
-    if(window.simUIMessage){
-        window.simUIMessage(str);
+    if(window.gameMessage){
+        window.gameMessage("toolSelected",str);
     }
 }
 

@@ -7,14 +7,14 @@ require(["util/domReady!", // Waits for page load
         "display",
         "js/util/messaging.js",
         "util/gl-util",
+        "js/boloclient.js",
         "js/boloworld.js",
         "js/bolosim.js",
-        "js/boloclient.js",
         "js/hexmap.js",
     "js/meshes/testmesh.js",
     "camera",
     "js/util/gl-matrix.js",
-    ], function(doc, display,messaging,glUtil,boloworld,bolosim,boloclient,hexmap,meshes,cameraModule) { //bolomap,textures
+    ], function(doc, display,messaging,glUtil,boloclient,boloworld,bolosim,hexmap,meshes,cameraModule) { //bolomap,textures
     "use strict";
     // Create gl context and start the render loop 
     var canvas = document.getElementById("canvas");

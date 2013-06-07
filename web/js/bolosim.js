@@ -1,5 +1,4 @@
 define([
-    "display",
     "js/util/messaging.js",
     "js/bolomap.js",
     "js/boloworld.js",
@@ -8,7 +7,7 @@ define([
     "js/util/gl-matrix.js"
 ],
 
-    function (displayModule, messaging, bolomap, boloworld, network, brain) {
+    function (messaging, bolomap, boloworld, network, brain) {
 
         function nv3() {return [0, 0, 0];}
 
@@ -91,8 +90,6 @@ define([
         var crosshairSprite;
         var cursorSprite;
         var display;
-        var gl;
-
         network.on("god", godCommand);
 
         var playerControls = {
@@ -239,11 +236,11 @@ define([
                             deadTurret.hp = 255;
                             boloworld.addObjectToGrid(deadTurret);
                             deadTurret.pillboxNumber = obj.pillboxNumber;
-                            var cb = document.getElementById("cbox_" + deadTurret.pillboxNumber);
-                            cb.style["background-color"] = "gray";
-                            cb.style["background-color"] = (this.team == 0) ? "red" : "blue";
+
+                            messaging.send("turretDestroyed",{turret:deadTurret,player:this});
 
                             playSound(obj, "big_explosion_far");
+
                         }
                         //console.log(obj.name+" destroyed.");
                         //cell.length=1;
@@ -493,8 +490,7 @@ define([
 
                                 setupUnitShader(turret);
 
-                                var cb = document.getElementById("cbox_" + turret.pillboxNumber);
-                                cb.style["background-color"] = (this.team == 0) ? "red" : "blue";
+                                messaging.send("turretDeployed",{turret:turret,player:this});
 
                             }
                         } else if (this.currentTool == "mine") {
@@ -868,6 +864,8 @@ define([
             if ((hudUpdateCounter++ % 30) == 0)
                 updatePlayerHUD(this);
 
+
+
             var pmat = this.matrix;
             display.camera.setCenter(this.camTarget);
 
@@ -1023,10 +1021,12 @@ define([
                             base.mines -= healAmt;
                             if (this.invMines > 40)this.invMines = 40;
                         } else if (this.hp < 255 && base.armor > 0) {
+                            healAmt = healAmt * 4; //4x heal
                             if (healAmt > base.armor)healAmt = base.armor;
                             this.hp += healAmt;
                             base.armor -= healAmt;
-                            if (this.hp > 255)this.hp = 255;
+                            if (this.hp > 255)
+                                this.hp = 255;
                         } else
                             healCounter = 0.0;
                     }
@@ -1165,26 +1165,16 @@ define([
             messaging.send("playSound",snd);
         }
 
-        function simUIMessage(msg) {
-            currentTool = msg;
+        messaging.listen("toolSelected",function(msg,tool){
+            currentTool=tool;
             playUISound("man_lay_mine_near");
-        }
+        });
 
         function initSim() {
-
-            window.simUIMessage = simUIMessage;
-            window.gameMessage = messaging.send;
-            window.getMapNames = bolomap.getMapNames;
-            window.loadMap = bolomap.loadMapByName;
-
-
-            display = displayModule.getDisplay();
-            gl = display.gl;
-
-
-
+            var cd={display:undefined};
+            messaging.send("getClientDisplay",cd);
+            display = cd.display;
             startGame(bolomap.getMapIndex("Spay Anything"), 1, 3);
-
         }
 
         messaging.listen("initSim",initSim);
