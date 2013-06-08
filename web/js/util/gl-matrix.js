@@ -25,6 +25,13 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+
+//define(function () {
+
 
 "use strict";
 
@@ -1940,3 +1947,5 @@ quat4.str = function (quat) {
     return '[' + quat[0] + ', ' + quat[1] + ', ' + quat[2] + ', ' + quat[3] + ']';
 };
 
+
+//});

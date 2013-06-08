@@ -1,5 +1,5 @@
 if (typeof define !== 'function') {
-    console.log("Not loaded with require.js.. is this a node module now?");
+    console.log("Loading bolosim as node module...");
 }
 
 if (typeof define !== 'function') {
@@ -8,11 +8,11 @@ if (typeof define !== 'function') {
 
 define([
     "./util/messaging.js",
-    "js/bolomap.js",
-    "js/boloworld.js",
-    "js/network.js",
-    "js/brain.js",
-    "js/util/gl-matrix.js"
+    "./bolomap.js",
+    "./boloworld.js",
+    "./network.js",
+    "./brain.js",
+    "./util/gl-matrix.js"
 ],
 
     function (messaging, bolomap, boloworld, network, brain) {

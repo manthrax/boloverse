@@ -1,15 +1,43 @@
-define([
-    "display",
-    "js/util/messaging.js",
-    "util/gl-util",
-    "util/util",
-    "programs",
-    "js/bolomap.js",
-    "js/meshes/testmesh.js",
-    "js/fontMesh.js",
-    "js/util/gl-matrix.js"
-],
-    function (displayModule, messaging, glUtil, util, programs, bolomap, meshes,fontMesh) {//display,
+
+if (typeof define !== 'function') {
+    var mdls = [
+        "./util/gl-matrix.js",
+        "./util/messaging.js",
+        "./util/gl-util.js",
+        "./util/util.js",
+        "./programs.js",
+        "./bolomap.js",
+        "./meshes/testmesh.js",
+        "./fontMesh.js"
+    ]
+}else{
+    mdls = [
+        "./util/gl-matrix.js",
+        "./util/messaging.js",
+        "util/gl-util",
+        "util/util",
+        "programs",
+        "./bolomap.js",
+        "./meshes/testmesh.js",
+        "./fontMesh.js"
+    ]
+}
+
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(mdls,
+    function (
+        glmatrix,
+        messaging,
+        glUtil,
+        util,
+        programs,
+        bolomap,
+        meshes,
+        fontMesh
+    ) {//display,
 
     //    util.testDLL();
 
@@ -341,7 +369,11 @@ define([
         }
 
         function initWorld() {
-            display = displayModule.getDisplay();
+            var cd={display:undefined};
+            messaging.send("getClientDisplay",cd);
+            display = cd.display;
+            //display = displayModule.getDisplay();
+
             gl = display.gl;
             var makeMeSick = false;
             if (makeMeSick)
@@ -446,7 +478,7 @@ define([
             return obj;
         }
 
-        var tmat = mat4.identity(mat4.create());
+        var tmat = new Float32Array(16);//mat4.identity(mat4.create());
 
         function createSingleMeshRenderer(meshName) {
             var batch = display.geomBatch();

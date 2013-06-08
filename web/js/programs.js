@@ -1,6 +1,14 @@
+if (typeof define !== 'function') {
+    var isNode = true;
+}
 
-define([
-	"text!shaders.js",
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(isNode?[]//In node, dummy this
+    :[
+	"text!shaders.js", //client
 	"text!shaders/noise2D.glsl",
 	"text!shaders/noise3D.glsl",
 	"text!shaders/noise4D.glsl",

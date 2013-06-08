@@ -1,7 +1,11 @@
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
 define([
-    "js/util/gl-matrix.js",
-    "js/util/astar.js",
-    "js/util/priorityQueue.js"
+    "./util/astar.js",
+    "./util/priorityQueue.js",
+    "./util/gl-matrix.js"
 ], function () {
     var v3t0=[0,0,0];
     var v3t1=[0,0,0];

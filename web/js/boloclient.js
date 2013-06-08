@@ -8,14 +8,14 @@
 
 define([
     "display",
-    "js/util/messaging.js",
-    "js/bolomap.js",
-    "js/bolosim.js",
-    "js/boloworld.js",
-    "js/meshes/testmesh.js",
-    "js/util/audio.js",
-    "js/network.js",
-    "js/util/gl-matrix.js"
+    "./util/messaging.js",
+    "./bolomap.js",
+    "./bolosim.js",
+    "./boloworld.js",
+    "./meshes/testmesh.js",
+    "./util/audio.js",
+    "./network.js",
+    "./util/gl-matrix.js"
 ],
     function (displayModule, messaging, bolomap, bolosim, boloworld, meshes, audio, network, brain) {
 
@@ -102,7 +102,7 @@ define([
             11: ["012", 3],
 
             15: ["0123", 0]
-        }
+        };
 
         function generateTileMesh(mat, mx, my, rand) {
             var cell = boloworld.getCell(mx, my);

@@ -1,20 +1,16 @@
-/*
-TURRET DISPLAY IS NOT SYNCED BETWEEN CLIENTS, ON MAPCHANGE
 
-
- */
 require(["util/domReady!", // Waits for page load
         "display",
-        "js/util/messaging.js",
         "util/gl-util",
+        "camera",
+        "js/util/messaging.js",
         "js/boloclient.js",
         "js/boloworld.js",
         "js/bolosim.js",
-        "js/hexmap.js",
-    "js/meshes/testmesh.js",
-    "camera",
-    "js/util/gl-matrix.js",
-    ], function(doc, display,messaging,glUtil,boloclient,boloworld,bolosim,hexmap,meshes,cameraModule) { //bolomap,textures
+        "hexmap",
+        "js/meshes/testmesh.js",
+        "js/util/gl-matrix.js"
+    ], function(doc, display,glUtil,cameraModule,messaging,boloclient,boloworld,bolosim,hexmap,meshes) { //bolomap,textures
     "use strict";
     // Create gl context and start the render loop 
     var canvas = document.getElementById("canvas");

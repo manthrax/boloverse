@@ -20,6 +20,14 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+if (typeof window !== 'object') {
+    var window = {};
+}
+
 
 define(function() {
 
@@ -189,6 +197,6 @@ define(function() {
                 lastTimeStamp = timing.time;
             };
             window.requestAnimationFrame(nextFrame, canvas);
-        },
+        }
     };
 });

@@ -1,4 +1,8 @@
-define(["js/mapcat.js"],function(mapcat){
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(["./mapcat.js"],function(mapcat){
     var bmap;
     var ascmap;
     function getNib(buf,idx,nidx){
