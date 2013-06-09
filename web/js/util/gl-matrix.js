@@ -25,9 +25,9 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
+//if (typeof define !== 'function') {
+//    var define = require('amdefine')(module);
+//}
 
 
 //define(function () {

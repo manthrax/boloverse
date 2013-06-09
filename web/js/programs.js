@@ -8,7 +8,7 @@ if (typeof define !== 'function') {
 
 define(isNode?[]//In node, dummy this
     :[
-	"text!shaders.js", //client
+	"text!shaders.glsl", //client
 	"text!shaders/noise2D.glsl",
 	"text!shaders/noise3D.glsl",
 	"text!shaders/noise4D.glsl",
