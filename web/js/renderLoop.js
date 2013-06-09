@@ -3,8 +3,7 @@ define([
     "camera",
     "display",
     "world",
-    "util/gl-util",
-    "js/util/gl-matrix.js"
+    "util/gl-util"//,"js/util/gl-matrix.js"
     ],
 function(camera, display,world, glUtil) {
     "use strict";

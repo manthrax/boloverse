@@ -5,9 +5,8 @@ define([
     "util/util",
     "programs",
     "js/bolomap.js",
-    "js/meshes/galaxymesh.js",
-    "js/util/gl-matrix.js"
-    ], 
+    "js/meshes/galaxymesh.js"//,"js/util/gl-matrix.js"
+    ],
     function(displayModule,glUtil,util,programs,bolomap,meshes) {//display, 
         var currentMap=null;//bolomap.loadRandomMap();
         var GameObject=function(){

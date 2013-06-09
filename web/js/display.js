@@ -1,8 +1,8 @@
 
 define([
     "camera",
-    "util/gl-util",
-    "js/util/gl-matrix.js" //    "js/bolomap.js"
+    "util/gl-util"//,
+    //"js/util/gl-matrix.js" //    "js/bolomap.js"
     ], function(camera, glUtil) {
         "use strict";
 /*

@@ -4,10 +4,12 @@ var express = require('express'),
     moment=require('moment'),
     util=require('util'),
     colors=require('colors'),
-    http = require('http');//,bolosim = require('./web/js/bolosim');
+    http = require('http');
 
 
-
+var fs = require('fs');
+eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
+var  bolosim = require('./web/js/bolosim');
 
 
 var app = express();

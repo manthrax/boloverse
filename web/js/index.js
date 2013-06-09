@@ -8,8 +8,8 @@ require(["util/domReady!", // Waits for page load
         "js/boloworld.js",
         "js/bolosim.js",
         "hexmap",
-        "js/meshes/testmesh.js",
-        "js/util/gl-matrix.js"
+        "js/meshes/testmesh.js"//,
+        //"js/util/gl-matrix.js"
     ], function(doc, display,glUtil,cameraModule,messaging,boloclient,boloworld,bolosim,hexmap,meshes) { //bolomap,textures
     "use strict";
     // Create gl context and start the render loop 

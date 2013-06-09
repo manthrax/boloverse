@@ -1,3 +1,11 @@
+if (typeof define !== 'function') {
+    var isNode=true;
+}
+
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
 define(function(){
 /*********** NETWORKING *********/
 function networkObject(){
@@ -131,6 +139,7 @@ connectToChatServer:function ()
     this.iosocket = io.connect("/");//:3001");
     return this.iosocket;
 },
+
 sendFixtureToServer:function (fix){
     var msg='sync~'+fix.id;
     for(var bid in fix.bodies){
@@ -236,13 +245,28 @@ recvSimFromServer:function (msg){
 }
 }
 
-//function 
-if(!window.network){
-    window.network=networkObject();
-
-    window.network.initNetwork();
+//function
+if(typeof network !== "object"){
+    network=networkObject();
+    if(!isNode){
+        network.initNetwork();
+    }else{
+        network.iosocket={
+            on:function(msg,fn){
+                console.log("network attempt to listen:"+msg);
+            }
+        }
+    }
 }
-return window.network;
+
+if(typeof window == "object"){
+    if(!window.network){
+        window.network=network;
+    }
+}
+
+return network;
+
 /*{
 };*/
 
