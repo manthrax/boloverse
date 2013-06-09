@@ -3,8 +3,7 @@ require(["util/domReady!", // Waits for page load
         "display",
         "world",
         "renderLoop",
-        "util/gl-util",
-        "js/util/gl-matrix.js",
+        "util/gl-util"
     ], function(doc, displayModule, world, renderLoop, glUtil) { //bolomap,textures
     "use strict";
     

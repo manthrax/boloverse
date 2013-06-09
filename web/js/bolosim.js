@@ -11,8 +11,7 @@ define([
     "./bolomap.js",
     "./boloworld.js",
     "./network.js",
-    "./brain.js",
-    "./util/gl-matrix.js"
+    "./brain.js"
 ],
 
     function (messaging, bolomap, boloworld, network, brain) {

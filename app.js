@@ -6,10 +6,26 @@ var express = require('express'),
     colors=require('colors'),
     http = require('http');
 
+var define = require('amdefine')(module);
+var messaging = require('./web/js/util/messaging');
 
+// Simulator gorp start
 var fs = require('fs');
 eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
+
 var  bolosim = require('./web/js/bolosim');
+
+
+messaging.listen("getClientDisplay",function(msg,param){
+    console.log("GetClientDisplay called...");
+    param.display={
+
+    };
+});
+
+//bolosim.initSim();
+//bolosim.updateSim();
+// Simulator gorp end
 
 
 var app = express();

@@ -2,9 +2,7 @@
 define(["util/domReady!", // Waits for page load
         "display",
         "world",
-       // "renderLoop",
-        "util/gl-util",
-        "js/util/gl-matrix.js",
+        "util/gl-util"
     ], function(doc, displayModule, world, glUtil) { //bolomap,textures
     
     function buildTexture(){

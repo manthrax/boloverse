@@ -14,8 +14,7 @@ define([
     "./boloworld.js",
     "./meshes/testmesh.js",
     "./util/audio.js",
-    "./network.js",
-    "./util/gl-matrix.js"
+    "./network.js"
 ],
     function (displayModule, messaging, bolomap, bolosim, boloworld, meshes, audio, network, brain) {
 
@@ -59,6 +58,11 @@ define([
         messaging.listen("getClientDisplay",function(msg,param){
             param.display = displayModule.getDisplay();
         });
+
+        messaging.listen("mapLoading",function(msg,mapName){
+            document.getElementById('logoBox').innerHTML = "BOLO | UNIVERSE : " + mapName;
+        });
+
         window.gameMessage = messaging.send;
         window.getMapNames = bolomap.getMapNames;
         window.loadMap = bolomap.loadMapByName;

@@ -2,7 +2,7 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(//["js/util/gl-matrix.js"],
+define(
     function () {
 
     "use strict";

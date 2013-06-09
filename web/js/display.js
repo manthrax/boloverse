@@ -1,8 +1,7 @@
 
 define([
     "camera",
-    "util/gl-util"//,
-    //"js/util/gl-matrix.js" //    "js/bolomap.js"
+    "util/gl-util"
     ], function(camera, glUtil) {
         "use strict";
 /*
@@ -323,14 +322,14 @@ deferred pass... screenspace render fx effects
         display.renderFrame=function(gl,timing){
             alert("Display:renderFrame is not overridden!");
 		
-        }
+        };
 	
         display.prototype.renderLoop = function (gl, timing) {
             //        gl.clearColor(0.0, 0.0, 0.1, 1.0);
             display.prototype.seconds = timing.time/1000.0;
             //     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);		
             this.renderFrame(gl,timing);
-        }
+        };
 	
 	
         function newBuffer(gl,type,data){

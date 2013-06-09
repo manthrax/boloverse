@@ -4,8 +4,7 @@ if (typeof define !== 'function') {
 
 define([
     "./util/astar.js",
-    "./util/priorityQueue.js",
-    "./util/gl-matrix.js"
+    "./util/priorityQueue.js"
 ], function () {
     var v3t0=[0,0,0];
     var v3t1=[0,0,0];

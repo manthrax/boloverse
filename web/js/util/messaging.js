@@ -1,5 +1,11 @@
 
 if (typeof define !== 'function') {
+    console.log("Loading messaging as node module!");
+}else{
+    console.log("Loading messaging as client module!");
+}
+
+if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
@@ -19,7 +25,7 @@ define( function() {
             console.log("unhandled:"+msg);
             return;
         }
-        //console.log("sending:"+msg);
+        console.log("sending:"+msg);
         for(var h =0;h< hands.length;h++)hands[h](msg,param);
     }
 

@@ -1,7 +1,6 @@
 
 if (typeof define !== 'function') {
     var mdls = [
-        "./util/gl-matrix.js",
         "./util/messaging.js",
         "./util/gl-util.js",
         "./util/util.js",
@@ -12,7 +11,6 @@ if (typeof define !== 'function') {
     ]
 }else{
     mdls = [
-        "./util/gl-matrix.js",
         "./util/messaging.js",
         "util/gl-util",
         "util/util",
@@ -29,7 +27,6 @@ if (typeof define !== 'function') {
 
 define(mdls,
     function (
-        glmatrix,
         messaging,
         glUtil,
         util,
@@ -514,7 +511,7 @@ define(mdls,
         }
 
         function loadMapByName(mapName) {
-            document.getElementById('logoBox').innerHTML = "BOLO | UNIVERSE : " + mapName;
+            messaging.send("mapLoading",mapName);
 
             objects.iterateActive({update: function (go) {if(!go.dontDestroy)go.active = false;}});
 
