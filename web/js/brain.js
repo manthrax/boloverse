@@ -3,9 +3,10 @@ if (typeof define !== 'function') {
 }
 
 define([
+    "./util/messaging.js",
     "./util/astar.js",
     "./util/priorityQueue.js"
-], function () {
+], function (messaging) {
     var v3t0=[0,0,0];
     var v3t1=[0,0,0];
     var v3t2=[0,0,0];
@@ -19,18 +20,23 @@ define([
         "Rubble":0.5,
         "Forest":0.1,
         "Grass":0.11,
-        "Road":0.01,
+        "Road":0.01
     };
 //        sim.invokeGod("repath")i
     var brainsById={};
-    network.on("ai",function(cmd){
-        
-        if(!network.g_isHost){
-            var brain=brainsById[cmd[0]];
-            if(brain)
-                brain.pathFind(cmd[1],cmd[2],cmd[3],cmd[4]);
-        }
+    messaging.listen("networkConnectedToServer",function(){
+
+        console.log("AI installing network listeners..");
+        network.on("ai",function(cmd){
+
+            if(!network.g_isHost){
+                var brain=brainsById[cmd[0]];
+                if(brain)
+                    brain.pathFind(cmd[1],cmd[2],cmd[3],cmd[4]);
+            }
+        });
     });
+
 
     function Brain(bsim,player,module){
         sim=bsim;

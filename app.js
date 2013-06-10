@@ -10,19 +10,19 @@ var define = require('amdefine')(module);
 var messaging = require('./web/js/util/messaging');
 
 // Simulator gorp start
-var fs = require('fs');
-eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
+var BOOT_SIMULATOR=false;
+if(BOOT_SIMULATOR){
+    var fs = require('fs');
+    eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
 
-var  bolosim = require('./web/js/bolosim');
+    var  bolosim = require('./web/js/bolosim');
+    messaging.listen("getClientDisplay",function(msg,param){
+        console.log("GetClientDisplay called...");
+        param.display={
 
-
-messaging.listen("getClientDisplay",function(msg,param){
-    console.log("GetClientDisplay called...");
-    param.display={
-
-    };
-});
-
+        };
+    });
+}
 //bolosim.initSim();
 //bolosim.updateSim();
 // Simulator gorp end
@@ -38,6 +38,13 @@ util.puts(' welcome to '.blue + 'BOLO '.red + 'v0.1.9.666.x'.yellow);
 util.puts(' server time: '.blue + moment().format('Y-m-d h:i:s').green);
 util.puts(' x x x '.green);
 util.puts('    happy hunting');
+
+
+var log = function(msg){
+    util.puts('app:'.green + "" + msg);
+    //console.log(msg);
+};
+
 httpServer.listen(port);
 
 var io = sio.listen(httpServer);
@@ -54,6 +61,8 @@ var playerSockets={};
 var occupiedFixtures={};
 var fixtures=[];
 
+// info @ recovery.us --- Modem #:001e69b4679a --- Comcast: 8155200014720926
+
 var modifiedCells={}
 
 var mapIndex=0;
@@ -63,9 +72,6 @@ var mapIndex=0;
 //    socket.broadcast.emit('message', msg);
 //});
 
-var log = function(msg){
-    //console.log(msg);
-};
 
 
 function sanitize(val){
@@ -132,6 +138,8 @@ io.sockets.on('connection', function (socket) {
             g_gameHost=socket.id;
             socket.emit('host',g_gameHost);
             log("host:"+g_gameHost);
+        }else{
+
         }
     });
     

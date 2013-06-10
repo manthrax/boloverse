@@ -42,16 +42,7 @@ require(["util/domReady!", // Waits for page load
 //    canvas.height = canvas.offsetHeight;
     display.resize(gl, canvas);
 
-    boloworld.initWorld();
-    
-    boloworld.makeScene();
 
-    messaging.send("initSim");
-
-
-    function onLoad(){
-    }
-    onLoad();
 
     display.createFrameRenderer = function(gl,timing){
         return {
@@ -79,12 +70,6 @@ require(["util/domReady!", // Waits for page load
         display.camera.update();
     }
 
-    display.radarRTT = display.initRTT(gl,512,512);
-
-    display.radarRTT.texture.bindToUnit = boloworld.bindToUnit;
-
-    display.debugTexShader=null;
-    display.debugTexObject=null;
 
     display.getDebugTexShader = function(){
         if(this.debugTexShader==null){
@@ -115,22 +100,46 @@ require(["util/domReady!", // Waits for page load
 //    debugTextObject.pos=vec3.create();//[sfrnd(1),sfrnd(1),sfrnd(0)]);
 //    debugTextObject.update=function(){console.log("updating");}
 
+    function bootGame(){
+        display.radarRTT = display.initRTT(gl,512,512);
 
-    display.getDebugTexObject();
+        display.radarRTT.texture.bindToUnit = boloworld.bindToUnit;
+
+        display.debugTexShader=null;
+        display.debugTexObject=null;
 
 
-    display.radarCamera = new cameraModule.ModelCamera();
-    display.radarCamera.distance = 100;//80
-    display.radarCamera.orbitY=0;
-    display.radarCamera.orbitX = 4.5;
+        boloworld.initWorld();
+        boloworld.makeScene();
+        messaging.send("initSim");
+
+
+        display.getDebugTexObject();
+
+        display.radarCamera = new cameraModule.ModelCamera();
+        display.radarCamera.distance = 100;//80
+        display.radarCamera.orbitY=0;
+        display.radarCamera.orbitX = 4.5;
 //    this.orbitY = 6.0;
-    display.radarCamera.setCenter([0, 0, 1]);
+        display.radarCamera.setCenter([0, 0, 1]);
+
+
+
+        glUtil.startRenderLoop(gl, canvas, function(gl, timing) {
+            fpsCounter.innerHTML = "hz:"+timing.framesPerSecond+"<br/>o:"+(((boloworld.objects.iterCount>0)?boloworld.objects.updateSum/boloworld.objects.iterCount:0))+"<br/>m:"+display.renderedMeshes+"<br/>t:"+display.renderedTriangles;
+            //gl.clearColor(1.0, 0.0, 0.1, 1.0);
+            boloworld.objects.iterCount=0;
+            boloworld.objects.updateSum=0;
+            display.renderedTriangles=0;
+            display.renderedMeshes=0;
+            display.renderLoop(gl, timing);
+        });
+    }
+
 
     display.renderFrame=function(gl,timing){
 
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    //Clear window framebuffer
-
-
 
         boloworld.update(gl,display,timing,updateSim);
 
@@ -177,17 +186,6 @@ require(["util/domReady!", // Waits for page load
 
     };
 
-    glUtil.startRenderLoop(gl, canvas, function(gl, timing) {
-        fpsCounter.innerHTML = "hz:"+timing.framesPerSecond+"<br/>o:"+(((boloworld.objects.iterCount>0)?boloworld.objects.updateSum/boloworld.objects.iterCount:0))+"<br/>m:"+display.renderedMeshes+"<br/>t:"+display.renderedTriangles;
-
-        //gl.clearColor(1.0, 0.0, 0.1, 1.0);
-        boloworld.objects.iterCount=0;
-        boloworld.objects.updateSum=0;
-        display.renderedTriangles=0;
-        display.renderedMeshes=0;
-        display.renderLoop(gl, timing);
-    });
-	
     function fullscreenchange() {
         if(document.webkitIsFullScreen || document.mozFullScreen) {
             canvas.width = screen.width;
@@ -197,12 +195,23 @@ require(["util/domReady!", // Waits for page load
             canvas.height = canvasOriginalHeight;
         }
         display.resize(gl, canvas);
-
-
     }
 
     frame.addEventListener("webkitfullscreenchange", fullscreenchange, false);
     frame.addEventListener("mozfullscreenchange", fullscreenchange, false);
-	
-	
+
+    function setStatus(str){
+        document.getElementById('logoBox').innerHTML = "BOLO | UNIVERSE : " + str;
+    }
+    messaging.listen("networkConnectedToServer",function(){
+        setStatus("Connected. Loading...");
+        bootGame();
+    });
+
+    messaging.listen("networkConnectionFailed",function(){
+        setStatus("CONNECT TO SERVER FAILED.");
+    });
+    setStatus("Connecting to server...");
+    network.connectToServer();
+
 });

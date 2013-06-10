@@ -6,7 +6,7 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(function(){
+define(["./util/messaging.js"],function(messaging){
 /*********** NETWORKING *********/
 function networkObject(){
     var self;
@@ -103,7 +103,10 @@ networkAttachClientListeners:function (){
     this.iosocket.on('welcome', function(data) {
         console.log("got welcome");
         self.g_networkId = data;
-        
+
+
+        messaging.send("networkConnectedToServer");
+
         //Send our default nick
         if(localStorage.nick){
             self.iosocket.emit('nick',localStorage.nick);
@@ -132,11 +135,22 @@ networkAttachClientListeners:function (){
     if(this.outgoingNickField)this.outgoingNickField.onkeypress=this.outgoingNickKeyPress;    
     if(this.outgoingChatElem)this.outgoingChatElem.onkeypress=this.outgoingChatKeyPress;
 },
-
-connectToChatServer:function ()
+checkConnectionSucceeded:function(){
+    if(self.g_networkId==null){
+        if(self.iosocket)   //We did get a socket, but the server didn't resppond in time... so discoonect...
+        {
+            io.disconnect(self.iosocket);
+            io.close(self.iosocket);
+            self.iosocket=null;
+        }
+        messaging.send("networkConnectionFailed");
+    }
+},
+connectToGameServer:function ()
 {
     if(this.iosocket)return undefined; //Already connected...
     this.iosocket = io.connect("/");//:3001");
+    setTimeout(this.checkConnectionSucceeded,2000);  //Check for connection failure after 2 seconds...
     return this.iosocket;
 },
 
@@ -215,7 +229,7 @@ recvSimFromServer:function (msg){
 }
 ,initNetwork:function (){
     
-    this.iosocket=this.connectToChatServer();
+    this.iosocket=this.connectToGameServer();
     var self=this;
     this.iosocket.on('connect', function () {
         self.networkAttachClientListeners();
@@ -241,22 +255,24 @@ recvSimFromServer:function (msg){
 
     connected:function(){return this.g_networkId===null?false:true},
     on:function(msg,fn){this.iosocket.on(msg,fn);},
-    emit:function(msg,data){this.iosocket.emit(msg,data);}
+    emit:function(msg,data){this.iosocket.emit(msg,data);},
+    connectToServer: function(){
+        if(!isNode){
+            this.initNetwork();
+        }else{
+            this.iosocket={
+                on:function(msg,fn){
+                    console.log("network attempt to listen:"+msg);
+                }
+            }
+        }
+    }
 }
 }
 
 //function
 if(typeof network !== "object"){
     network=networkObject();
-    if(!isNode){
-        network.initNetwork();
-    }else{
-        network.iosocket={
-            on:function(msg,fn){
-                console.log("network attempt to listen:"+msg);
-            }
-        }
-    }
 }
 
 if(typeof window == "object"){

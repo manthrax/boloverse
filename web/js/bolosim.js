@@ -97,7 +97,10 @@ define([
         var crosshairSprite;
         var cursorSprite;
         var display;
-        network.on("god", godCommand);
+
+        messaging.listen("networkConnectedToServer",function(){
+            network.on("god", godCommand);
+        });
 
         var playerControls = {
             up: 1,
