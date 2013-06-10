@@ -37,7 +37,7 @@ define([
         var localPlayer = null;
         var NEUTRAL_TEAM_ID = 8;
 
-        var ticketBleed = 0.1;
+        var ticketBleed = 0.5;
         var startingTickets = 500;
         var teamTickets = {0: startingTickets, 1: startingTickets};
 
@@ -1184,7 +1184,7 @@ define([
             var cd={display:undefined};
             messaging.send("getClientDisplay",cd);
             display = cd.display;
-            startGame(bolomap.getMapIndex("Spay Anything"), 1, 3);
+            startGame(bolomap.getMapIndex("Spay Anything"), 0, 1);
         }
 
         messaging.listen("initSim",initSim);

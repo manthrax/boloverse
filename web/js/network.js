@@ -139,9 +139,11 @@ checkConnectionSucceeded:function(){
     if(self.g_networkId==null){
         if(self.iosocket)   //We did get a socket, but the server didn't resppond in time... so discoonect...
         {
-            io.disconnect(self.iosocket);
-            io.close(self.iosocket);
+            //io.disconnect(self.iosocket);
+            //io.close(self.iosocket);
+            self.iosocket.server.close();
             self.iosocket=null;
+            console.log("Dangling socket on failed connect...");
         }
         messaging.send("networkConnectionFailed");
     }
