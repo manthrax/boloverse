@@ -1184,7 +1184,7 @@ define([
             var cd={display:undefined};
             messaging.send("getClientDisplay",cd);
             display = cd.display;
-            startGame(bolomap.getMapIndex("Spay Anything"), 0, 1);
+            startGame(bolomap.getMapIndex("BERTHA"), 16, 16);
         }
 
         messaging.listen("initSim",initSim);
