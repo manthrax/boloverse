@@ -141,7 +141,7 @@ checkConnectionSucceeded:function(){
         {
             //io.disconnect(self.iosocket);
             //io.close(self.iosocket);
-            self.iosocket.server.close();
+            self.iosocket.disconnect();
             self.iosocket=null;
             console.log("Dangling socket on failed connect...");
         }
