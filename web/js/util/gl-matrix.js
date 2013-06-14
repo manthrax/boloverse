@@ -25,9 +25,10 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-//if (typeof define !== 'function') {
-//    var define = require('amdefine')(module);
-//}
+if (typeof(define)!=='undefined') {
+    var isNode=true;
+    //var define = require('amdefine')(module);
+}
 
 
 //define(function () {
@@ -44,7 +45,12 @@ var MatrixArray = (typeof Float32Array !== 'undefined') ? Float32Array : Array, 
     mat4 = {},
     quat4 = {};
 
-
+if(isNode){
+    global.vec3 = vec3;
+    global.mat3 = mat3;
+    global.mat4 = mat4;
+    global.quat4 = quat4;
+}
 /*
  * vec3 - 3 Dimensional Vector
  */

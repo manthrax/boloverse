@@ -15,7 +15,10 @@ define([
 ],
 
     function (messaging, bolomap, boloworld, network, brain) {
-
+        if(typeof(global)=='object'){//Node
+            global.network=network;
+            network.g_isHost=true;
+        }
         function nv3() {return [0, 0, 0];}
 
         var v3t0 = nv3();
@@ -682,7 +685,7 @@ define([
                 ai.aiModule = cmd[1];
                 ai.team = parseInt(cmd[2]);
             } else if (cmd[0] == "host") {
-                if (cmd[1] == network.g_networkId) {
+                if (cmd[1] == ""+network.g_networkId) {
                     network.g_isHost = true;
                 } else {
                     network.g_isHost = false;
@@ -874,7 +877,8 @@ define([
             if ((hudUpdateCounter++ % 30) == 0)
                 updatePlayerHUD(this);
 
-
+            if(display.camera == undefined)//Node
+                return;
 
             var pmat = this.matrix;
             display.camera.setCenter(this.camTarget);
@@ -1291,6 +1295,10 @@ define([
             updateAIs();
         }
 
+        function headlessUpdateWorld(timing){
+            boloworld.update(undefined,undefined,timing,updateSim);
+        }
+
         function randElem(arr) {
             return arr[parseInt(Math.random() * arr.length * 0.999)];
         }
@@ -1526,7 +1534,8 @@ define([
                         if (np.respawnCountdown == 0) {
                             spawnPlayer(np);
                             if (np == localPlayer) {
-                                display.camera.setCenter(np.avatar.camTarget);
+                                if(typeof(display.camera)=='object')
+                                    display.camera.setCenter(np.avatar.camTarget);
                                 boloworld.localPlayerSpawned();
                             }
                         }
@@ -1539,11 +1548,13 @@ define([
         {
             initSim: initSim,
             updateSim: updateSim,
+            headlessUpdateWorld: headlessUpdateWorld,
             playerControls: playerControls,
             randElem: randElem,
-            world: boloworld,
+            nodeImpassible: boloworld,
             angleBetweenPoints: angleBetweenPoints,
-            teamTickets: teamTickets
+            teamTickets: teamTickets,
+            network: network
         }
 
         return bsim;

@@ -7,7 +7,8 @@ if (typeof define !== 'function') {
         "./programs.js",
         "./bolomap.js",
         "./meshes/testmesh.js",
-        "./fontMesh.js"
+        "./fontMesh.js",
+        "./util/gl-matrix.js"
     ]
 }else{
     mdls = [
@@ -190,9 +191,10 @@ define(mdls,
         }
 
         function update(gl, display, timing, simUpdate) {
-            if (frameRenderer == null)
-                frameRenderer = display.createFrameRenderer(gl, timing);
-
+            if(display!=undefined){
+                if (frameRenderer == null )
+                    frameRenderer = display.createFrameRenderer(gl, timing);
+            }
             if (!simTime) {
                 simTime = timing.time;
             }
@@ -213,14 +215,14 @@ define(mdls,
                 simTime += simFPS;
             }
 
-            display.renderedTriangles=0;
-            display.renderedMeshes=0;
-            objects.iterateActive(frameRenderer);
-
-
-            if (currentMap != null)
-                updateRegions();
-
+            if(display!=undefined){
+                display.renderedTriangles=0;
+                display.renderedMeshes=0;
+                if(frameRenderer)
+                    objects.iterateActive(frameRenderer);
+                if (currentMap != null)
+                    updateRegions();
+            }
         }
 
 
@@ -369,6 +371,7 @@ define(mdls,
             var cd={display:undefined};
             messaging.send("getClientDisplay",cd);
             display = cd.display;
+
             //display = displayModule.getDisplay();
 
             gl = display.gl;
@@ -561,22 +564,26 @@ define(mdls,
 
         function addMeshObject(mesh, position, shader, diffuse) {
             var obj = objects.allocate();
-            var batch = display.geomBatch();
             mat4.identity(obj.matrix);
             var scl = tileRad;
             mat4.scale(obj.matrix, [scl, scl, scl]);
-            display.instanceMesh(mesh, batch, obj.matrix);
 
-            var mesh = display.mesh(gl,
-                batch.vertices,
-                batch.indices,
-                batch.normals,
-                batch.uvs);
-            var meshRenderer = display.meshRenderer(gl, mesh, shader ? shader : tileShader);
+            if(display==null){  //Node
+                obj.meshRenderer={};
+            }else{
+                var batch = display.geomBatch();
+                display.instanceMesh(mesh, batch, obj.matrix);
 
-            obj.addComponent('meshRenderer', meshRenderer);
-            obj.diffuseSampler = diffuse ? diffuse : tileDiffuse;
+                var mesh = display.mesh(gl,
+                    batch.vertices,
+                    batch.indices,
+                    batch.normals,
+                    batch.uvs);
+                var meshRenderer = display.meshRenderer(gl, mesh, shader ? shader : tileShader);
 
+                obj.addComponent('meshRenderer', meshRenderer);
+                obj.diffuseSampler = diffuse ? diffuse : tileDiffuse;
+            }
             mat4.identity(obj.matrix);
             if (position)mat4.translate(obj.matrix, position);
             return obj;

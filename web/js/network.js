@@ -151,7 +151,11 @@ checkConnectionSucceeded:function(){
 connectToGameServer:function ()
 {
     if(this.iosocket)return undefined; //Already connected...
-    this.iosocket = io.connect("/");//:3001");
+    if(io==undefined){
+        //Node
+        this.iosocket = global.io.connect("/");//:3001");
+    }else
+        this.iosocket = io.connect("/");//:3001");
     setTimeout(this.checkConnectionSucceeded,2000);  //Check for connection failure after 2 seconds...
     return this.iosocket;
 },
@@ -259,8 +263,8 @@ recvSimFromServer:function (msg){
     on:function(msg,fn){this.iosocket.on(msg,fn);},
     emit:function(msg,data){this.iosocket.emit(msg,data);},
     connectToServer: function(){
-        if(!isNode){
-            this.initNetwork();
+        this.initNetwork();
+ /*       if(!isNode){
         }else{
             this.iosocket={
                 on:function(msg,fn){
@@ -268,6 +272,7 @@ recvSimFromServer:function (msg){
                 }
             }
         }
+ */
     }
 }
 }

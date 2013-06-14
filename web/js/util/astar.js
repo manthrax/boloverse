@@ -29,7 +29,7 @@
             this.DIAGNOL_COST = Math.sqrt(2) * this.DIST_SCALE;
             this.DIST_FUNC = PathFinder.distFast;//.distOctagonal;
             PathFinder.distNames = ["euclidean", "squared", "manhattan", "fast", "octagonal"];
-            this.world = (world != null) && (w != null) && (h != null) ? world : null;
+            this.nodeImpassible = (world != null) && (w != null) && (h != null) ? world : null;
             this.width = w != null ? w : 0;
             this.height = h != null ? h : 0;
         }
@@ -59,13 +59,13 @@
         };
 
         PathFinder.prototype.hasDiagnolBlocker = function(x1, y1, x2, y2) {
-            if (this.world == null) {
+            if (this.nodeImpassible == null) {
                 return false;
             }
             if (!this.isAdjacent(x1, y1, x2, y2)) {
                 return false;
             }
-            return this.world(x2,y1) || this.world(x1,y2);
+            return this.nodeImpassible(x2,y1) || this.nodeImpassible(x1,y2);
         };
 
         PathFinder.prototype.addToOpen = function(node) {
@@ -115,10 +115,11 @@
 
         PathFinder.prototype.gCost = function(x1, y1, x2, y2) {
             if (x1 === x2 || y1 === y2) {
-                return this.CARDINAL_COST;
+                var gcost = this.CARDINAL_COST;
             } else {
-                return this.DIAGNOL_COST;
+                gcost = this.DIAGNOL_COST;
             }
+            return gcost;
         };
 
         PathFinder.distManhattan = function(fromx, fromy, tox, toy, distScale) {
@@ -201,7 +202,7 @@
             if (func) {
                 this.DIST_FUNC = func;
             }
-            if (this.world == null) {
+            if (this.nodeImpassible == null) {
                 console.log('no world defined');
                 return null;
             }
@@ -246,7 +247,7 @@
                 console.log('max depth reached');
                 return;
             }
-            if (this.world(node.x,node.y)) {
+            if (this.nodeImpassible(node.x,node.y)) {
                 console.log('node is blocked');
                 return null;
             }
@@ -257,7 +258,7 @@
             for (i = _i = _ref = node.x - 1, _ref1 = node.x + 1; _ref <= _ref1 ? _i <= _ref1 : _i >= _ref1; i = _ref <= _ref1 ? ++_i : --_i) {
                 for (j = _j = _ref2 = node.y - 1, _ref3 = node.y + 1; _ref2 <= _ref3 ? _j <= _ref3 : _j >= _ref3; j = _ref2 <= _ref3 ? ++_j : --_j) {
                     if (this.validCell(i, j)) {
-                        if (this.world(i,j) === 0 && !this.hasDiagnolBlocker(node.x, node.y, i, j)) {
+                        if (this.nodeImpassible(i,j) === 0 && !this.hasDiagnolBlocker(node.x, node.y, i, j)) {
                             gcost = this.gCost(i, j, node.x, node.y) + node.g;
                             hcost = this.DIST_FUNC(i, j, this.destination.x, this.destination.y, this.DIST_SCALE);
                             this.addToOpen(new PathNode(i, j, node, gcost, hcost));
@@ -314,7 +315,9 @@
             context.fillText("Diagnol Cost      : " + this.DIAGNOL_COST, 5, 75);
             return context.fillText("Distance Function : " + distName, 5, 100);
         };
-
+        if(typeof(global)=='object'){
+            global.PathFinder = PathFinder;
+        }
         return PathFinder;
 
     })();

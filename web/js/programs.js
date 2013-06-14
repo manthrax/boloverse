@@ -98,9 +98,10 @@ define(isNode?[]//In node, dummy this
 			var shader = gl.createShader(shaderType);
 			var lastError=null;
 
-			if (shader == null) {
-				throw("*** Error: unable to create shader '"+shaderSource+"'");
-			}
+			//if (shader == null) {         //Dont do this check per mozilla reccomendation..
+                                            //The only time it should happen is on context loss.. which we deal with higher up
+			//	throw("*** Error: unable to create shader '"+shaderSource+"'");
+			//}
 
 			// Load the shader source
 			gl.shaderSource(shader, shaderSource);
@@ -110,7 +111,7 @@ define(isNode?[]//In node, dummy this
 
 			// Check the compile status
 			var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-			if (!compiled) {
+			if (!compiled && !gl.isContextLost()) {
 				// Something went wrong during compilation; get the error
 				lastError = gl.getShaderInfoLog(shader);
 				gl.deleteShader(shader);
@@ -167,7 +168,7 @@ define(isNode?[]//In node, dummy this
 
 			// Check the link status
 			var linked = gl.getProgramParameter(program, gl.LINK_STATUS);
-			if (!linked) {
+			if (!linked && !gl.isContextLost()) {
 				// something went wrong with the link
 				lastError = gl.getProgramInfoLog (program);
 				throw("*** Error in program linking:" + lastError);
@@ -429,8 +430,13 @@ define(isNode?[]//In node, dummy this
             ctext = shaderSource;
         }else{
 
-            var scriptElem=document.getElementById("shaderScript");
-            if(scriptElem!=null){
+            var scriptElem;
+            if(typeof(document)!='function'){
+                this.g_scriptCache[tagName]="";
+                return this.g_scriptCache[tagName];
+            }
+            else
+            if((scriptElem=document.getElementById("shaderScript"))!=null){
                 //Load the scripts from a script element...
                 //This is used to embed shaders directly in the root html for the app
                 ctext=scriptElem.text;
@@ -469,7 +475,8 @@ define(isNode?[]//In node, dummy this
         var shdr=this.loadProgram(gl,this.getScriptText(vertexTagId),this.getScriptText(fragmentTagId));
         //document.getElementById(vertexTagId).text, document.getElementById(fragmentTagId).text);
         if(!shdr){
-            alert("Shader error:"+lastError);
+            shdr={};
+            //alert("Shader error:"+lastError);
         }else{
 			shdr.name=vertexTagId+":"+fragmentTagId;
 		}
@@ -505,7 +512,7 @@ define(isNode?[]//In node, dummy this
 		if(g_debug){
 			if(!func)console.log("Unused uniform:"+uniform);    
 			var error=gl.getError();
-			if(error!=gl.NO_ERROR){
+			if(error!=gl.NO_ERROR && error != gl.CONTEXT_LOST_WEBGL){
 				console.log("uniform:"+uniform+" errored:"+WebGLDebugUtils.glEnumToString(error));
 				debugger;
 			}

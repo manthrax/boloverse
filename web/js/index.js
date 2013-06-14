@@ -29,13 +29,14 @@ require(["util/domReady!", // Waits for page load
     var gl = glUtil.getContext(canvas);
 
 
-    var display = new display.display(gl, canvas);
-
     if(!gl) {
         // Replace the canvas with a message that instructs them on how to get a WebGL enabled browser
         glUtil.showGLFailed(frame); 
         return;
     }
+
+    var display = new display.display(gl, canvas);
+
 
     // If we don't set this here, the rendering will be skewed
 //    canvas.width = canvas.offsetWidth;

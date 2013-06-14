@@ -14,10 +14,11 @@ define([
     var sim;
     var playerControls;
     var terrainWeights={
-        "Building":0.8,
-        "Ocean":0.9,
-        "River":0.8,
-        "Rubble":0.5,
+        "Building":10.8,
+        "ShotBuilding":9.8,
+        "Ocean":3.9,
+        "River":2.8,
+        "Rubble":1.5,
         "Forest":0.1,
         "Grass":0.11,
         "Road":0.01
@@ -40,15 +41,15 @@ define([
 
     function Brain(bsim,player,module){
         sim=bsim;
-        world=bsim.world;
+        world=bsim.nodeImpassible;
         playerControls=sim.playerControls;
         
         this.pathFinder=new PathFinder(function worldAdaptor(tx,ty){
             var cell=world.getCell(tx,ty);
-            if(cell[0].name=="Building"||cell[0].name=="ShotBuilding")
-                return 1;
+//            if(cell[0].name=="Building"||cell[0].name=="ShotBuilding")
+//                return 1;
             return 0;
-        },256,256);
+        },256,256,1.0);
         
         this.pathFinder.gCost=function(sx,sy,ex,ey){
             var dc;
@@ -186,6 +187,7 @@ define([
                         }else{
                             //No good path...
                             this.pathRetryCountdown=(60*5)+(Math.random()*(60*5));
+                            this.noGoodPath=true;
                         }
                     }
                 }
@@ -202,11 +204,18 @@ define([
                 if(this.player.avatar!=null)
                     mat4.setRowV3(this.player.avatar.matrix,3,this.pathPoint);
             }
-        }
+        };
 
+        this.determineRandomTarget=function(obj){
+            if(!this.pathFind(obj.cellCoord[0],
+                obj.cellCoord[1],
+                obj.cellCoord[0]+parseInt(Math.random()*16)-8,
+                obj.cellCoord[1]+parseInt(Math.random()*16)-8)){
+            }
+            this.determineTarget = this.determineRandomBaseTarget;
+        };
         this.determineBestTarget=function(obj){
             var queue=new PriorityQueue();
-            
             var map=world.getMap();
             var mo=world.mapOrigin;
             var base;//sim.randElem(map.bases);    //Pick a random base to go to...
@@ -244,13 +253,14 @@ define([
             if(this.currentTarget){
                 if(!this.pathFind(obj.cellCoord[0],obj.cellCoord[1],base.x-mo[0],base.y-mo[1])){
                     //this.currentTarget=null;
+                    this.determineTarget = this.determineRandomTarget;
                 }
             }else{
                 console.log("No valid target bases found.");
             }
         };
         
-        this.determineRandomTarget=function(obj){
+        this.determineRandomBaseTarget=function(obj){
             var map=world.getMap();
             var mo=world.mapOrigin;
             var base=sim.randElem(map.bases);    //Pick a random base to go to...
@@ -262,7 +272,8 @@ define([
                 this.getPathPoint(0,this.pathPoint);
                 if(this.cursorSprite)mat4.setRowV3(this.cursorSprite.matrix,3,this.pathPoint);
             }
-        }
+            this.determineTarget=this.determineBestTarget;
+        };
         this.determineTarget=this.determineBestTarget;
     }
     

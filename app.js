@@ -9,22 +9,60 @@ var express = require('express'),
 var define = require('amdefine')(module);
 var messaging = require('./web/js/util/messaging');
 
-// Simulator gorp start
-var BOOT_SIMULATOR=false;
-if(BOOT_SIMULATOR){
-    var fs = require('fs');
-    eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
+//global.io=sio;
 
-    var  bolosim = require('./web/js/bolosim');
-    messaging.listen("getClientDisplay",function(msg,param){
-        console.log("GetClientDisplay called...");
-        param.display={
+function simulateBolo(){
+    // Simulator gorp start
+    var BOOT_SIMULATOR=true;
+    if(BOOT_SIMULATOR){
+        var fs = require('fs');
+        eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
+        //eval(fs.readFileSync('./web/js/socket.io-client/dist/socket.io.js')+'');
+        //var cio=require('socket.io-client');//./web/js/socket.io-client/dist/socket.io.js');
+        global.io=sio;
 
-        };
-    });
+
+
+
+
+// Connect to server
+        var cio = global.io = require('socket.io-client');
+        var socket = cio.connect('localhost:3000', {reconnect: true});
+
+        /*
+        global.location={};
+        global.location.port=3000;
+        global.location.hostname="/";
+        global.location.protocol="http";
+        */
+        var  bolosim = require('./web/js/bolosim');
+        var timing={time:0};
+
+        messaging.listen("playPositionalSound2d",function(){});
+        messaging.listen("updatePlayerHUD",function(){});
+        messaging.listen("baseTaken",function(){});
+        messaging.listen("getClientDisplay",function(msg,param){
+            console.log("GetClientDisplay called...");
+            param.display={
+                alphaKeyPressed:function(kc){return false;},
+                alphaKeyDown:function(kc){return false;},
+                keyCodeDown:function(kc){return false;}
+            };
+        });
+
+        messaging.listen("networkConnectedToServer",function(){
+            bolosim.initSim();
+            var tickInterval=parseInt(1000/60);
+            function gameLoop(){
+                setTimeout(gameLoop,tickInterval);
+                bolosim.headlessUpdateWorld(timing);
+                timing.time+=tickInterval;
+            }
+            setTimeout(gameLoop,tickInterval);
+        });
+        bolosim.network.connectToGameServer();
+    }
 }
-//bolosim.initSim();
-//bolosim.updateSim();
 // Simulator gorp end
 
 
@@ -47,9 +85,9 @@ var log = function(msg){
 
 httpServer.listen(port);
 
-var io = sio.listen(httpServer);
+var hio = sio.listen(httpServer);
 
-io.set('log level',0);
+hio.set('log level',0);
 
 var clients={};
 var players={};
@@ -67,7 +105,7 @@ var modifiedCells={}
 
 var mapIndex=0;
 
-//io.sockets.on('message', function (msg) {
+//hio.sockets.on('message', function (msg) {
 	//console.log('Message Received: ', msg);
 //    socket.broadcast.emit('message', msg);
 //});
@@ -103,7 +141,7 @@ function addClient(sockId){
 
 console.log("started!");
 
-io.sockets.on('connection', function (socket) {
+hio.sockets.on('connection', function (socket) {
 
     var address = socket.handshake.address;
     log("New connection from " + address.address + ":" + address.port + " sid:"+socket.id);
@@ -123,11 +161,11 @@ io.sockets.on('connection', function (socket) {
 
     socket.emit('welcome',socket.id); //Send the joining players id
     
-    io.sockets.emit("players",players); //Broadcast the new player list
+    hio.sockets.emit("players",players); //Broadcast the new player list
 
     socket.on('nick', function (nnick) {    //Change user nickname
         players[socket.id].nick = sanitize(nnick);
-        io.sockets.emit('player',players[socket.id]); //Broadcast the changed player nick..
+        hio.sockets.emit('player',players[socket.id]); //Broadcast the changed player nick..
         log("nick:"+nnick);
     });
     
@@ -196,7 +234,7 @@ io.sockets.on('connection', function (socket) {
     
     socket.on('god', function(data){
         log("Got god command from host:"+data);
-        io.sockets.emit('god',data);
+        hio.sockets.emit('god',data);
     });
     
     socket.on('joinrequest', function(playerId){
@@ -251,7 +289,7 @@ io.sockets.on('connection', function (socket) {
                 };
         }
         var state={id:plr.id,spectating:plr.spectating,avatar:plr.avatar};
-        io.sockets.emit('playerState',{id:plr.id,spectating:plr.spectating,avatar:plr.avatar});   //Send the player state change to everyone.
+        hio.sockets.emit('playerState',{id:plr.id,spectating:plr.spectating,avatar:plr.avatar});   //Send the player state change to everyone.
 
         log("control plr:"+plr+" fix:"+fixtureId);
     });
@@ -273,7 +311,7 @@ io.sockets.on('connection', function (socket) {
         log("players:"+JSON.stringify(clients));
         log("occupiedFixtures:"+JSON.stringify(occupiedFixtures));
 
-        io.sockets.emit('players',players); //Broadcast the new player list
+        hio.sockets.emit('players',players); //Broadcast the new player list
         
         if(socket.id == g_gameHost){        //Host has left the game...
             var pkeys=Object.keys(players);
@@ -281,8 +319,10 @@ io.sockets.on('connection', function (socket) {
                 g_gameHost=null;
             }else{
                 g_gameHost=players[pkeys[0]].id;    //Pick a new host..
-                io.sockets.emit('host',g_gameHost); //Broadcast the new host
+                hio.sockets.emit('host',g_gameHost); //Broadcast the new host
             }
         }
     });
 });
+
+//simulateBolo();

@@ -25,7 +25,7 @@ define( function() {
             console.log("unhandled:"+msg);
             return;
         }
-        console.log("sending:"+msg);
+        //console.log("sending:"+msg);
         for(var h =0;h< hands.length;h++)hands[h](msg,param);
     }
 

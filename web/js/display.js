@@ -78,21 +78,7 @@ deferred pass... screenspace render fx effects
         
         var aspectRatio=1.0;
         var _display;
-        
-        var display = function (gl, canvas) {
-            vaoExtension = (
-              gl.getExtension('OES_vertex_array_object') ||
-              gl.getExtension('MOZ_OES_vertex_array_object') ||
-              gl.getExtension('WEBKIT_OES_vertex_array_object')
-            );/*
-            vaoExtension = gl.getExtension("OES_vertex_array_object");
-            if(!vaoExtension)
-                vaoExtension = gl.getExtension("MOZ_OES_vertex_array_object");*/
-            
-            if(!vaoExtension)
-                alert("OES_vertex_array_object is not supported!");
-            _display=this;
-            //this.camera = new camera.FlyingCamera(canvas);
+        var displayDefaults = function(){
             this.cameraModule=camera;
             this.camera = new camera.ModelCamera();
             this.camera.addMouseControls(canvas);
@@ -102,14 +88,30 @@ deferred pass... screenspace render fx effects
             this.renderedMeshes=0;
             this.renderedTriangles=0;
             this.fov = 45;
-            this.gl = gl;
             this.nearDepth=0.1;
             this.farDepth=200.0;
-            canvas.gl = gl;
-            
             display.prototype.fov=this.fov;
             display.prototype.aspectRatio=canvas.width/canvas.height;
             mat4.perspective(this.fov, display.prototype.aspectRatio , this.nearDepth, this.farDepth, projection);
+        };
+        var display = function (gl, canvas) {
+            vaoExtension = (
+              gl.getExtension('OES_vertex_array_object') ||
+              gl.getExtension('MOZ_OES_vertex_array_object') ||
+              gl.getExtension('WEBKIT_OES_vertex_array_object')
+            );/*
+            vaoExtension = gl.getExtension("OES_vertex_array_object");
+            if(!vaoExtension)
+                vaoExtension = gl.getExtension("MOZ_OES_vertex_array_object");*/
+            if(!vaoExtension)
+                alert("OES_vertex_array_object is not supported!");
+            _display=this;
+            //this.camera = new camera.FlyingCamera(canvas);
+
+            displayDefaults.call(this);
+
+            this.gl = gl;
+            canvas.gl = gl;
 
             gl.clearColor(0.5, 0.6, 0.9, 0.0);
             gl.clearDepth(1.0);
@@ -123,7 +125,7 @@ deferred pass... screenspace render fx effects
         };
 	
         display.prototype.aspectRatio=aspectRatio;
-        display.prototype.world=world;
+        display.prototype.nodeImpassible=world;
         display.prototype.view=view;
         display.prototype.projection=projection;
         display.prototype.viewProjectionInverse=viewProjectionInverse;
@@ -146,7 +148,8 @@ deferred pass... screenspace render fx effects
 
         };
         display.prototype.resize = function (gl, canvas) {
-            
+            if(!gl || gl.isContextLost())
+                return;
             if (canvas.width != window.innerWidth ||
               canvas.height != window.innerHeight) {
               // Change the size of the canvas to match the size it's being displayed
@@ -557,6 +560,7 @@ deferred pass... screenspace render fx effects
         
         return {
             display: display,
+            displayDefaults:displayDefaults,
             getDisplay: function(){return _display;},
             cameraMatrix: cameraMatrix,
             view: view,
