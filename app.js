@@ -7,51 +7,58 @@ var express = require('express'),
     http = require('http');
 
 var define = require('amdefine')(module);
-var messaging = require('./web/js/util/messaging');
 
 //global.io=sio;
 
-function simulateBolo(){
+function createBoloServer(){
+    var server={};
     // Simulator gorp start
     var BOOT_SIMULATOR=true;
-    if(BOOT_SIMULATOR){
-        var fs = require('fs');
-        eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
-        // Connect to server
-        var cio = global.io = require('socket.io-client');
+    if(!BOOT_SIMULATOR)return;
+    var fs = require('fs');
+    eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
+    // Connect to server
+    var cio = global.io = require('socket.io-client');
 
-        var  bolosim = require('./web/js/bolosim');
-        var timing={time:0};
-        //Stub out the messages that the headless client will ignore...
-        messaging.listen("playPositionalSound2d",function(){});
-        messaging.listen("updatePlayerHUD",function(){});
-        messaging.listen("baseTaken",function(){});
-        messaging.listen("activateBaseHUD",function(){});
-        messaging.listen("deactivateBaseHUD",function(){});
-        messaging.listen("activatePillHUD",function(){});
-        messaging.listen("deactivatePillHUD",function(){});
+    var  bolosim = require('./web/js/bolosim');
+    var timing={time:0};
+    var messaging = require('./web/js/util/messaging');
 
-        messaging.listen("getClientDisplay",function(msg,param){
-            console.log("GetClientDisplay called...");
-            param.display={
-                alphaKeyPressed:function(kc){return false;},
-                alphaKeyDown:function(kc){return false;},
-                keyCodeDown:function(kc){return false;}
-            };
-        });
+    server.simulator=bolosim;
+    server.timing=timing;
+    server.messaging=messaging;
 
-        messaging.listen("networkConnectedToServer",function(){
-            bolosim.initSim();
-            var tickInterval=parseInt(1000/60);
-            function gameLoop(){
-                setTimeout(gameLoop,tickInterval);
-                bolosim.headlessUpdateWorld(timing);
-                timing.time+=tickInterval;
-            }
+    //Stub out the messages that the headless client will ignore...
+    messaging.listen("playPositionalSound2d",function(){});
+    messaging.listen("updatePlayerHUD",function(){});
+    messaging.listen("baseTaken",function(){});
+    messaging.listen("activateBaseHUD",function(){});
+    messaging.listen("deactivateBaseHUD",function(){});
+    messaging.listen("activatePillHUD",function(){});
+    messaging.listen("deactivatePillHUD",function(){});
+
+    messaging.listen("getClientDisplay",function(msg,param){
+        console.log("GetClientDisplay called...");
+        param.display={
+            alphaKeyPressed:function(kc){return false;},
+            alphaKeyDown:function(kc){return false;},
+            keyCodeDown:function(kc){return false;}
+        };
+    });
+
+    messaging.listen("networkConnectedToServer",function(){
+        bolosim.initSim();
+        var tickInterval=parseInt(1000/60);
+        function gameLoop(){
             setTimeout(gameLoop,tickInterval);
-        });
-        bolosim.network.connectToServer();  //Fire this bitch up
-    }
+            global.messaging=server.messaging;
+            bolosim.headlessUpdateWorld(timing);
+            timing.time+=tickInterval;
+        }
+        setTimeout(gameLoop,tickInterval);
+    });
+    bolosim.network.connectToServer();  //Fire this bitch up
+    return server;
 }
 // Simulator gorp end
 
@@ -136,6 +143,7 @@ function addClient(sockId){
 }
 
 console.log("started!");
+var g_gameHost=null;
 
 hio.sockets.on('connection', function (socket) {
 
@@ -164,17 +172,16 @@ hio.sockets.on('connection', function (socket) {
         hio.sockets.emit('player',players[socket.id]); //Broadcast the changed player nick..
         log("nick:"+nnick);
     });
-    
-    var g_gameHost=null;
+
     socket.on('host', function(){
 
         if(!g_gameHost){
             g_gameHost=socket.id;
-            socket.emit('host',g_gameHost);
             log("host:"+g_gameHost);
         }else{
             log("attempt to become HOST:"+socket.id);
         }
+        socket.emit('host',g_gameHost);
     });
     
     socket.on('ai', function (cmd) {    //Broadcast ai path change
@@ -321,4 +328,4 @@ hio.sockets.on('connection', function (socket) {
     });
 });
 
-simulateBolo();
+var testGame=createBoloServer();

@@ -1200,7 +1200,10 @@ define([
             var cd={display:undefined};
             messaging.send("getClientDisplay",cd);
             display = cd.display;
-            startGame(bolomap.getMapIndex("World"), 1, 1);
+
+            //Central Map
+            //World
+            startGame(bolomap.getMapIndex("Central Map"), 1, 1);
         }
 
         messaging.listen("initSim",initSim);
