@@ -704,11 +704,12 @@ define([
         }
 
         function invokeHost(msg) {
-            console.log("god:" + msg);
+            console.log("requesting host:" + msg);
             if (network.connected()) {
-                network.emit('god', msg);
+                network.emit('host', msg);
             } else {
-                godCommand(msg);
+                network.g_isHost=true;
+                //godCommand(msg);
             }
         }
 
@@ -1188,7 +1189,7 @@ define([
             var cd={display:undefined};
             messaging.send("getClientDisplay",cd);
             display = cd.display;
-            startGame(bolomap.getMapIndex("BERTHA"), 16, 16);
+            startGame(bolomap.getMapIndex("World"), 0, 0);
         }
 
         messaging.listen("initSim",initSim);
@@ -1196,7 +1197,8 @@ define([
 
         function startGame(map, aiCount0, aiCount1) {
 
-            invokeGod("host~" + network.g_networkId);
+            //invokeGod("host~" + network.g_networkId);
+            invokeHost(network.g_networkId);
 
             invokeGod("changeMap~" + map);
             invokeGod("startGame");
@@ -1357,7 +1359,7 @@ define([
         function buildMapObjects() {
             currentMap = bolomap.getCurrentMap();
             if (!currentMap)return;
-            for (var i in currentMap.bases) {
+            for (var i= 0,il=currentMap.bases.length;i<il;i++) {
                 var tbase = currentMap.bases[i];
                 var base = boloworld.addTileObject("base", tbase.x, tbase.y);
 

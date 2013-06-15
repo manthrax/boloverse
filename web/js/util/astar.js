@@ -212,7 +212,7 @@
             }
             //if (this.world(tox,toy) || (fromx === tox && fromy === toy)) {
             if (fromx === tox && fromy === toy) {
-                console.log('start and end location are the same, or start is blocked');
+                //console.log('start and end location are the same, or start is blocked');
                 return null;
             }
             this.openlist.length = 0;

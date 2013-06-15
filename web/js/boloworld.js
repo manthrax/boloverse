@@ -83,11 +83,12 @@ define(mdls,
             exp.alpha = 0.0;
             exp.pos=vec3.create();//[sfrnd(1),sfrnd(1),sfrnd(0)]);
 
-            var zoomTween=new TWEEN.Tween(exp);
-            zoomTween.to({scale:0.08,alpha:1.0},1000.0).onComplete(function(c,v){
-                //this.active=false;
-            }).easing(TWEEN.Easing.Quadratic.In).start();
-
+            if(typeof(TWEEN)=='object'){ // No tweening on Node
+                var zoomTween=new TWEEN.Tween(exp);
+                zoomTween.to({scale:0.08,alpha:1.0},1000.0).onComplete(function(c,v){
+                    //this.active=false;
+                }).easing(TWEEN.Easing.Quadratic.In).start();
+            }
             exp.update=function(){
                 //console.log("updating");
                 //this.scale+=0.01;
@@ -96,9 +97,11 @@ define(mdls,
 
         function onTeamWon(msg,param){
             if(msg=="team_won"){
+                console.log("TEAM WON:"+param);
                 showWinMessage(param);
             }
             if(msg=="team_lost"){
+                console.log("TEAM LOST:"+param);
                 showWinMessage(param);
             }
         }
@@ -546,7 +549,7 @@ define(mdls,
         }
 
         function addTileObject(meshName, x, y) {
-            if (x.length) {//X is passed as a vector, so treat as world space coordinate..
+            if (typeof(x)=='array'){//.length) {//X is passed as a vector, so treat as world space coordinate..
                 var pos = x;
                 worldToCellCoord(pos, v3t0);
                 x = v3t0[0];

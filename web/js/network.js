@@ -37,6 +37,7 @@ function networkObject(){
 
 rebuildPlayerListUI:function ()
 {
+    if(typeof(document)!='object')return;   //No document on Node
     var elem=document.getElementById("playerListElems");
     if(!elem)return;
     var str="<list>";
@@ -90,11 +91,13 @@ outgoingChatKeyPress:function (event){
 
 networkAttachClientListeners:function (){
     var self=this;
-    this.incomingChatElem=document.getElementById('incomingChatMessages');
-    this.outgoingChatElem=document.getElementById('outgoingChatMessage');
-    this.outgoingNickField=document.getElementById('outgoingNickField');
-    if(this.incomingChatElem)
-        this.incomingChatElem.innerHTML+='<li>Connected</li>';
+    if(typeof(document)=='object'){
+        this.incomingChatElem=document.getElementById('incomingChatMessages');
+        this.outgoingChatElem=document.getElementById('outgoingChatMessage');
+        this.outgoingNickField=document.getElementById('outgoingNickField');
+        if(this.incomingChatElem)
+            this.incomingChatElem.innerHTML+='<li>Connected</li>';
+    }
     this.iosocket.on('addroom')
     this.iosocket.on('disconnect', function() {
         if(this.incomingChatElem)
@@ -108,8 +111,10 @@ networkAttachClientListeners:function (){
         messaging.send("networkConnectedToServer");
 
         //Send our default nick
-        if(localStorage.nick){
-            self.iosocket.emit('nick',localStorage.nick);
+        if(typeof(localstorage)=='object'){ //No localstorage on Node
+            if(localStorage.nick){
+                self.iosocket.emit('nick',localStorage.nick);
+            }
         }
         if(self.g_targetFixture!=null)
             self.iosocket.emit('control',self.g_targetFixture.id);    //Attempt to take control of our targeted fixture
@@ -151,12 +156,12 @@ checkConnectionSucceeded:function(){
 connectToGameServer:function ()
 {
     if(this.iosocket)return undefined; //Already connected...
-    if(io==undefined){
+    if(isNode){
         //Node
-        this.iosocket = global.io.connect("/");//:3001");
+        this.iosocket = io.connect("127.0.0.1:3000");//:3001");
     }else
         this.iosocket = io.connect("/");//:3001");
-    setTimeout(this.checkConnectionSucceeded,2000);  //Check for connection failure after 2 seconds...
+    setTimeout(this.checkConnectionSucceeded,60000);  //Check for connection failure after 2 seconds...
     return this.iosocket;
 },
 

@@ -19,7 +19,7 @@ function simulateBolo(){
         eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
         //eval(fs.readFileSync('./web/js/socket.io-client/dist/socket.io.js')+'');
         //var cio=require('socket.io-client');//./web/js/socket.io-client/dist/socket.io.js');
-        global.io=sio;
+ //       global.io=sio;
 
 
 
@@ -27,7 +27,7 @@ function simulateBolo(){
 
 // Connect to server
         var cio = global.io = require('socket.io-client');
-        var socket = cio.connect('localhost:3000', {reconnect: true});
+        //var socket = cio.connect('localhost:3000', {reconnect: true});
 
         /*
         global.location={};
@@ -41,6 +41,11 @@ function simulateBolo(){
         messaging.listen("playPositionalSound2d",function(){});
         messaging.listen("updatePlayerHUD",function(){});
         messaging.listen("baseTaken",function(){});
+        messaging.listen("activateBaseHUD",function(){});
+        messaging.listen("deactivateBaseHUD",function(){});
+        messaging.listen("activatePillHUD",function(){});
+        messaging.listen("deactivatePillHUD",function(){});
+
         messaging.listen("getClientDisplay",function(msg,param){
             console.log("GetClientDisplay called...");
             param.display={
@@ -60,7 +65,7 @@ function simulateBolo(){
             }
             setTimeout(gameLoop,tickInterval);
         });
-        bolosim.network.connectToGameServer();
+        bolosim.network.connectToServer();
     }
 }
 // Simulator gorp end
@@ -78,8 +83,13 @@ util.puts(' x x x '.green);
 util.puts('    happy hunting');
 
 
-var log = function(msg){
-    util.puts('app:'.green + "" + msg);
+var g_logLevel = 2;
+var g_logColors=[''.green,''.red,''.yellow];
+var log = function(msg,level){
+    if(!level)level=0;
+    if(level<=g_logLevel){
+        util.puts( g_logColors[level] + 'app:'+''.white + msg);
+    }
     //console.log(msg);
 };
 
@@ -183,7 +193,7 @@ hio.sockets.on('connection', function (socket) {
     
     socket.on('ai', function (cmd) {    //Broadcast ai path change
         socket.broadcast.emit('ai',cmd);
-        log("ai:"+cmd);
+        log("ai:"+cmd,2);
     });
     
     socket.on('video', function (data) {
@@ -200,7 +210,7 @@ hio.sockets.on('connection', function (socket) {
                 pav.lastState=msg;
         }
         socket.broadcast.emit('sim', {data:msg,id:socket.id});   //Forward chat/game data
-        log("sim:"+msg);
+        log("sim:"+msg,2);
     });
     
     socket.on('chat', function (msg) {
@@ -208,12 +218,12 @@ hio.sockets.on('connection', function (socket) {
         socket.broadcast.emit('chat', {message:msg,id:socket.id});   //Forward chat/game data
     });
     
-    Array.prototype.contains = function(val) {
-        return (this.indexOf(val)==-1)?false:true;
-    }
+    var arrayContains = function(arr,val) {
+        return (arr.indexOf(val)==-1)?false:true;
+    };
 
-    Array.prototype.remove = function() {
-        var what, a = arguments, L = a.length, ax;
+    var arrayRemove = function(arr,args) {
+        var what, a = args, L = a.length, ax;
         while (L && this.length) {
             what = a[--L];
             while ((ax = this.indexOf(what)) !== -1) {
@@ -233,7 +243,7 @@ hio.sockets.on('connection', function (socket) {
     });
     
     socket.on('god', function(data){
-        log("Got god command from host:"+data);
+        log("Got god command from host:"+data,2);
         hio.sockets.emit('god',data);
     });
     
@@ -243,7 +253,7 @@ hio.sockets.on('connection', function (socket) {
 
         log("Got join request from "+plr.nick+" to "+plr2.nick+" "+playerId);
         if(joinRequests[playerId]){
-            if(joinRequests[playerId].contains(plr.id)==false)
+            if(arrayContains(oinRequests[playerId],plr.id)==false)
                 joinRequests[playerId].push(plr.id);
         }else{
             joinRequests[playerId]=[plr.id];
@@ -254,9 +264,9 @@ hio.sockets.on('connection', function (socket) {
         var plr=players[socket.id];
         var plr2=players[playerId];
         log("Got join accept from "+plr.nick+" to "+plr2.nick+" "+playerId);
-        if(joinRequests[plr.id].contains(playerId))
+        if(arrayContains(joinRequests[plr.id],playerId))
         {   //Set up game
-            joinRequests[plr.id].remove(playerId);
+            arrayRemove(joinRequests[plr.id],playerId);
             log("Setting up game between "+plr.nick+" and "+plr2.nick+"");
             var room=""+socket.id+playerId;
             addRoom(room);
@@ -325,4 +335,4 @@ hio.sockets.on('connection', function (socket) {
     });
 });
 
-//simulateBolo();
+simulateBolo();

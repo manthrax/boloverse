@@ -67,7 +67,7 @@ define([
         this.brainId=player.aiIndex;
         brainsById[this.brainId]=this;
         this.path=[];
-        this.pathRetryCountdown=200;
+        this.pathRetryCountdown=1+parseInt(Math.random()*200);
         this.pathIndex=0;
         this.pathPoint=[0,0,0];
         this.cursorPathIndex=0;
