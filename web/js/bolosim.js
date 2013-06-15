@@ -1204,7 +1204,7 @@ define([
             //DEFAULT MAP
             //Central Map
             //World
-            startGame(bolomap.getMapIndex("Central Map"), 0, 0);
+            startGame(bolomap.getMapIndex("Central Map"), 1, 1);
         }
 
         messaging.listen("initSim",initSim);
