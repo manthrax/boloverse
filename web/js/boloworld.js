@@ -60,6 +60,8 @@ define(mdls,
         }
 
         function hideHudObject(){
+            if(typeof(TWEEN)!='object')//No tweens in node
+                return;
             var zoomTween=new TWEEN.Tween(getHudObject());
             hudFGObject=null;
             zoomTween.to({scale:1.0,alpha:0.0},1000.0).onComplete(function(c,v){

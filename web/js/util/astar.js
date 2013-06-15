@@ -23,7 +23,7 @@
             this.openlist = [];
             this.closedlist = [];
             this.destination = new PathNode();
-            this.MAX_DEPTH = 1000;
+            this.MAX_DEPTH = 300;
             this.DIST_SCALE = dscale != null ? dscale : 1;
             this.CARDINAL_COST = 1 * this.DIST_SCALE;
             this.DIAGNOL_COST = Math.sqrt(2) * this.DIST_SCALE;
@@ -245,7 +245,7 @@
             }
             if (depth >= this.MAX_DEPTH) {
                 console.log('max depth reached');
-                return null;
+                return node;
             }
             if (this.nodeImpassible(node.x,node.y)) {
                 console.log('node is blocked');

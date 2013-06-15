@@ -1201,9 +1201,10 @@ define([
             messaging.send("getClientDisplay",cd);
             display = cd.display;
 
+            //DEFAULT MAP
             //Central Map
             //World
-            startGame(bolomap.getMapIndex("Central Map"), 1, 1);
+            startGame(bolomap.getMapIndex("Central Map"), 0, 0);
         }
 
         messaging.listen("initSim",initSim);
