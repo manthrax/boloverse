@@ -63,7 +63,7 @@ define([
             var weight=terrainWeights[cell[0].name];
             if(weight)return dc*weight;
             return dc;
-        }
+        };
         this.brainId=player.aiIndex;
         brainsById[this.brainId]=this;
         this.path=[];
@@ -81,7 +81,7 @@ define([
         player.avatar.destroy=function(){
             this.cursorSprite.active=false;
             delete this.cursorSprite;
-        }
+        };
         
        
         this.pathPtCtr=0;
@@ -90,7 +90,7 @@ define([
             v3t0[0]=ppt.x;
             v3t0[1]=ppt.y;
             world.cellCoordToWorld(v3t0,outPt);
-        },
+        };
         
         this.rotateToward=function(obj,targetPt){
             mat4.getRowV3(obj.matrix, 3, v3t0);
@@ -109,7 +109,7 @@ define([
          //       obj.controls|=playerControls.up;
          //   }
             return dang;
-        }
+        };
         
         this.followPath=function(obj){
             var dang = this.rotateToward(obj,this.pathPoint);
@@ -180,7 +180,7 @@ define([
 
                     if(network.g_isHost){
                         this.determineTarget(obj);
-                        if(this.path.length){
+                        if(this.path.length>1){
                             if(network.connected()){
                                 var pl=this.path.length-1;
                                 network.emit("ai",[this.brainId,this.path[0].x,this.path[0].y,this.path[pl].x,this.path[pl].y]);
@@ -222,7 +222,7 @@ define([
             var base;//sim.randElem(map.bases);    //Pick a random base to go to...
             
             
-            for(var b in map.bases){
+            for(var b = 0,bl=map.bases.length;b<bl;b++){
                 var base=map.bases[b];
                 var prior=0.0;
                 if(base.body.team!=obj.team){

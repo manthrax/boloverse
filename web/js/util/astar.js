@@ -7,7 +7,7 @@
         function PathNode(nx, ny, p, ng, nh) {
             this.x = nx != null ? nx : 0;
             this.y = ny != null ? ny : 0;
-            this.parent = typeof parent !== "undefined" && parent !== null ? p : null;
+            this.parent = p;//typeof parent !== "undefined" && parent !== null ? p : null;
             this.g = ng != null ? ng : 0;
             this.h = nh != null ? nh : 0;
             this.f = this.g + this.h;
@@ -245,7 +245,7 @@
             }
             if (depth >= this.MAX_DEPTH) {
                 console.log('max depth reached');
-                return;
+                return null;
             }
             if (this.nodeImpassible(node.x,node.y)) {
                 console.log('node is blocked');

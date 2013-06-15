@@ -103,6 +103,7 @@ define([
 
         messaging.listen("networkConnectedToServer",function(){
             network.on("god", godCommand);
+            network.on("host", hostCommand);
         });
 
         var playerControls = {
@@ -710,6 +711,16 @@ define([
             } else {
                 network.g_isHost=true;
                 //godCommand(msg);
+            }
+        }
+
+        function hostCommand(msg) {
+            if(msg!=""+network.g_networkId){
+                console.log("DEFERRING HOST DUTIES");
+                network.g_isHost=false;
+            }else{
+                console.log("I AM HOST");
+                network.g_isHost=true;
             }
         }
 

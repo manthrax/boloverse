@@ -72,7 +72,8 @@ var g_logLevel = 2;
 var g_logColors=[''.blue,''.red,''.yellow];
 var log = function(msg,level){
     if(!level)level=0;
-    if(level<=g_logLevel){
+    if(level<=g_logLevel)
+    {
         util.puts( g_logColors[level] + 'app:'+''.yellow + msg);
     }
     //console.log(msg);
@@ -172,7 +173,7 @@ hio.sockets.on('connection', function (socket) {
             socket.emit('host',g_gameHost);
             log("host:"+g_gameHost);
         }else{
-
+            log("attempt to become HOST:"+socket.id);
         }
     });
     
