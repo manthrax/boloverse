@@ -90,7 +90,7 @@ define([
             v3t0[0]=ppt.x;
             v3t0[1]=ppt.y;
             world.cellCoordToWorld(v3t0,outPt);
-        }
+        },
         
         this.rotateToward=function(obj,targetPt){
             mat4.getRowV3(obj.matrix, 3, v3t0);
@@ -161,7 +161,8 @@ define([
             if(this.progress<0.001){
                 //Not making progress on path...
                 this.path.length=0;
-                this.pathRetryCountdown=60;
+                this.pathRetryCountdown=180;
+                console.log("blocked.. repathing.");
             }
             if(this.path.length==0){
                 obj.controls=playerControls.down;

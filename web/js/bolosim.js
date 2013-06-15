@@ -1189,7 +1189,7 @@ define([
             var cd={display:undefined};
             messaging.send("getClientDisplay",cd);
             display = cd.display;
-            startGame(bolomap.getMapIndex("World"), 0, 0);
+            startGame(bolomap.getMapIndex("World"), 1, 1);
         }
 
         messaging.listen("initSim",initSim);

@@ -17,27 +17,12 @@ function simulateBolo(){
     if(BOOT_SIMULATOR){
         var fs = require('fs');
         eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
-        //eval(fs.readFileSync('./web/js/socket.io-client/dist/socket.io.js')+'');
-        //var cio=require('socket.io-client');//./web/js/socket.io-client/dist/socket.io.js');
- //       global.io=sio;
-
-
-
-
-
-// Connect to server
+        // Connect to server
         var cio = global.io = require('socket.io-client');
-        //var socket = cio.connect('localhost:3000', {reconnect: true});
 
-        /*
-        global.location={};
-        global.location.port=3000;
-        global.location.hostname="/";
-        global.location.protocol="http";
-        */
         var  bolosim = require('./web/js/bolosim');
         var timing={time:0};
-
+        //Stub out the messages that the headless client will ignore...
         messaging.listen("playPositionalSound2d",function(){});
         messaging.listen("updatePlayerHUD",function(){});
         messaging.listen("baseTaken",function(){});
@@ -65,7 +50,7 @@ function simulateBolo(){
             }
             setTimeout(gameLoop,tickInterval);
         });
-        bolosim.network.connectToServer();
+        bolosim.network.connectToServer();  //Fire this bitch up
     }
 }
 // Simulator gorp end
@@ -84,11 +69,11 @@ util.puts('    happy hunting');
 
 
 var g_logLevel = 2;
-var g_logColors=[''.green,''.red,''.yellow];
+var g_logColors=[''.blue,''.red,''.yellow];
 var log = function(msg,level){
     if(!level)level=0;
     if(level<=g_logLevel){
-        util.puts( g_logColors[level] + 'app:'+''.white + msg);
+        util.puts( g_logColors[level] + 'app:'+''.yellow + msg);
     }
     //console.log(msg);
 };
@@ -210,7 +195,7 @@ hio.sockets.on('connection', function (socket) {
                 pav.lastState=msg;
         }
         socket.broadcast.emit('sim', {data:msg,id:socket.id});   //Forward chat/game data
-        log("sim:"+msg,2);
+        log("sim:"+msg,3);
     });
     
     socket.on('chat', function (msg) {
