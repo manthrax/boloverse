@@ -100,7 +100,7 @@ define([
         var crosshairSprite;
         var cursorSprite;
         var display;
-
+        var dirtyTileCache={};
         messaging.listen("networkConnectedToServer",function(){
             network.on("god", godCommand);
             network.on("host", hostCommand);
@@ -271,8 +271,10 @@ define([
                     shellExploded = true;
                 }
             }
-            if (cellDirty == true)
+            if (cellDirty == true){
                 boloworld.rebuildRegionAtTile(c[0], c[1]);
+                dirtyTileCache[""+c[0]+","+c[1]]=cell;
+            }
             return shellExploded;
         }
 
@@ -662,6 +664,7 @@ define([
 
         function changeMap(index) {
             //display.camera.zoomToPause();
+            dirtyTileCache={};
             currentMap = boloworld.loadMapByName(bolomap.getMapNames()[index]);
             messaging.send("game_map_changed",0);
             buildMapObjects();

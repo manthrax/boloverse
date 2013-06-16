@@ -23,7 +23,7 @@
             this.openlist = [];
             this.closedlist = [];
             this.destination = new PathNode();
-            this.MAX_DEPTH = 300;
+            this.MAX_DEPTH = 800;
             this.DIST_SCALE = dscale != null ? dscale : 1;
             this.CARDINAL_COST = 1 * this.DIST_SCALE;
             this.DIAGNOL_COST = Math.sqrt(2) * this.DIST_SCALE;

@@ -32,8 +32,10 @@ define([
 
             if(!network.g_isHost){
                 var brain=brainsById[cmd[0]];
-                if(brain)
+                if(brain){
                     brain.pathFind(cmd[1],cmd[2],cmd[3],cmd[4]);
+
+                }
             }
         });
     });
@@ -204,6 +206,9 @@ define([
                 if(this.cursorSprite)mat4.setRowV3(this.cursorSprite.matrix,3,this.pathPoint);
                 if(this.player.avatar!=null)
                     mat4.setRowV3(this.player.avatar.matrix,3,this.pathPoint);
+                else{
+                    console.log("Avatar unavailable!");
+                }
             }
         };
 
