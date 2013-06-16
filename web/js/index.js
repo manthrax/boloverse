@@ -144,7 +144,7 @@ require(["util/domReady!", // Waits for page load
 
         boloworld.update(gl,display,timing,updateSim);
 
-        var renderRadar = false;
+        var renderRadar = true;
 
         if(renderRadar){
             this.radarRTT.bindRTTForRendering(gl);

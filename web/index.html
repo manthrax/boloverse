@@ -20,7 +20,7 @@ var tools={
     "road":["roads","ROADS"],
     "building":["buildings","BUILDINGS"],
     "pillbox":["turrets","TURRETS"],
-    "mine":["mines","MINES"],
+    "mine":["mines","MINES"]
 }
 
 
@@ -62,7 +62,7 @@ function selectTool(str){
     
     <div id="topRightBox">
     
-    	<div id="container" style="padding:20px;">
+    	<div id="toolContainer" style="padding:20px;">
     
             <div id="purposeBox" style="padding:12px;">
 
@@ -79,7 +79,7 @@ function selectTool(str){
     
     <div id="bottomLeftBox">
     
-        <div id="container" style="padding:20px;">
+        <div id="resIconContainer" style="padding:20px;">
     
             <div id="basesBox" style="padding:12px;">
                 <div class="navFont" style="color:#bb9878;">BASES</div>
@@ -143,9 +143,9 @@ function selectTool(str){
         if (e.which == 13)gameMessage('setTickets',parseInt(e.target.value));
     }
 </script>
-            <div id="centerBox">
-        <table cellpadding=0 cellspacing=0 border=0>
+    <div id="centerBox">
         <div class="navFont" style="color:#db17cb;">PLAYERLIST</div>
+        <table cellpadding=0 cellspacing=0 border=0>
             <button onclick="gameMessage('addAI');">Add AI</button><br/>
             <button onclick="gameMessage('loadRandomMap');">Random Map</button><br/>
             <button onclick="gameMessage('showOptions');">Options</button><br/>
@@ -157,8 +157,8 @@ function selectTool(str){
             Maps:<br/>
             <select id="maps" onchange="gameMessage('changeMap',this.selectedIndex);this.blur();" class='selectable'>
             </select>
-        <div id="playerListElems"></div>
         </table>
+    <div id="playerListElems"></div>
     </div>
 
 

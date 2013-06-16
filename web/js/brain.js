@@ -14,8 +14,8 @@ define([
     var sim;
     var playerControls;
     var terrainWeights={
-        "Building":10.8,
-        "ShotBuilding":9.8,
+        "Building":100.8,
+        "ShotBuilding":80.8,
         "Ocean":3.9,
         "River":2.8,
         "Rubble":1.5,
