@@ -67,7 +67,7 @@ var app = express();
 var httpServer = http.createServer(app);
 
 app.use(express.static(__dirname+"/web"));
-app.use(express.compress());
+//app.use(express.compress());
 
 var port = 3000;
 

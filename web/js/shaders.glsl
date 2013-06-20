@@ -113,7 +113,7 @@ void main() {
     gl_FragColor += v_tint;
     //gl_FragColor.rgb = diffuse.rgb*v_normal.z;
 
-
+    //gl_FragColor.rgb=vec3(mod(gl_FragCoord.z*1000.0,1.0));
 //    gl_FragColor.a=1.0;
 }
 
@@ -385,6 +385,83 @@ varying vec2 v_texCoord;
 void main() {
     vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
     diffuse.a=5.0-(length(v_texCoord-vec2(0.5,0.5))*10.0);
+    gl_FragColor = diffuse;//vec4(1,0,0,1);//
+}
+
+SCRIPT='deferredVS';
+
+attribute vec4 position;
+attribute vec3 normal;
+attribute vec2 texCoord;
+
+varying vec4 v_position;
+varying vec2 v_texCoord;
+varying vec3 v_normal;
+
+//uniform sampler2D diffuseSampler;
+uniform vec3 scale;
+uniform float aspectRatio;
+uniform vec3 pos;
+
+void main() {
+
+    v_texCoord = texCoord;
+    v_position = position;
+    v_position.w=1.0;
+    v_normal =  normal;
+
+    //vec4 diffuse = texture2D(diffuseSampler, v_texCoord);
+    //if(diffuse.a<1.0)
+    //    v_position.y = v_position.y*0.1;
+
+    gl_Position = vec4(
+        (pos.x+v_position.x)*scale.x,// /aspectRatio))*scale.x),
+        (pos.y+v_position.y)*scale.y,//*aspectRatio,
+        (pos.z+v_position.z)*scale.z,
+        1);//worldViewProjection * vec4((position.xyz*scale*2.0),1.0);
+    //gl_Position.y*=aspectRatio;
+}
+
+
+SCRIPT='deferredFS';
+
+//#ifdef GL_ES
+precision mediump float;
+//#endif
+
+uniform sampler2D diffuseSampler;
+uniform sampler2D accumSampler;
+
+uniform float warpFactor;
+uniform float blurFactor;
+uniform float chromabFactor;
+uniform float gainFactor;
+
+varying vec3 v_normal;
+varying vec4 v_position;
+varying vec2 v_texCoord;
+
+void main() {
+    float gain = (1.0/6.0)*gainFactor;
+    float warpInt=0.015*warpFactor;
+    float warpFreq=0.02*warpFactor;
+    vec2 texCoord=v_texCoord+(vec2(sin(gl_FragCoord.y*warpFreq),cos(gl_FragCoord.x*warpFreq))*warpInt);
+    vec4 diffuse = texture2D(diffuseSampler, texCoord);
+    float abber=0.002*chromabFactor;
+    float abint=4.0*chromabFactor;
+    vec4 diffuse1 = vec4(0,0,texture2D(diffuseSampler, texCoord+vec2(abber,abber)).b*abint,0);
+    vec4 diffuse2 = vec4(0,texture2D(diffuseSampler, texCoord+vec2(-abber,-abber)).r*abint,0,0);
+    vec4 diffuse3 = vec4(0,texture2D(diffuseSampler, texCoord+vec2(-abber,0)).g*abint,0,0);
+    float krn=0.002*blurFactor;
+    vec4 diffuse5 = texture2D(diffuseSampler, texCoord+vec2(0,-krn));
+    vec4 diffuse6 = texture2D(diffuseSampler, texCoord+vec2(krn,0));
+    vec4 diffuse7 = texture2D(diffuseSampler, texCoord+vec2(0,krn));
+    vec4 diffuse8 = texture2D(diffuseSampler, texCoord+vec2(-krn,0));
+    diffuse=(diffuse+diffuse+diffuse1+diffuse2+diffuse3+diffuse5+diffuse6+diffuse7+diffuse8)*gain;
+    vec4 accum=texture2D(accumSampler,texCoord);
+    //if(gl_FragCoord.x>500.5)diffuse=accum;
+    //diffuse=(diffuse*0.01)+(accum*0.99);
+    diffuse.a=1.0;//5.0-(length(texCoord-vec2(0.5,0.5))*10.0);
     gl_FragColor = diffuse;//vec4(1,0,0,1);//
 }
 

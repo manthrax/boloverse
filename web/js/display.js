@@ -151,7 +151,7 @@ deferred pass... screenspace render fx effects
             if(!gl || gl.isContextLost())
                 return;
             if (canvas.width != window.innerWidth ||
-              canvas.height != window.innerHeight) {
+                canvas.height != window.innerHeight) {
               // Change the size of the canvas to match the size it's being displayed
               canvas.width = window.innerWidth;
               canvas.height = window.innerHeight;
@@ -557,7 +557,33 @@ deferred pass... screenspace render fx effects
                 return true;
             return false;
         };
-        
+        var Cubemap={};
+        Cubemap.prototype = {
+            init: function(width, height, type){
+                gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, width, height, 0, gl.RGBA, type, null);
+                gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl.RGBA, width, height, 0, gl.RGBA, type, null);
+                gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl.RGBA, width, height, 0, gl.RGBA, type, null);
+                gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl.RGBA, width, height, 0, gl.RGBA, type, null);
+                gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl.RGBA, width, height, 0, gl.RGBA, type, null);
+                gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGBA, width, height, 0, gl.RGBA, type, null);
+                return this;
+            },
+            bind: function(unit){
+                if(unit != undefined){
+                    gl.activeTexture(gl.TEXTURE0+unit);
+                }
+                gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.id);
+                return this;
+            },
+            unbind: function(){
+                gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                return this;
+            },
+            param: function(name, value){
+                gl.texParameteri(gl.TEXTURE_CUBE_MAP, name, value);
+                return this;
+            }
+        };
         return {
             display: display,
             displayDefaults:displayDefaults,

@@ -28,6 +28,8 @@ require(["util/domReady!", // Waits for page load
     var fpsCounter = document.getElementById("fps");
     var gl = glUtil.getContext(canvas);
 
+    var deferredRender=true;
+    var accumRender=false;
 
     if(!gl) {
         // Replace the canvas with a message that instructs them on how to get a WebGL enabled browser
@@ -79,22 +81,32 @@ require(["util/domReady!", // Waits for page load
             this.debugTexShader.dontCull=true;
         }
         return this.debugTexShader;
-    }
+    };
 
+    display.getDeferredShader = function(){
+        if(this.deferredTexShader==null){
+            this.deferredTexShader = boloworld.getShader("deferred");
+            this.deferredTexShader.passIndex=4;
+            this.deferredTexShader.dontCull=true;
+        }
+        return this.deferredTexShader;
+    };
+
+    display.createQuadObject = function (bscl,bpx,bpy,shader,srcTex){
+        var dbto= boloworld.addObject("quad1x1",undefined,shader,srcTex);
+        dbto.scale = [bscl,bscl,bscl];
+        dbto.alpha = 0.0;
+        dbto.pos=[bpx,bpy,0.0];
+        dbto.active=true;
+        dbto.dontDestroy=true;
+        dbto.destroy = function(){
+            alert("debugTexObject destroyed!");
+        };
+        return dbto;
+    };
     display.getDebugTexObject = function (){
         if(this.debugTexObject==null){
-
-            this.debugTexObject= boloworld.addObject("quad1x1",undefined,this.getDebugTexShader(),this.radarRTT.texture);
-            var bscl=0.13;
-            var bpos=5.0;
-            this.debugTexObject.scale = [bscl,bscl,bscl];
-            this.debugTexObject.alpha = 0.0;
-            this.debugTexObject.pos=[-bpos,bpos,0.0];
-            this.debugTexObject.active=true;
-            this.debugTexObject.dontDestroy=true;
-            this.debugTexObject.destroy = function(){
-                alert("debugTexObject destroyed!");
-            }
+            this.debugTexObject=this.createQuadObject(0.13,-5,5,this.getDebugTexShader(),this.radarRTT.texture);
         }
         return this.debugTextObject;
     }
@@ -102,12 +114,24 @@ require(["util/domReady!", // Waits for page load
 //    debugTextObject.update=function(){console.log("updating");}
 
     function bootGame(){
-        display.radarRTT = display.initRTT(gl,512,512);
-
+        var radarDim=512;
+        var rttDim=1024;
+        display.radarRTT = display.initRTT(gl,radarDim,radarDim);
         display.radarRTT.texture.bindToUnit = boloworld.bindToUnit;
 
+        display.deferredRTT = display.initRTT(gl,rttDim,rttDim);
+        display.deferredRTT.texture.bindToUnit = boloworld.bindToUnit;
+
+        display.accumRTT = display.initRTT(gl,rttDim,rttDim);
+        display.accumRTT.texture.bindToUnit = boloworld.bindToUnit;
+
+        display.pingRTT=display.deferredRTT;
+        display.pongRTT=display.accumRTT;
+
         display.debugTexShader=null;
+        display.deferredTexShader=null;
         display.debugTexObject=null;
+        display.deferredRendererTexObject=null;
 
 
         boloworld.initWorld();
@@ -116,6 +140,21 @@ require(["util/domReady!", // Waits for page load
 
 
         display.getDebugTexObject();
+
+        display.deferredRendererTexObject=display.createQuadObject(0.4,0,0,display.getDeferredShader(),display.deferredRTT.texture);
+
+        display.deferredRendererTexObject.blurFactor=1.0;
+        display.deferredRendererTexObject.chromabFactor=1.0;
+        display.deferredRendererTexObject.gainFactor=1.0;
+        display.deferredRendererTexObject.warpFactor=1.0;
+
+        messaging.listen("shdrActivate",function(msg,param){deferredRender=param;console.log("Activate:"+param);});
+        messaging.listen("shdrV1",function(msg,param){display.deferredRendererTexObject.blurFactor=parseFloat(param);console.log("sv1:"+param);});
+        messaging.listen("shdrV2",function(msg,param){display.deferredRendererTexObject.chromabFactor=parseFloat(param);console.log("sv2:"+param);});
+        messaging.listen("shdrV3",function(msg,param){display.deferredRendererTexObject.gainFactor=parseFloat(param);console.log("sv3:"+param);});
+        messaging.listen("shdrV4",function(msg,param){display.deferredRendererTexObject.warpFactor=parseFloat(param);console.log("sv4:"+param);});
+
+
 
         display.radarCamera = new cameraModule.ModelCamera();
         display.radarCamera.distance = 100;//80
@@ -140,8 +179,6 @@ require(["util/domReady!", // Waits for page load
 
     display.renderFrame=function(gl,timing){
 
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    //Clear window framebuffer
-
         boloworld.update(gl,display,timing,updateSim);
 
         var renderRadar = true;
@@ -157,7 +194,29 @@ require(["util/domReady!", // Waits for page load
         }
 
         var renderFullRes=true;
+
+
+        messaging.listen("localPlayerDamaged",function(msg,param){
+
+            if(typeof(TWEEN)=='object'){ // No tweening on Node
+                var fuzzTween=new TWEEN.Tween(deferredRender);
+                zoomTween.to({scale:0.08,alpha:1.0},1000.0).onComplete(function(c,v){
+                    //this.active=false;
+                }).easing(TWEEN.Easing.Quadratic.In).start();
+            }
+        });
+
         var renderRTTRadarView=renderRadar;
+
+        if(deferredRender){
+            this.pingRTT.bindRTTForRendering(gl);
+            if(accumRender){
+                var sv=this.pongRTT;
+                this.pongRTT=this.pingRTT;
+                this.pingRTT=sv;
+            }
+        }
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    //Clear window framebuffer
 
         this.startRendering();
         if(renderFullRes)this.renderActiveShaders();  //Pass 0 Render solid geometry
@@ -178,13 +237,25 @@ require(["util/domReady!", // Waits for page load
         // render debug textures...
         gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
         if(renderRTTRadarView)this.renderActiveShaders(3);
-        gl.disable(gl.BLEND);
 
+
+
+        if(deferredRender){
+            this.unbindRTT(gl);
+
+           // gl.flush();
+            display.deferredRendererTexObject.diffuseSampler = this.pingRTT.texture;
+            display.deferredRendererTexObject.accumSampler = this.pongRTT.texture;
+
+            this.renderActiveShaders(4);    //Render the deferred quad renderer to the screen
+
+        }
+
+        gl.disable(gl.BLEND);
         gl.enable(gl.CULL_FACE);
         gl.enable(gl.DEPTH_TEST);
 
         this.finishRendering();
-
     };
 
     function fullscreenchange() {

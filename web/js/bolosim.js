@@ -95,12 +95,11 @@ define([
 
         var hudUpdateCounter = 0;
 
-
-
         var crosshairSprite;
         var cursorSprite;
         var display;
         var dirtyTileCache={};
+
         messaging.listen("networkConnectedToServer",function(){
             network.on("god", godCommand);
             network.on("host", hostCommand);
@@ -730,7 +729,7 @@ define([
         network.onSim = function (cmd) {
             for (var t = 0; t < cmd.length;) {
                 if (cmd[t] == 'sync') {
-                    //console.log('got sync' + cmd.join());
+                    console.log('got sync' + cmd.join());
                     t++;
                     var id = cmd[t++];
                     var plyr = playersByNetworkId[id];
@@ -748,7 +747,7 @@ define([
                             t += 5;
                     }
                 } else if (cmd[t] == 'ctrl') {
-                    //console.log('got ctrl' + cmd.join());
+                    console.log('got ctrl' + cmd.join());
                     t++;
                     var id = cmd[t++];
                     var plyr = playersByNetworkId[id];
