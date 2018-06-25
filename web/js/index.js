@@ -147,6 +147,7 @@ require(["util/domReady!", // Waits for page load
         display.deferredRendererTexObject.chromabFactor=1.0;
         display.deferredRendererTexObject.gainFactor=1.0;
         display.deferredRendererTexObject.warpFactor=1.0;
+        deferredRender = false;
 
         messaging.listen("shdrActivate",function(msg,param){deferredRender=param;console.log("Activate:"+param);});
         messaging.listen("shdrV1",function(msg,param){display.deferredRendererTexObject.blurFactor=parseFloat(param);console.log("sv1:"+param);});

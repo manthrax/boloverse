@@ -1,0 +1,23 @@
+remove initial shader debug stuff
+
+fix resizing logic to resize rtt buffers
+
+fix sound
+
+make fog only apply in the distance
+
+start camera further out...
+
+reverse orbitcontrols rotation... make camera follow rotation of tank
+
+
+zoom out minimap further
+
+
+Fix little dude pathing...
+
+
+remove legacy browser support cruft...
+
+
+remove ai pathing debug indicator..
