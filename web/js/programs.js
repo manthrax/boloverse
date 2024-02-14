@@ -479,6 +479,8 @@ programs.getScriptText = function (tagName) {
 };
 
 programs.createProgramFromTags = function (gl, vertexTagId, fragmentTagId) {
+    if(!gl)return {}
+    
     var shdr = this.loadProgram(
         gl,
         this.getScriptText(vertexTagId),

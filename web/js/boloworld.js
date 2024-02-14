@@ -370,6 +370,8 @@ define(mdls,
      //       name = "grid.png";
 
             var tileTex = glUtil.loadTexture(gl, name, function (glTex) {
+                
+                
                 tileTex.bindToUnit = bindToUnit;
                 tileTex.src=name;
                 objects.iterateActive({

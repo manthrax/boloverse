@@ -6,7 +6,7 @@
  *
  */
 
-import displayModule from "./display.js";
+import displayModule from "./display3.js";
 
 import messaging from "./util/messaging.js";
 import bolomap from "./bolomap.js";

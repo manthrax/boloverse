@@ -22,7 +22,8 @@
  */
 
 "use strict";
-
+import {TextureLoader} from "three"
+let textureLoader = new TextureLoader();
 // Polyfill to ensure we can always call requestAnimaionFrame
 if (!window.requestAnimationFrame) {
     window.requestAnimationFrame = (function () {
@@ -147,6 +148,7 @@ export default {
     },
 
     createSolidTexture: function (gl, color, dim) {
+        if(!gl)return {}
         var data = new Uint8Array(color);
         var texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -168,6 +170,7 @@ export default {
     },
 
     loadTexture: function (gl, src, callback, genMipMaps) {
+        if(!gl)return textureLoader.load(src,callback);
         var texture = gl.createTexture();
         var image = new Image();
         image.addEventListener("load", function () {

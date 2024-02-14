@@ -1,7 +1,7 @@
 
 //import doc from "./util/domReady.js"
 import glUtil from "./util/gl-util.js"
-import displayModule from "./display.js"
+import displayModule from "./display3.js"
 import cameraModule from "./camera.js"
 
 import    messaging from "./util/messaging.js"
@@ -35,22 +35,26 @@ require(["util/domReady!", // Waits for page load
     ) { //bolomap,textures
     */
     "use strict";
+
+
     // Create gl context and start the render loop 
+
     var canvas = document.getElementById("canvas");
     var frame = document.getElementById("display-frame");
     var fpsCounter = document.getElementById("fps");
-    var gl = glUtil.getContext(canvas);
 
     var deferredRender=true;
     var accumRender=false;
-
+/*
+    var gl = null;//glUtil.getContext(canvas);
     if(!gl) {
         // Replace the canvas with a message that instructs them on how to get a WebGL enabled browser
         glUtil.showGLFailed(frame);
         throw "GL NOT AVAILABLE."
         //return;
     }
-
+*/
+    let gl;
     var display = new displayModule.display(gl, canvas);
 
 
@@ -58,6 +62,8 @@ require(["util/domReady!", // Waits for page load
 //    canvas.width = canvas.offsetWidth;
 //    canvas.height = canvas.offsetHeight;
     display.resize(gl, canvas);
+
+//let renderer = new THREE.WebGLRenderer({canvas})
 
 
 
@@ -80,7 +86,7 @@ require(["util/domReady!", // Waits for page load
             }
         }
     }
-    
+
     function updateSim(){
         bolosim.updateSim();
         boloclient.updateSim();
@@ -130,6 +136,7 @@ require(["util/domReady!", // Waits for page load
     function bootGame(){
         var radarDim=512;
         var rttDim=1024;
+        
         display.radarRTT = display.initRTT(gl,radarDim,radarDim);
         display.radarRTT.texture.bindToUnit = boloworld.bindToUnit;
 
@@ -154,7 +161,7 @@ require(["util/domReady!", // Waits for page load
 
 
         display.getDebugTexObject();
-
+/*
         display.deferredRendererTexObject=display.createQuadObject(0.4,0,0,display.getDeferredShader(),display.deferredRTT.texture);
 
         display.deferredRendererTexObject.blurFactor=1.0;
@@ -169,7 +176,7 @@ require(["util/domReady!", // Waits for page load
         messaging.listen("shdrV3",function(msg,param){display.deferredRendererTexObject.gainFactor=parseFloat(param);console.log("sv3:"+param);});
         messaging.listen("shdrV4",function(msg,param){display.deferredRendererTexObject.warpFactor=parseFloat(param);console.log("sv4:"+param);});
 
-
+*/
 
         display.radarCamera = new cameraModule.ModelCamera();
         display.radarCamera.distance = 100;//80
@@ -199,6 +206,10 @@ require(["util/domReady!", // Waits for page load
         var renderRadar = true;
 
         if(renderRadar){
+            if(!gl)
+                return;
+
+            
             this.radarRTT.bindRTTForRendering(gl);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    //Clear RTT buffer
             this.startRendering(this.radarCamera);
