@@ -70,7 +70,7 @@ app.use(express.static(__dirname+"/web"));
 //app.use(express.compress());
 
 var port = 3000;
-
+util.puts = console.log;
 util.puts(' x x x '.green);
 util.puts(' welcome to '.blue + 'BOLO '.red + 'v0.1.9.666.x'.yellow);
 util.puts(' server time: '.blue + moment().format('Y-m-d h:i:s').green);
