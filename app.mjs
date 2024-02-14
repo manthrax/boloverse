@@ -1,28 +1,36 @@
-var express = require('express'),
-    socketio = require('socket.io'),
-    os=require('os'),
-    moment=require('moment'),
-    util=require('util'),
-    colors=require('colors'),
-    http = require('http');
 
-var define = require('amdefine')(module);
-//global.io=sio;
+import { URL } from 'url';
+let appurl = new URL('', import.meta.url);
+const __filename = appurl.pathname;
 
-function createBoloServer(){
+const __dirname = appurl.pathname.slice(1,appurl.pathname.lastIndexOf('/'));
+
+import express from "express"
+import * as socketio from "socket.io"
+import os from "os"
+import moment from "moment"
+import util from "util"
+import colors from "colors"
+import https from "https"
+import fs from "fs"
+
+
+async function createBoloServer(){
     var server={};
     // Simulator gorp start
     var BOOT_SIMULATOR=true;
     if(!BOOT_SIMULATOR)return;
-    var fs = require('fs');
+
+
+    var fs = await import('fs') //require('fs');
     eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
     // Connect to server
-    var cio = global.io = require('socket.io-client');
+    var cio = global.io = (await import ('socket.io-client')).default; //require(
 
-    var  bolosim = require('./web/js/bolosim');
+    var  bolosim = (await import ('./web/js/bolosim.js')).default;
     var timing={time:0};
-    var messaging = require('./web/js/util/messaging');
-
+    var messaging = (await import ('./web/js/util/messaging.js')).default
+    
     server.simulator=bolosim;
     server.timing=timing;
     server.messaging=messaging;
@@ -59,13 +67,57 @@ function createBoloServer(){
     bolosim.network.connectToServer();  //Fire this bitch up
     return server;
 }
+/*
 // Simulator gorp end
+import mkcert from 'mkcert';
+
+  // Create a certificate authority
+  const ca = await mkcert.createCA({
+    organization: 'My Development CA',
+    countryCode: 'US',
+    state: 'MyState',
+    locality: 'MyLocality',
+    validityDays: 365,
+  });
+
+  // Create a certificate
+  const cert = await mkcert.createCert({
+    domains: ['localhost', '127.0.0.1', '::1', "136.24.178.125"],
+    validityDays: 365,
+    ca
+    //caKey: ca.key,
+    //caCert: ca.cert,
+  });
+
+  console.log('Certificates generated successfully.');
+*/  // Save the certificates to files or proceed as needed
+
+
 
 
 var app = express();
-var httpServer = http.createServer(app);
+/*
+const options = {
+  key: ca.key,
+  cert: ca.cert
+};
+*/
 
-sio = socketio( httpServer );
+const options = {
+    key: fs.readFileSync('keys/server.key'),
+    cert: fs.readFileSync('keys/server.crt')
+};
+var httpServer = https.createServer(options,app);
+
+let sio = new socketio.Server( httpServer )/*,{
+    cors: {
+      origin: "https://http://136.24.178.125:3000",//appurl.origin,//, // Adjust to your client's origin
+      methods: ["GET", "POST"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true
+    }
+  });*/
+  
 app.use(express.static(__dirname+"/web"));
 //app.use(express.compress());
 

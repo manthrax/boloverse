@@ -3,3 +3,5 @@
 # NODE modules that require NATIVE
 #
 node_modules
+keys/*
+.vscode/*

@@ -1,4 +1,16 @@
 
+//import doc from "./util/domReady.js"
+import glUtil from "./util/gl-util.js"
+import displayModule from "./display.js"
+import cameraModule from "./camera.js"
+
+import    messaging from "./util/messaging.js"
+import    boloclient from "./boloclient.js"
+import   boloworld from "./boloworld.js"
+import   bolosim from "./bolosim.js"
+import   meshes from "./meshes/testmesh.js"
+import   hexmap from "./hexmap.js"
+    /*
 require(["util/domReady!", // Waits for page load
         "util/gl-util",
         "display",
@@ -21,6 +33,7 @@ require(["util/domReady!", // Waits for page load
     meshes,
     hexmap
     ) { //bolomap,textures
+    */
     "use strict";
     // Create gl context and start the render loop 
     var canvas = document.getElementById("canvas");
@@ -33,11 +46,12 @@ require(["util/domReady!", // Waits for page load
 
     if(!gl) {
         // Replace the canvas with a message that instructs them on how to get a WebGL enabled browser
-        glUtil.showGLFailed(frame); 
-        return;
+        glUtil.showGLFailed(frame);
+        throw "GL NOT AVAILABLE."
+        //return;
     }
 
-    var display = new display.display(gl, canvas);
+    var display = new displayModule.display(gl, canvas);
 
 
     // If we don't set this here, the rendering will be skewed
@@ -287,4 +301,4 @@ require(["util/domReady!", // Waits for page load
     setStatus("Connecting to server...");
     network.connectToServer();
 
-});
+//});

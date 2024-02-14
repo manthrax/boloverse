@@ -1,4 +1,16 @@
 
+import messaging from "./util/messaging.js"
+import util from "./util/util.js"
+import programs from "./programs.js"
+import bolomap from "./bolomap.js"
+import   meshes from "./meshes/testmesh.js"
+import   fontMesh from "./fontMesh.js"
+
+let glUtil;
+if(typeof window==='object') glUtil = (await import("./util/gl-util.js")).default;
+//import glUtil from "./util/gl-util.js"
+    
+/*
 if (typeof define !== 'function') {
     var mdls = [
         "./util/messaging.js",
@@ -36,7 +48,7 @@ define(mdls,
         meshes,
         fontMesh
     ) {//display,
-
+*/
     //    util.testDLL();
 
         function showWinMessage(winTeam){
@@ -428,7 +440,7 @@ define(mdls,
                     mat4.translate(mat, [x * tileDim, y * tileDim, 0.0]);
                     var mx = x + mox;
                     var my = y + moy;
-                    mesh = meshGen(mat, mx, my, Math.random());
+                    let mesh = meshGen(mat, mx, my, Math.random());
                     var scl = tileRad;
                     mat4.scale(mat, [scl, scl, scl]);
                     display.instanceMesh(mesh, batch, mat);
@@ -732,7 +744,8 @@ define(mdls,
             return objects.byId[id];
         }
 
-        return{
+        //return
+        export default {
             makeScene: makeScene,
             update: update,
             getCellAtWorld: getCellAtWorld,
@@ -773,5 +786,5 @@ define(mdls,
             getMap: getMap,
             mapOrigin: mapOrigin
         }
-    }
-);
+    //}
+//);

@@ -5,10 +5,11 @@
  *
  *
  */
+/*
 if (typeof define !== 'function') {var define = require('amdefine')(module);}
 
 define([],function(){
-
+*/
 function getMeshVertex(mesh,index,vert,normal,uv)
 {
     if(vert){
@@ -80,7 +81,9 @@ function createFontFromMesh(mesh){
     console.log("cct:"+cct);
 }
 
-return{
+//return
+export default{
     createFontFromMesh:createFontFromMesh
 }
-});
+
+//});

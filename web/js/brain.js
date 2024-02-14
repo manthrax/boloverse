@@ -1,3 +1,4 @@
+/*
 if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
@@ -7,6 +8,10 @@ define([
     "./util/astar.js",
     "./util/priorityQueue.js"
 ], function (messaging) {
+*/
+import messaging from "./util/messaging.js"
+import PathFinder from "./util/astar.js"
+import PriorityQueue from "./util/priorityQueue.js"
     var v3t0=[0,0,0];
     var v3t1=[0,0,0];
     var v3t2=[0,0,0];
@@ -284,7 +289,8 @@ define([
     }
     
     
-    return{
+//    return
+    export default {
         Brain:Brain
     }
-});
+//});
