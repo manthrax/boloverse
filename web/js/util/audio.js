@@ -1,14 +1,14 @@
 /* Copyright 2011 - Michael A. Schlachter - please contact me if you want to use this code! */
 
 import messaging from "./messaging.js";
-var loggingEnabled = false;
-var soundDisabled = true;
-var audibleRadius = 200;
-var g_globalSoundVolume = 0.01;
+let loggingEnabled = false;
+let soundDisabled = true;
+let audibleRadius = 200;
+let g_globalSoundVolume = 0.01;
 
-var audibleRadius2 = audibleRadius * audibleRadius;
+let audibleRadius2 = audibleRadius * audibleRadius;
 
-var files = [],
+let files = [],
     endEvents = [],
     loadedEvent = null,
     playing = {},
@@ -25,40 +25,40 @@ var files = [],
     v3_min_len = 0.00001;
 
 function calcPositionalVolume2d(pos) {
-    var dx = pos[0] - listenerPosition[0];
-    var dy = pos[1] - listenerPosition[1];
+    let dx = pos[0] - listenerPosition[0];
+    let dy = pos[1] - listenerPosition[1];
     dx *= dx;
     dy *= dy;
-    var vd2 = dx + dy;
+    let vd2 = dx + dy;
     if (vd2 > audibleRadius2) return 0.0;
     if (vd2 < v3_min_len) return 1.0;
     return 1.0 - Math.sqrt(vd2) / audibleRadius;
 }
 
 function playPositional2d(name, position, vol, caller, cleanup) {
-    var tvol = calcPositionalVolume2d(position);
+    let tvol = calcPositionalVolume2d(position);
     if (tvol > 0.0) {
         return play(name, tvol * (vol ? vol : 1.0), caller, cleanup);
     }
     return 0;
 }
-var g_soundFalloff = [1, 0.5, 0.25, 0.1, 0.01, 0.0, 0.0];
+let g_soundFalloff = [1, 0.5, 0.25, 0.1, 0.01, 0.0, 0.0];
 
 function calcPositionalVolume3d(targ, radius) {
-    var rsqr = radius;
+    let rsqr = radius;
     v3subv(v3t0, targ, listenerPosition);
-    var dist = v3len(v3t0);
+    let dist = v3len(v3t0);
     if (dist > rsqr) return 0.0;
-    var idx = (dist * (g_soundFalloff.length - 1) * 0.999) / rsqr;
-    var rnd = parseInt(idx);
-    var frac = idx - rnd;
-    var vol =
+    let idx = (dist * (g_soundFalloff.length - 1) * 0.999) / rsqr;
+    let rnd = parseInt(idx);
+    let frac = idx - rnd;
+    let vol =
         g_soundFalloff[rnd] * (1.0 - frac) + g_soundFalloff[rnd + 1] * frac;
     return vol;
 }
 
 function playPositional3d(name, position, vol, radius, caller, cleanup) {
-    var tvol = calcPositionalVolume3d(position, radius);
+    let tvol = calcPositionalVolume3d(position, radius);
     if (tvol > 0.0) {
         return audio.play(name, tvol * vol, caller, cleanup);
     }
@@ -66,8 +66,8 @@ function playPositional3d(name, position, vol, radius, caller, cleanup) {
 }
 // generate audio data of a sine wave
 function setListenerParams(position) {
-    for (var i = 0; i < 3; i++) listenerPosition[i] = position[i];
-    for (var e = 0; e < emitters.length; e++) {
+    for (let i = 0; i < 3; i++) listenerPosition[i] = position[i];
+    for (let e = 0; e < emitters.length; e++) {
         emitters[e].update();
     }
     //this.playing
@@ -91,13 +91,13 @@ function i2b(b, i) {
 }
 
 function sineWave(freq, len, rate, vol) {
-    var I = len * rate;
-    var p = 0;
-    var s = (2 * Math.PI * freq) / rate;
-    var w = "";
-    var sin = Math.sin;
-    var chr = String.fromCharCode;
-    for (var i = 0; i < I; i++) {
+    let I = len * rate;
+    let p = 0;
+    let s = (2 * Math.PI * freq) / rate;
+    let w = "";
+    let sin = Math.sin;
+    let chr = String.fromCharCode;
+    for (let i = 0; i < I; i++) {
         v = sin(p) * vol;
         p += s;
         w += chr(v & 255, (v >> 8) & 255);
@@ -106,12 +106,12 @@ function sineWave(freq, len, rate, vol) {
 }
 function playTone(frequency, seconds, _volume, _func) {
     //document.getElementById('console').innerHTML = Math.round(frequency)+' Hz for '+seconds+' seconds\n'+document.getElementById('console').innerHTML;
-    var samplerate = 2000;
-    var volume = 32767 * (_volume ? _volume : 1.0);
-    var player = document.createElement("audio");
+    let samplerate = 2000;
+    let volume = 32767 * (_volume ? _volume : 1.0);
+    let player = document.createElement("audio");
     if (_func == undefined) _func = sineWave;
-    var wave = _func(frequency, seconds, samplerate, volume);
-    var format =
+    let wave = _func(frequency, seconds, samplerate, volume);
+    let format =
         "fmt " +
         i2b(32, 16) +
         i2b(16, 1) +
@@ -120,8 +120,8 @@ function playTone(frequency, seconds, _volume, _func) {
         i2b(32, 2 * samplerate) +
         i2b(16, 2) +
         i2b(16, 16);
-    var content = "data" + i2b(32, 2 * wave.length) + wave;
-    var header = "RIFF" + i2b(32, format.length + content.length + 20) + "WAVE";
+    let content = "data" + i2b(32, 2 * wave.length) + wave;
+    let header = "RIFF" + i2b(32, format.length + content.length + 20) + "WAVE";
     player.src =
         "data:audio/wav;base64," + escape(btoa(header + format + content));
     player.play();
@@ -145,7 +145,7 @@ function allSoundsLoaded() {
 }
 function load(name, path, cb) {
     if (loggingEnabled == true) console.log("Loading sound:" + name);
-    var f = (files[name] = document.createElement("audio"));
+    let f = (files[name] = document.createElement("audio"));
     f.setAttribute("preload", "true");
     f.setAttribute("autobuffer", "true");
     f.setAttribute("src", path);
@@ -166,7 +166,7 @@ function load(name, path, cb) {
     f.pause();
 }
 function addEmitter(gsound, eposition) {
-    var em = {
+    let em = {
         sound: gsound,
         active: false,
         playing: false,
@@ -189,13 +189,13 @@ function addEmitter(gsound, eposition) {
             this.active = false;
         },
         update: function () {
-            var tvol =
+            let tvol =
                 calcPositionalVolume3d(this.position, this.radius) *
                 this.volume;
             if (this.playing) {
                 //Adjust playing sound volume
                 if (tvol > 0.0) {
-                    var snd = audio.getChannelSound(this.channel);
+                    let snd = audio.getChannelSound(this.channel);
                     if (snd) {
                         snd.volume = tvol;
                     }
@@ -222,7 +222,7 @@ function addEmitter(gsound, eposition) {
             this.name = name;
             this.loop = loop;
 
-            var tvol = calcPositionalVolume3d(this.position, this.radius);
+            let tvol = calcPositionalVolume3d(this.position, this.radius);
             if (tvol > 0.0) {
                 this.channel = audio.play(
                     name,
@@ -244,7 +244,7 @@ function loadSoundsFN(arr) {
     if (arr.length === 0) {
         return;
     } else {
-        var x = arr.pop();
+        let x = arr.pop();
         load(x[0], x[1], function () {
             loadSoundsFN(arr);
         });
@@ -258,12 +258,12 @@ function startSoundsLoading() {
     waitSoundsLoaded();
 }
 function loadSounds(root, earr) {
-    //var ext = Modernizr.audio.ogg ? '.ogg' : '.mp3';
-    var ext = ".ogg";
+    //let ext = Modernizr.audio.ogg ? '.ogg' : '.mp3';
+    let ext = ".ogg";
     let arr = [];
     for (let key in earr) {
-        var elm = earr[key]; //Paul Headhunter: 6082037473
-        var fn = elm.file;
+        let elm = earr[key]; //Paul Headhunter: 6082037473
+        let fn = elm.file;
         if (fn.indexOf(".") < 0) fn += ext;
         arr.push([key, root + fn]);
     }
@@ -281,11 +281,11 @@ function soundLoadedCB(event, name, callback) {
     }
 }
 function status() {
-    var str = "Sounds Playing:" + playingCount + " cached:" + cachedCount;
+    let str = "Sounds Playing:" + playingCount + " cached:" + cachedCount;
     return str;
 }
 function stopSounds() {
-    for (var i in playing) {
+    for (let i in playing) {
         playing[i].pause();
         freeSound(playing[i]);
     }
@@ -295,7 +295,7 @@ function stopSounds() {
 
 function stop(sndID) {
     if (sndID) {
-        var snd = playing[sndID];
+        let snd = playing[sndID];
         snd.endTime = 0;
         snd.loop = false;
         if (snd.doneCbfn) {
@@ -307,12 +307,12 @@ function stop(sndID) {
 }
 function harvestDeadSounds() {
     if (playingCount == 0) return;
-    var soundTime = new Date();
-    var tm = soundTime.getTime();
-    var nplaying = {};
-    var npct = 0;
+    let soundTime = new Date();
+    let tm = soundTime.getTime();
+    let nplaying = {};
+    let npct = 0;
     for (let i in playing) {
-        var snd = playing[i];
+        let snd = playing[i];
         if (snd.endTime >= tm) {
             nplaying[i] = snd;
             npct++;
@@ -340,7 +340,7 @@ function harvestDeadSounds() {
 }
 /*
     function ended(name,snd) {
-        var i, tmp = [], found = false;
+        let i, tmp = [], found = false;
         snd.removeEventListener("ended", endEvents[snd], true);
 		delete playing[i];
 		playingCount--;
@@ -352,7 +352,7 @@ function getChannelSound(chan) {
     return playing[chan];
 }
 function getPlayer() {
-    var elm = document.createElement("audio");
+    let elm = document.createElement("audio");
     elm.channelIndex = chanBaseId++;
     return elm;
 }
@@ -367,14 +367,14 @@ function freeSound(snd) {
 function play(name, vol, caller, doneCbfn, loop) {
     if (soundDisabled || playingCount > 4) return null;
 
-    var rsrc = files[name];
+    let rsrc = files[name];
     if (rsrc == undefined) {
         console.log("Sound:" + name + " is undefined.");
         return;
     }
-    var vol = g_globalSoundVolume * (vol != undefined ? parseFloat(vol) : 1.0);
-    if (vol < 0.0001) return null;
-    var snd;
+    let svol = g_globalSoundVolume * (vol != undefined ? parseFloat(vol) : 1.0);
+    if (svol < 0.0001) return null;
+    let snd;
     if (freeChannels[rsrc.src]) {
         snd = freeChannels[rsrc.src].pop();
         if (freeChannels[rsrc.src].length == 0) delete freeChannels[rsrc.src];
@@ -386,15 +386,15 @@ function play(name, vol, caller, doneCbfn, loop) {
     snd.loop = loop == undefined ? false : loop;
     snd.caller = caller;
     snd.doneCbfn = doneCbfn;
-    var soundTime = new Date();
-    var tm = soundTime.getTime();
+    let soundTime = new Date();
+    let tm = soundTime.getTime();
     //console.log("Playing snd:"+name+" at "+tm+" duration:"+rsrc.duration);
     snd.name = name;
     //snd.tmDuration=(1000*rsrc.duration)-500;
     snd.tmDuration = 1000 * rsrc.duration;
     if (snd.tmDuration < 1) snd.tmDuration = 1;
     snd.endTime = tm + snd.tmDuration;
-    snd.volume = vol;
+    snd.volume = svol;
     playing[snd.channelIndex] = snd;
     playingCount++;
     /*    endEvents[snd]=function() { ended(name,snd); };
@@ -406,20 +406,26 @@ function play(name, vol, caller, doneCbfn, loop) {
 		}
 	*/
     //snd.volume=1.0;
+	try{
     snd.play();
+		
+	}
+	catch{
+		console.log("Sound:"+name+" error!");		
+	}
     //snd.currentTime=0.0;
     //		console.log("Sound:"+name+" started.");
     return snd.channelIndex;
 }
 
 function pause() {
-    for (var i in playing) {
+    for (let i in playing) {
         i.pause();
     }
 }
 
 function resume() {
-    for (var i in playing) {
+    for (let i in playing) {
         i.play();
     }
 }

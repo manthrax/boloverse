@@ -1,4 +1,4 @@
-var handlers = {};
+let handlers = {};
 function removeListener(msg, handler) {}
 function listen(msg, handler) {
     if (!handlers[msg]) handlers[msg] = [handler];
@@ -6,13 +6,13 @@ function listen(msg, handler) {
 }
 
 function send(msg, param) {
-    var hands = handlers[msg];
+    let hands = handlers[msg];
     if (!hands) {
         console.log("unhandled:" + msg);
         return;
     }
     //console.log("sending:"+msg);
-    for (var h = 0; h < hands.length; h++) hands[h](msg, param);
+    for (let h = 0; h < hands.length; h++) hands[h](msg, param);
 }
 
 export default {

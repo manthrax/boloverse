@@ -8,6 +8,8 @@
 
 import displayModule from "./display3.js";
 
+import {vec3,mat4} from "./util/gl-matrix.js"
+
 import messaging from "./util/messaging.js";
 import bolomap from "./bolomap.js";
 import bolosim from "./bolosim.js";
@@ -16,7 +18,7 @@ import meshes from "./meshes/testmesh.js";
 import audio from "./util/audio.js";
 import network from "./network.js";
 
-var sounds = [
+let sounds = [
     "big_explosion_far",
     "big_explosion_near",
     "bubbles",
@@ -64,7 +66,7 @@ window.gameMessage = messaging.send;
 window.getMapNames = bolomap.getMapNames;
 window.loadMap = bolomap.loadMapByName;
 
-var tileMeshNames = {
+let tileMeshNames = {
     Building: "building",
     River: "river",
     Swamp: "swamp",
@@ -78,11 +80,11 @@ var tileMeshNames = {
     Ocean: "ocean",
 };
 
-for (var v in meshes) {
+for (let v in meshes) {
     meshes[v].name = v;
 }
 
-var dirLUT = {
+let dirLUT = {
     0: ["", 0],
     1: ["0", 2],
     2: ["0", 3],
@@ -106,11 +108,11 @@ var dirLUT = {
 };
 
 function generateTileMesh(mat, mx, my, rand) {
-    var cell = boloworld.getCell(mx, my);
-    var tid = cell[0].name;
-    var mesh = meshes[tileMeshNames[tid]];
-    var directional = false;
-    var meshBase = "";
+    let cell = boloworld.getCell(mx, my);
+    let tid = cell[0].name;
+    let mesh = meshes[tileMeshNames[tid]];
+    let directional = false;
+    let meshBase = "";
     if (tid == "Road") {
         // instanceMesh(meshes.crater,mat,batch);
         directional = true;
@@ -123,12 +125,12 @@ function generateTileMesh(mat, mx, my, rand) {
         meshBase = "building";
     }
     if (directional) {
-        var dbits = boloworld.getNeighborsOfName(mx, my, tid);
+        let dbits = boloworld.getNeighborsOfName(mx, my, tid);
         if (tid == "River") {
             dbits |= boloworld.getNeighborsOfName(mx, my, "Ocean");
         }
-        var tdata = dirLUT[dbits];
-        var meshName = meshBase + tdata[0];
+        let tdata = dirLUT[dbits];
+        let meshName = meshBase + tdata[0];
         if (tid == "Building") {
             if (tdata[0] != "02") meshName = "building";
             if (cell[0].hp < 255) {
@@ -148,60 +150,60 @@ function generateTileMesh(mat, mx, my, rand) {
     return mesh;
 }
 messaging.listen("baseTaken", function (msg, params) {
-    var cb = document.getElementById("basebox_" + params.baseNumber);
+    let cb = document.getElementById("basebox_" + params.baseNumber);
     cb.style["background-color"] = params.team == 0 ? "red" : "blue";
     audio.play(params.team == 0 ? "takebase" : "lostbase");
 });
 
 messaging.listen("deactivateBaseHUD", function (msg, id) {
-    var bbox = document.getElementById("basebox_" + id);
+    let bbox = document.getElementById("basebox_" + id);
     bbox.style.display = "none";
 });
 
 messaging.listen("activateBaseHUD", function (msg, id) {
-    var bbox = document.getElementById("basebox_" + id);
+    let bbox = document.getElementById("basebox_" + id);
     bbox.style["background-color"] = "#bb9878";
 });
 
 messaging.listen("deactivatePillHUD", function (msg, id) {
-    var bbox = document.getElementById("cbox_" + id);
+    let bbox = document.getElementById("cbox_" + id);
     bbox.style.display = "none";
 });
 
 messaging.listen("activatePillHUD", function (msg, id) {
-    var bbox = document.getElementById("cbox_" + id);
+    let bbox = document.getElementById("cbox_" + id);
     bbox.style["background-color"] = "#14751c";
 });
 
 messaging.listen("turretDestroyed", function (msg, param) {
-    var cb = document.getElementById("cbox_" + param.turret.pillboxNumber);
+    let cb = document.getElementById("cbox_" + param.turret.pillboxNumber);
     cb.style["background-color"] = "gray";
     //cb.style["background-color"] = (param.player.team == 0) ? "red" : "blue";
 });
 
 messaging.listen("turretDeployed", function (msg, param) {
-    var cb = document.getElementById("cbox_" + param.turret.pillboxNumber);
+    let cb = document.getElementById("cbox_" + param.turret.pillboxNumber);
     cb.style["background-color"] = param.player.team == 0 ? "red" : "blue";
 });
 
 messaging.listen("initSim", function () {
-    //var explosionMesh;
-    //var explosionRenderer;
+    //let explosionMesh;
+    //let explosionRenderer;
     //explosionMesh = display.mesh(gl, meshes.explosion)
     //explosionRenderer = boloworld.createSingleMeshRenderer("explosion");
 
     console.log("Client boot...");
 
     //Build the map load menu html
-    var mapNames = getMapNames();
-    var str = "";
-    for (var t = 0; t < mapNames.length; t++)
+    let mapNames = getMapNames();
+    let str = "";
+    for (let t = 0; t < mapNames.length; t++)
         str +=
             "<option value='" + mapNames[t] + "'>" + mapNames[t] + "</option>";
     document.getElementById("maps").innerHTML = str;
 
-    var loadRequests = {};
-    for (var si in sounds) loadRequests[sounds[si]] = { file: sounds[si] };
+    let loadRequests = {};
+    for (let si in sounds) loadRequests[sounds[si]] = { file: sounds[si] };
     audio.loadSounds("js/sounds/", loadRequests);
     audio.startSoundsLoading();
 
@@ -228,32 +230,32 @@ messaging.listen("initSim", function () {
     boloworld.setTileMeshGenerator(generateTileMesh);
 });
 
-var barShells = document.getElementById("statColor_shells");
-var barMines = document.getElementById("statColor_mines");
-var barArmor = document.getElementById("statColor_armor");
-var barWood = document.getElementById("statColor_wood");
-var ticketsDisplay = document.getElementById("ticketDisplay");
+let barShells = document.getElementById("statColor_shells");
+let barMines = document.getElementById("statColor_mines");
+let barArmor = document.getElementById("statColor_armor");
+let barWood = document.getElementById("statColor_wood");
+let ticketsDisplay = document.getElementById("ticketDisplay");
 
 messaging.listen("updatePlayerHUD", function (msg, p) {
-    var str = "TICKETS:";
+    let str = "TICKETS:";
     barShells.style.width = "" + parseInt((p.invShells * 100.0) / 40.0) + "px";
     barMines.style.width = "" + parseInt((p.invMines * 100.0) / 40.0) + "px";
     barArmor.style.width = "" + parseInt((p.hp * 100.0) / 255.0) + "px";
     barWood.style.width = "" + parseInt((p.invWood * 100.0) / 255.0) + "px";
-    var liveTeams = 0;
-    var tickets = bolosim.teamTickets;
-    for (var i in tickets) {
+    let liveTeams = 0;
+    let tickets = bolosim.teamTickets;
+    for (let i in tickets) {
         if (tickets[i] > 0) liveTeams++;
     }
     if (liveTeams > 0) {
-        for (i in tickets) {
+        for (let i in tickets) {
             str += " " + i + ":" + parseInt(tickets[i]);
         }
         ticketsDisplay.innerHTML = str;
     }
 });
 
-var cameraPos = [0, 0, 0];
+let cameraPos = [0, 0, 0];
 
 function updateSim() {
     audio.harvestDeadSounds();

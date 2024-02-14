@@ -1,6 +1,6 @@
 remove initial shader debug stuff
 
-fix resizing logic to resize rtt buffers
+X fix resizing logic to resize rtt buffers
 
 fix sound
 
@@ -19,7 +19,7 @@ zoom out minimap further
 Fix little dude pathing...
 
 
-remove legacy browser support cruft...
+X remove legacy browser support cruft...
 
 
 remove ai pathing debug indicator..

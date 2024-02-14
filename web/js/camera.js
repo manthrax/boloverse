@@ -1,7 +1,8 @@
 
 "use strict";
-
-var KeyboardState={
+import {vec3,mat4} from "./util/gl-matrix.js"
+import TWEEN from "./util/tween.js"
+let KeyboardState={
     _pressedKeys: new Array(128),
     _debounceKeys: new Array(128)
 }
@@ -18,7 +19,7 @@ function addKeyEventHooks(){
     }, false);
 }
 
-var ModelCamera, FlyingCamera;
+let ModelCamera, FlyingCamera;
 
 /**
  * A ModelDemoCamera is one that always points at a central point and orbits around at a fixed radius
@@ -27,7 +28,7 @@ var ModelCamera, FlyingCamera;
 import {PerspectiveCamera} from "three" 
 
 ModelCamera = function (canvas) {
-    var self = this, moving = false;
+    let self = this, moving = false;
     this.perspectiveCamera = new PerspectiveCamera();   
     //this.perspectiveCamera.matrixAutoUpdate = false;
     
@@ -52,7 +53,7 @@ ModelCamera = function (canvas) {
     this.zoomValues=[8.0,30.0,70,100];
    // document.onmousewheel = wheel;
     this.addMouseControls = function(canvas){
-        var self=this;
+        let self=this;
         addKeyEventHooks();
         // Set up the appropriate event hooks
         canvas.addEventListener('mousedown', function (event) {
@@ -67,7 +68,7 @@ ModelCamera = function (canvas) {
         }, false);
 
         canvas.addEventListener('mousewheel', function (event) {
-            var delta = 0;
+            let delta = 0;
             if (!event) event = window.event;
             if (event.wheelDelta) {
                 delta = event.wheelDelta/120;
@@ -79,7 +80,7 @@ ModelCamera = function (canvas) {
                 self.zoomLevel-=delta;
                 if(self.zoomLevel<0)self.zoomLevel=0;
                 if(self.zoomLevel>3)self.zoomLevel=3;
-                var t = new TWEEN.Tween(self);
+                let t = new TWEEN.Tween(self);
                 t.to({distance:self.zoomValues[parseInt(self.zoomLevel)]},160).onUpdate(function(c,v){
                     self._dirty=true;
                     //this.update();
@@ -98,14 +99,14 @@ ModelCamera = function (canvas) {
         }
         canvas.addEventListener('mousemove', function (event) {
             if (moving) {
-                var xDelta = event.pageX  - self.lastX,
+                let xDelta = event.pageX  - self.lastX,
                     yDelta = event.pageY  - self.lastY;
 
                 self.lastX = event.pageX;
                 self.lastY = event.pageY;
 
-                var nx=self.orbitX;
-                var ny=self.orbitY;
+                let nx=self.orbitX;
+                let ny=self.orbitY;
                 ny += xDelta * -0.025;
                 nx += yDelta * 0.025;
 
@@ -151,7 +152,7 @@ ModelCamera.prototype.setDistance = function (value) {
 
 ModelCamera.prototype.getViewMat = function () {
     if (this._dirty) {
-        var mv = this._viewMat;
+        let mv = this._viewMat;
         mat4.identity(mv);
         mat4.translate(mv, [0, 0, -this.distance]);
         mat4.rotateX(mv, this.orbitX + (Math.PI / 2));
@@ -214,19 +215,19 @@ ModelCamera.prototype.update = function () {
  * A FlyingDemoCamera allows free motion around the scene using FPS style controls (WASD + mouselook)
  * This type of camera is good for displaying large scenes
  */
-var cursorPos=[0,0];
+let cursorPos=[0,0];
  function camMouseMove(event) {
     if (moving) {
-        var xDelta = event.pageX  - self.lastX,
+        let xDelta = event.pageX  - self.lastX,
             yDelta = event.pageY  - self.lastY;
 
         self.lastX = event.pageX;
         self.lastY = event.pageY;
 
-        var sensitivity=0.005;
+        let sensitivity=0.005;
 
-        var nx=self._angles[0];
-        var ny=self._angles[1];
+        let nx=self._angles[0];
+        let ny=self._angles[1];
         ny += xDelta * -sensitivity;
         while (ny < 0) {
             ny += Math.PI * 2.0;
@@ -269,7 +270,7 @@ function camMouseUp() {
 }
 
 FlyingCamera = function (canvas) {
-    var self = this, moving = false;
+    let self = this, moving = false;
     this.lastX=0;
     this.lastY=0;
     this.mouseX=0;
@@ -315,7 +316,7 @@ FlyingCamera.prototype.setPosition = function (value) {
 
 FlyingCamera.prototype.getViewMat = function () {
     if (this._dirty) {
-        var mv = this._viewMat;
+        let mv = this._viewMat;
         mat4.identity(mv);
         mat4.rotateX(mv, this._angles[0] - Math.PI / 2.0);
         mat4.rotateZ(mv, this._angles[1] * -1.0);
@@ -328,7 +329,7 @@ FlyingCamera.prototype.getViewMat = function () {
 };
 
 FlyingCamera.prototype.update  = function (frameTime) {
-    var dir = vec3.create(),
+    let dir = vec3.create(),
         speed = (this.speed / 1000) * frameTime,
         cam;
 
@@ -364,7 +365,7 @@ FlyingCamera.prototype.update  = function (frameTime) {
         // Move the camera in the direction we are facing
         vec3.add(this._position, dir);
         //Clamp to area above ground..
-        var groundHeight=62.33;
+        let groundHeight=62.33;
         if(this._position[2]<groundHeight)this._position[2]=groundHeight;
         this._dirty = true;
     }

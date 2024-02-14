@@ -5,16 +5,15 @@
     Description:
         Purpose of the stylesheet follows.
 */
-
-root { 
+root {
     display: block;
 }
 
 #shaderIFrame , #imageCache {
     width: 0px;
     height: 0px;
-    visibility:hidden;
-    background-color: #d8da3d 
+    visibility: hidden;
+    background-color: #d8da3d
 }
 
 html, body {
@@ -42,29 +41,24 @@ CANVAS {
 }
 
 .uiTitle {
-
     position: absolute;
-    top:0;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     width: 512px;
     height: 175px;
-
     margin: auto;
-
     z-index: 2;
     background-color: rgba(0,0,0,0.25);
     border-radius: 6px;
     padding: 1px;
     color: yellow;
-
     text-align: center;
     visibility: hidden;
-
 }
 
-.uiComponent, .uiElem{
+.uiComponent, .uiElem {
     z-index: 2;
     color: yellow;
     font-family: sans-serif;
@@ -75,13 +69,12 @@ CANVAS {
 }
 
 * {
-    
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    user-select: none;    
+    user-select: none;
 }
 
 .selectable {
@@ -90,15 +83,13 @@ CANVAS {
     -khtml-user-select: text;
     -moz-user-select: text;
     -ms-user-select: text;
-    user-select: text;    
-    
+    user-select: text;
 }
 
 .uiElem {
     position: absolute;
     top: 10px;
     left: 10px;
-
     overflow: hidden;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -106,11 +97,9 @@ CANVAS {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-
     border-radius: 6px;
     padding: 1px;
 }
-
 
 #viewContainer {
     width: 100%;
@@ -118,81 +107,75 @@ CANVAS {
 }
 
 color {
-    magenta:#db17cb;
-    lightBlue:#2ac8ca;
-    lightGreen:#20db17;
-    orange:#db8617;
-    green:#14751c;
-    tan:#bb9878;
+    magenta: #db17cb;
+    lightBlue: #2ac8ca;
+    lightGreen: #20db17;
+    orange: #db8617;
+    green: #14751c;
+    tan: #bb9878;
 }
 
 .colorBar {
-    height:12px;
-    width:100px;
-    padding:0;
-    margin:0px auto;
-    background-color:#000;
+    height: 12px;
+    width: 100px;
+    padding: 0;
+    margin: 0px auto;
+    background-color: #000;
 }
 
 .colorBox {
-    height:13px;
-    width:13px;
-    padding:0;
-    margin:0px auto;
-    margin-right:-1px;
-    background-color:#000;
-    display:inline-block;
+    height: 13px;
+    width: 13px;
+    padding: 0;
+    margin: 0px auto;
+    margin-right: -1px;
+    background-color: #000;
+    display: inline-block;
 }
 
-
-
-XXhtml
-{
-    height:100%;   
+XXhtml {
+    height: 100%;
 }
 
 XXbody {
-
-    height:100%;
-    background-color:#36F;
-    padding:0px;
-    margin:0px auto;
-
+    height: 100%;
+    background-color: #36F;
+    padding: 0px;
+    margin: 0px auto;
 }
 
 #playerListElems {
-    position:absolute;
-    z-index:1;
-    left:0px;
-    width:100px;
-    height:100px;
+    position: absolute;
+    z-index: 1;
+    left: 0px;
+    width: 100px;
+    height: 100px;
 }
 
 #topLeftBox {
-    position:absolute;
-    z-index:1;
-    top:0px;
+    position: absolute;
+    z-index: 1;
+    top: 0px;
 }
 
 #topRightBox {
-
-    position:absolute;
-    z-index:1;
-    right:0px;
-    top:0px;
+    position: absolute;
+    z-index: 1;
+    right: 0px;
+    top: 0px;
 }
 
 #bottomLeftBox {
-    position:absolute;
-    z-index:1;
-    bottom:0px;
+    position: absolute;
+    z-index: 1;
+    bottom: 0px;
 }
 
 #bottomRightBox {
-    position:absolute;
-    z-index:1;
-    right:0px;
-    bottom:0px;
+    position: absolute;
+    z-index: 1;
+    right: 0px;
+    bottom: 0px;
 }
 
 #incomingChatMessage {
@@ -201,14 +184,14 @@ XXbody {
 }
 
 #bottomCenterBox {
-    z-index:1;
-    margin:0px auto;
-    position:absolute;
+    z-index: 1;
+    margin: 0px auto;
+    position: absolute;
     left: 300px;
-    bottom:20px;
-    padding:12px;
+    bottom: 20px;
+    padding: 12px;
     height: 100px;
-    background-color:rgba(0,0,0, 0.5);
+    background-color: rgba(0,0,0, 0.5);
     margin-left: auto;
     margin-right: auto;
     overflow-x: auto;
@@ -216,14 +199,14 @@ XXbody {
 }
 
 #centerBox {
-    z-index:1;
-    margin:0px auto;
-    position:absolute;
+    z-index: 1;
+    margin: 0px auto;
+    position: absolute;
     left: 20px;
     height: 200px;
     top: 70px;
-    padding:12px;
-    background-color:rgba(0,0,0, 0.5);
+    padding: 12px;
+    background-color: rgba(0,0,0, 0.5);
     margin-left: auto;
     margin-right: auto;
     margin-top: auto;
@@ -231,16 +214,15 @@ XXbody {
     display: none;
 }
 
-
 #rightBox {
-    z-index:1;
-    margin:0px auto;
-    position:absolute;
+    z-index: 1;
+    margin: 0px auto;
+    position: absolute;
     right: 20px;
     height: 200px;
     top: 70px;
-    padding:12px;
-    background-color:rgba(0,0,0, 0.5);
+    padding: 12px;
+    background-color: rgba(0,0,0, 0.5);
     margin-left: auto;
     margin-right: auto;
     margin-top: auto;
@@ -248,71 +230,66 @@ XXbody {
     display: block;
 }
 
-
 .statBar {
-    display:block;
+    display: block;
 }
 
 #statsBox {
-    background-color:rgba(0,0,0, 0.5);
-    display:inline-block;
-    padding:0px;
-    margin:0px auto;
-    height:64px;
+    background-color: rgba(0,0,0, 0.5);
+    display: inline-block;
+    padding: 0px;
+    margin: 0px auto;
+    height: 64px;
 }
 
 #statsBoxText {
-    background-color:rgba(0,0,0, 0.5);	
-    display:inline-block;
-    padding:0px;
-    margin:0px auto;
+    background-color: rgba(0,0,0, 0.5);
+    display: inline-block;
+    padding: 0px;
+    margin: 0px auto;
 }
 
 #basesBox {
-    background-color:rgba(0,0,0, 0.5);
-    display:inline-block;
+    background-color: rgba(0,0,0, 0.5);
+    display: inline-block;
 }
 
 #purposeBox {
-    background-color:rgba(0,0,0, 0.5);
-    display:inline-block;
+    background-color: rgba(0,0,0, 0.5);
+    display: inline-block;
 }
 
 #turretsBox {
-    margin-left:12px;
-    background-color:rgba(0,0,0, 0.5);	
-    display:inline-block;
-
+    margin-left: 12px;
+    background-color: rgba(0,0,0, 0.5);
+    display: inline-block;
 }
 
 #logoBox {
-    background-color:rgba(0,0,0, 0.5);
-
+    background-color: rgba(0,0,0, 0.5);
 }
 
 .purposeButton {
-    display:inline-block;
+    display: inline-block;
 }
 
-
-
 .navFont {
-    font-family:Arial, Helvetica, sans-serif;
-    font-weight:bold;
-    font-size:small;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: small;
 }
 
 a {
-    font-family:Arial, Helvetica, sans-serif;
-    font-weight:bold;
-    font-size:small;
-    color:#fff;
-    text-decoration:none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: small;
+    color: #fff;
+    text-decoration: none;
 }
 
 a.hover {
-    font-family:Arial, Helvetica, sans-serif;
-    font-weight:bold;
-    font-size:small;
-    color:#666;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: small;
+    color: #666;
 }

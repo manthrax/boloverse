@@ -11,13 +11,13 @@ export default {
                 freeCount:0,
                 add: function(obj){
                     if(this.freeCount==0){  //No free nodes
-                        var nd={prev:null,next:this.used,obj:obj};
+                        let nd={prev:null,next:this.used,obj:obj};
                         this.store.push(nd);    //push a node on the store, linked to the used list
                         if(this.used!=null)this.used.prev=nd;
                         obj[this.link]=this.used=nd;
                         this.usedCount++;      //set the node pointer in the obj and set the used list to point to the new node..
                     }else{
-                        var elem=this.free;
+                        let elem=this.free;
                         this.free=elem.next;
                         elem.prev=null;
                         if(this.used!=null)
@@ -31,7 +31,7 @@ export default {
                     }
                 },
                 rmv: function(obj){
-                    var e=obj[link];
+                    let e=obj[link];
                     if(e.prev==null)this.used=e.next;
                     else e.prev.next= e.next;
                     if(e.next!=null)e.next.prev=e.prev;
@@ -46,16 +46,16 @@ export default {
             }
         },
         testDLL: function(){
-            var tlist=this.DLL("testList");
-            var tobjs=[];
-            var ect=1000;
-            var incount=ect;
-            for(var t=0;t<ect;t++){
-                var obj={name:"mo"+t};
+            let tlist=this.DLL("testList");
+            let tobjs=[];
+            let ect=1000;
+            let incount=ect;
+            for(let t=0;t<ect;t++){
+                let obj={name:"mo"+t};
                 tobjs.push(obj);
                 tlist.add(obj);
             }
-            for(var iter=0;iter<1000;iter++){
+            for(let iter=0;iter<1000;iter++){
                 for(t=0;t<ect;t++){
                     if(tobjs[t][tlist.link]!=null){
                         if(Math.random()<0.5){
@@ -70,8 +70,8 @@ export default {
                     }
                 }
             }
-            var str="";
-            for(var n=tlist.used;n!=null;n=n.next)str+="   "+(n.prev?n.prev.obj.name+"<":"[")+n.obj.name+(n.next?">"+n.next.obj.name:"]");
+            let str="";
+            for(let n=tlist.used;n!=null;n=n.next)str+="   "+(n.prev?n.prev.obj.name+"<":"[")+n.obj.name+(n.next?">"+n.next.obj.name:"]");
             console.log(str);
             console.log("list:"+tlist.link+" u:"+tlist.usedCount+" f:"+tlist.freeCount+" fs:"+tlist.store.length);
             console.log("expected u:"+incount+" f:"+(ect-incount));
@@ -92,7 +92,7 @@ export default {
                     this.pendingList=elem;
                 },
                 allocate:function(){
-                    var e=this.freeList;
+                    let e=this.freeList;
                     if(e!=null){
                         this.freeList=e.next;
                     }else{
@@ -114,7 +114,7 @@ export default {
                             if(this.elem.active==true)
                                 this.func(this.elem);
                             if(this.elem.active==false){
-                                var nxt=this.elem[next];
+                                let nxt=this.elem[next];
                                 if(this.dtor)
                                     this.dtor(this.elem);
                                 if(this.prv==null)this[list]=nxt;
@@ -128,13 +128,13 @@ export default {
                     }
                 },
                 iterateList:function (list,next,func,dtor){
-                    var elem=this[list];
-                    var prv=null;
+                    let elem=this[list];
+                    let prv=null;
                     while(elem!=null){
                         if(elem.active)
                             updater.update(elem);
                         if(elem.active==false){
-                            var nxt=elem[next];
+                            let nxt=elem[next];
                             
                             if(dtor)
                                 dtor(elem);
@@ -149,9 +149,9 @@ export default {
                 },
                 addPending:function(){
                     if(this.pendingList==null)return;
-                    var elem=this.pendingList;  //Add newly added objects...
+                    let elem=this.pendingList;  //Add newly added objects...
                     while(elem!=null){
-                        var e=elem;
+                        let e=elem;
                         elem=elem.next;                        
                         e.next=this.activeList;
                         this.activeList=e;
@@ -162,17 +162,17 @@ export default {
                     this.pendingList=null;                    
                 },
                 iterateActive:function (updater){
-                    var upct=0;
+                    let upct=0;
                     this.addPending();
-                    var elem=this.activeList;
-                    var prv=null;
+                    let elem=this.activeList;
+                    let prv=null;
                     while(elem!=null){
                         if(elem.active){
                             updater.update(elem);
                             upct++;
                         }
                         if(elem.active==false){
-                            var nxt=elem.next;
+                            let nxt=elem.next;
                             if(elem.id) delete this.byId[elem.id];
                             //elem.next=this.freeList;
                             //this.freeList=elem;

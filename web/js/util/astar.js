@@ -64,7 +64,7 @@ PathFinder.prototype.hasDiagnolBlocker = function (x1, y1, x2, y2) {
 };
 
 PathFinder.prototype.addToOpen = function (node) {
-    var n, _i, _j, _len, _len1, _ref, _ref1;
+    let n, _i, _j, _len, _len1, _ref, _ref1;
     _ref = this.openlist;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         n = _ref[_i];
@@ -83,7 +83,7 @@ PathFinder.prototype.addToOpen = function (node) {
 };
 
 PathFinder.prototype.addToClosed = function (node) {
-    var n, _i, _len, _ref;
+    let n, _i, _len, _ref;
     _ref = this.closedlist;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         n = _ref[_i];
@@ -96,7 +96,7 @@ PathFinder.prototype.addToClosed = function (node) {
 };
 
 PathFinder.prototype.adjacentOpenNodes = function (node) {
-    var adjacent, n, _i, _len, _ref;
+    let adjacent, n, _i, _len, _ref;
     adjacent = [];
     _ref = this.openlist;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -110,7 +110,7 @@ PathFinder.prototype.adjacentOpenNodes = function (node) {
 
 PathFinder.prototype.gCost = function (x1, y1, x2, y2) {
     if (x1 === x2 || y1 === y2) {
-        var gcost = this.CARDINAL_COST;
+        let gcost = this.CARDINAL_COST;
     } else {
         gcost = this.DIAGNOL_COST;
     }
@@ -118,7 +118,7 @@ PathFinder.prototype.gCost = function (x1, y1, x2, y2) {
 };
 
 PathFinder.distManhattan = function (fromx, fromy, tox, toy, distScale) {
-    var name;
+    let name;
     name = "manhattan";
     distScale = distScale != null ? distScale : 1;
     return (
@@ -127,14 +127,14 @@ PathFinder.distManhattan = function (fromx, fromy, tox, toy, distScale) {
 };
 
 PathFinder.distSq = function (fromx, fromy, tox, toy, distScale) {
-    var name;
+    let name;
     name = "squared";
     distScale = distScale != null ? distScale : 1;
     return (Math.pow(fromx - tox, 2) + Math.pow(fromy - toy, 2)) * distScale;
 };
 
 PathFinder.dist = function (fromx, fromy, tox, toy, distScale) {
-    var name;
+    let name;
     name = "euclidean";
     distScale = distScale != null ? distScale : 1;
     return (
@@ -144,7 +144,7 @@ PathFinder.dist = function (fromx, fromy, tox, toy, distScale) {
 };
 
 PathFinder.distFast = function (fromx, fromy, tox, toy, distScale) {
-    var approx, dx, dy, max, min, name;
+    let approx, dx, dy, max, min, name;
     name = "approximation";
     distScale = distScale != null ? distScale : 1;
     dx = Math.abs(tox - fromx);
@@ -159,7 +159,7 @@ PathFinder.distFast = function (fromx, fromy, tox, toy, distScale) {
 };
 
 PathFinder.distOctagonal = function (fromx, fromy, tox, toy, distScale) {
-    var dx, dy, name;
+    let dx, dy, name;
     name = "octagonal";
     distScale = distScale != null ? distScale : 1;
     dx = Math.abs(tox - fromx);
@@ -168,7 +168,7 @@ PathFinder.distOctagonal = function (fromx, fromy, tox, toy, distScale) {
 };
 
 PathFinder.prototype.minF = function () {
-    var minscore, n, result, _i, _len, _ref;
+    let minscore, n, result, _i, _len, _ref;
     minscore = 9999999;
     result = null;
     _ref = this.openlist;
@@ -183,7 +183,7 @@ PathFinder.prototype.minF = function () {
 };
 
 PathFinder.prototype.minG = function () {
-    var minscore, n, result, _i, _len, _ref;
+    let minscore, n, result, _i, _len, _ref;
     minscore = 9999999;
     result = null;
     _ref = this.openlist;
@@ -198,7 +198,7 @@ PathFinder.prototype.minG = function () {
 };
 
 PathFinder.prototype.getPath = function (fromx, fromy, tox, toy, func) {
-    var finalNode, node, result, slider;
+    let finalNode, node, result, slider;
     if (func) {
         this.DIST_FUNC = func;
     }
@@ -236,7 +236,7 @@ PathFinder.prototype.getPath = function (fromx, fromy, tox, toy, func) {
 };
 
 PathFinder.prototype.processNode = function (node, depth) {
-    var adjOpenNode,
+    let adjOpenNode,
         gcost,
         hcost,
         i,
@@ -309,7 +309,7 @@ PathFinder.prototype.processNode = function (node, depth) {
 };
 
 PathFinder.prototype.debugDraw = function (nodeSize) {
-    var distName, n, _i, _j, _len, _len1, _ref, _ref1;
+    let distName, n, _i, _j, _len, _len1, _ref, _ref1;
     nodeSize = nodeSize != null ? nodeSize : 20;
     context.fillStyle = "rgba(0, 200, 0, 0.5)";
     _ref = this.openlist;

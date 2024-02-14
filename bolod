@@ -17,8 +17,7 @@ trap control_c SIGINT
 RC=1
   while [ $RC -ne 0 ];
   do
-	node app.js
+	node app.mjs
 	RC=$?
 	sleep 1
   done
-

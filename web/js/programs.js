@@ -17,13 +17,13 @@ if (!isNode) {
     libNoise4D = await loadText("./js/shaders/noise4D.glsl");
 }
 
-var shaderIncludes = {
+let shaderIncludes = {
     noise2D: libNoise2D,
     noise3D: libNoise3D,
     noise4D: libNoise4D,
 };
 
-var programs = {};
+let programs = {};
 
 //All the programs currently loaded.
 programs.programDB = {};
@@ -43,8 +43,8 @@ programs.loadProgramFromScriptTags = function (
     vertexShaderId,
     fragmentShaderId
 ) {
-    var vertElem = document.getElementById(vertexShaderId);
-    var fragElem = document.getElementById(fragmentShaderId);
+    let vertElem = document.getElementById(vertexShaderId);
+    let fragElem = document.getElementById(fragmentShaderId);
     if (!vertElem) {
         throw "Can't find vertex program tag: " + vertexShaderId;
     }
@@ -65,8 +65,8 @@ programs.loadProgramFromScriptTags = function (
  * @return {Program} The created program.
  */
 programs.loadProgram = function (gl, vertexShader, fragmentShader) {
-    var id = vertexShader + fragmentShader;
-    var program = this.programDB[id];
+    let id = vertexShader + fragmentShader;
+    let program = this.programDB[id];
     if (program) {
         return program;
     }
@@ -95,16 +95,16 @@ programs.Program = function (gl, vertexShader, fragmentShader) {
      * @return {!WebGLShader} The created shader.
      */
 
-    var loadShader = function (gl, shaderSource, shaderType) {
-        var id = shaderSource + shaderType;
-        var shader = programs.shaderDB[id];
-        if (shader) {
-            return shader;
+    let loadShader = function (gl, shaderSource, shaderType) {
+        let id = shaderSource + shaderType;
+        let dbshader = programs.shaderDB[id];
+        if (dbshader) {
+            return dbshader;
         }
 
         // Create the shader object
-        var shader = gl.createShader(shaderType);
-        var lastError = null;
+        let shader = gl.createShader(shaderType);
+        let lastError = null;
 
         //if (shader == null) {         //Dont do this check per mozilla reccomendation..
         //The only time it should happen is on context loss.. which we deal with higher up
@@ -118,7 +118,7 @@ programs.Program = function (gl, vertexShader, fragmentShader) {
         gl.compileShader(shader);
 
         // Check the compile status
-        var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+        let compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
         if (!compiled && !gl.isContextLost()) {
             // Something went wrong during compilation; get the error
             lastError = gl.getShaderInfoLog(shader);
@@ -138,10 +138,10 @@ programs.Program = function (gl, vertexShader, fragmentShader) {
      * @param {string} fragmentShader The fragment shader.
      * @return {!WebGLProgram} The created program.
      */
-    var loadProgram = function (gl, vertexShader, fragmentShader) {
-        var vs;
-        var fs;
-        var program;
+    let loadProgram = function (gl, vertexShader, fragmentShader) {
+        let vs;
+        let fs;
+        let program;
         try {
             vs = loadShader(gl, vertexShader, gl.VERTEX_SHADER);
             fs = loadShader(gl, fragmentShader, gl.FRAGMENT_SHADER);
@@ -169,12 +169,12 @@ programs.Program = function (gl, vertexShader, fragmentShader) {
      * @param {!WebGLContext} gl The WebGLContext to use.
      * @param {!WebGLProgram} program The WebGLProgram to link.
      */
-    var linkProgram = function (gl, program) {
+    let linkProgram = function (gl, program) {
         // Link the program
         gl.linkProgram(program);
 
         // Check the link status
-        var linked = gl.getProgramParameter(program, gl.LINK_STATUS);
+        let linked = gl.getProgramParameter(program, gl.LINK_STATUS);
         if (!linked && !gl.isContextLost()) {
             // something went wrong with the link
             lastError = gl.getProgramInfoLog(program);
@@ -183,23 +183,23 @@ programs.Program = function (gl, vertexShader, fragmentShader) {
     };
 
     // Compile shaders
-    var program = loadProgram(gl, vertexShader, fragmentShader);
+    let program = loadProgram(gl, vertexShader, fragmentShader);
     if (!program) {
         throw "could not compile program";
     }
 
     // Look up attribs.
-    var attribs = {};
+    let attribs = {};
     // Also make a plain table of the locs.
-    var attribLocs = {};
+    let attribLocs = {};
 
     programs.Program.prototype.renderImmediate = function () {
         gl.useProgram(this.program);
     };
     programs.Program.prototype.render = function () {
         gl.useProgram(this.program);
-        for (var t = 0; t < this.displayTop; t++) {
-            var elem = this.displayList[t];
+        for (let t = 0; t < this.displayTop; t++) {
+            let elem = this.displayList[t];
             elem[1].render(elem[0]);
         }
         //			this.displayTop=0;
@@ -209,7 +209,7 @@ programs.Program = function (gl, vertexShader, fragmentShader) {
         if (this.displayTop == this.displayList.length)
             this.displayList.push([object, component]);
         else {
-            var slot = this.displayList[this.displayTop];
+            let slot = this.displayList[this.displayTop];
             slot[0] = object;
             slot[1] = component;
         }
@@ -236,26 +236,26 @@ programs.Program = function (gl, vertexShader, fragmentShader) {
     function endsWith(str, suffix) {
         return str.indexOf(suffix, str.length - suffix.length) !== -1;
     }
-    var numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
-    for (var ii = 0; ii < numAttribs; ++ii) {
-        var info = gl.getActiveAttrib(program, ii);
-        var name = info.name;
+    let numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+    for (let ii = 0; ii < numAttribs; ++ii) {
+        let info = gl.getActiveAttrib(program, ii);
+        let name = info.name;
         if (endsWith(name, "[0]")) {
             name = name.substr(0, name.length - 3);
         }
-        var index = gl.getAttribLocation(program, info.name);
+        let index = gl.getAttribLocation(program, info.name);
         attribs[name] = createAttribSetter(info, index);
         attribLocs[name] = index;
     }
 
     // Look up uniforms
-    var numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
-    var uniforms = {};
-    var textureUnit = 0;
+    let numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+    let uniforms = {};
+    let textureUnit = 0;
 
     function createUniformSetter(info) {
-        var loc = gl.getUniformLocation(program, info.name);
-        var type = info.type;
+        let loc = gl.getUniformLocation(program, info.name);
+        let type = info.type;
         if (info.size > 1 && endsWith(info.name, "[0]")) {
             // It's an array.
             if (type == gl.FLOAT)
@@ -319,8 +319,8 @@ programs.Program = function (gl, vertexShader, fragmentShader) {
                     gl.uniformMatrix4fv(loc, false, v);
                 };
             if (type == gl.SAMPLER_2D || type == gl.SAMPLER_CUBE) {
-                var units = [];
-                for (var ii = 0; ii < info.size; ++ii) {
+                let units = [];
+                for (let ii = 0; ii < info.size; ++ii) {
                     units.push(textureUnit++);
                 }
                 return (function (units) {
@@ -404,15 +404,15 @@ programs.Program = function (gl, vertexShader, fragmentShader) {
         }
     }
 
-    var textures = {};
+    let textures = {};
 
-    for (var ii = 0; ii < numUniforms; ++ii) {
-        var info = gl.getActiveUniform(program, ii);
+    for (let ii = 0; ii < numUniforms; ++ii) {
+        let info = gl.getActiveUniform(program, ii);
         name = info.name;
         if (endsWith(name, "[0]")) {
             name = name.substr(0, name.length - 3);
         }
-        var setter = createUniformSetter(info);
+        let setter = createUniformSetter(info);
         uniforms[name] = setter;
         if (info.type == gl.SAMPLER_2D || info.type == gl.SAMPLER_CUBE) {
             textures[name] = setter;
@@ -433,11 +433,11 @@ programs.getScriptText = function (tagName) {
     if (Object.keys(this.g_scriptCache).length != 0)
         return this.g_scriptCache[tagName];
 
-    var ctext = null;
+    let ctext = null;
     if (shaderSource != null) {
         ctext = shaderSource;
     } else {
-        var scriptElem;
+        let scriptElem;
         if (typeof document != "function") {
             this.g_scriptCache[tagName] = "";
             return this.g_scriptCache[tagName];
@@ -455,17 +455,17 @@ programs.getScriptText = function (tagName) {
         }
     }
 
-    var chunks = ctext.split("SCRIPT='");
-    for (var ckey in chunks) {
-        var chunk = chunks[ckey];
-        var sstart = chunk.indexOf("';");
-        var sname = chunk.substring(0, sstart);
+    let chunks = ctext.split("SCRIPT='");
+    for (let ckey in chunks) {
+        let chunk = chunks[ckey];
+        let sstart = chunk.indexOf("';");
+        let sname = chunk.substring(0, sstart);
         chunk = chunk.substring(sstart + 3);
         if (chunk !== "" && sname !== "") {
             sstart = chunk.indexOf("LINK='");
             if (sstart >= 0) {
-                var send = chunk.indexOf("';");
-                var lname = chunk.substring(sstart + 6, send);
+                let send = chunk.indexOf("';");
+                let lname = chunk.substring(sstart + 6, send);
                 chunk =
                     chunk.substring(0, sstart) +
                     shaderIncludes[lname] +
@@ -481,7 +481,7 @@ programs.getScriptText = function (tagName) {
 programs.createProgramFromTags = function (gl, vertexTagId, fragmentTagId) {
     if(!gl)return {}
     
-    var shdr = this.loadProgram(
+    let shdr = this.loadProgram(
         gl,
         this.getScriptText(vertexTagId),
         this.getScriptText(fragmentTagId)
@@ -501,10 +501,10 @@ programs.Program.prototype.use = function () {
 };
 
 //function dumpValue(msg, name, value) {
-//  var str;
+//  let str;
 //  if (value.length) {
 //      str = value[0].toString();
-//     for (var ii = 1; ii < value.length; ++ii) {
+//     for (let ii = 1; ii < value.length; ++ii) {
 //       str += "," + value[ii];
 //     }
 //  } else {
@@ -514,15 +514,15 @@ programs.Program.prototype.use = function () {
 //}
 
 programs.Program.prototype.setUniform = function (uniform, value) {
-    var func = this.uniform[uniform];
+    let func = this.uniform[uniform];
     if (func) {
         //dumpValue("SET UNI:", uniform, value);
         func(value);
     }
-    var g_debug = false;
+    let g_debug = false;
     if (g_debug) {
         if (!func) console.log("Unused uniform:" + uniform);
-        var error = gl.getError();
+        let error = gl.getError();
         if (error != gl.NO_ERROR && error != gl.CONTEXT_LOST_WEBGL) {
             console.log(
                 "uniform:" +

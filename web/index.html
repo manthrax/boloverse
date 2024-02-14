@@ -1,225 +1,224 @@
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>BOLO | UNIVERSE</title>
-<link href="v2.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="js/socket.io-client/dist/socket.io.js"></script>
-<script type="text/javascript" src="js/util/seedrandom.js" ></script>
-<script type="text/javascript" src="js/util/tween.js" ></script>
-<script type="text/javascript" src="js/util/gl-matrix.js" ></script>
-<!--script type="text/javascript" src="require.js" data-main="js/index"></script-->
-<!--script type="text/javascript" src="js/util/jquery-1.9.1.js"data-main="js/index"></script-->
-<!--script type="text/javascript" src="js/network.js"></script-->
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>BOLO | UNIVERSE</title>
+        <link href="./assets/v2.css" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" src="js/socket.io-client/dist/socket.io.js"></script>
+        <script type="text/javascript">
 
+            var tools = {
+                "harvest": ["trees", "TREES"],
+                "road": ["roads", "ROADS"],
+                "building": ["buildings", "BUILDINGS"],
+                "pillbox": ["turrets", "TURRETS"],
+                "mine": ["mines", "MINES"]
+            }
 
-<script type="text/javascript">
+            function activateToolButton(name) {
+                document.getElementById(name).innerHTML = tools[name][1];
+            }
 
-var tools={
-    "harvest":["trees","TREES"],
-    "road":["roads","ROADS"],
-    "building":["buildings","BUILDINGS"],
-    "pillbox":["turrets","TURRETS"],
-    "mine":["mines","MINES"]
-}
+            function resetToolButtons() {
+                for (var k in tools)
+                    document.getElementById(k).innerHTML = tools[k][0];
+            }
 
-
-function activateToolButton(name){
-    document.getElementById(name).innerHTML=tools[name][1];
-}
-
-function resetToolButtons() {
-    for(var k in tools)
-        document.getElementById(k).innerHTML = tools[k][0];
-}
-
-
-function selectTool(str){
-    resetToolButtons();
-    activateToolButton(str)
-    if(window.gameMessage){
-        window.gameMessage("toolSelected",str);
-    }
-}
-
-</script>
-
-</head>
-
-<body onbeforeunload="if(window.saveSession)window.saveSession();console.log('app closed.');" oncontextmenu="return false;" style="cursor: crosshair">
-<div id="display-frame">
-    <div class="uiElem" id="fpsContainer" style="top:3px;left:3px;">
-        <div><span id="fps"></span></div>
-    </div>
-</div>
-<div id="hud" style="width:100%;height:100%;z-index:1;top:0px;">
-
-    <div id="topLeftBox">
-    
-        <div id="logoBox" class="navFont" style="margin:20px;padding:12px;">BOLO | UNIVERSE</div>
-    
-    </div>
-    
-    <div id="topRightBox">
-    
-    	<div id="toolContainer" style="padding:20px;">
-    
-            <div id="purposeBox" style="padding:12px;">
-
-                <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="harvest">TREES</a></div>
-                <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="road">roads</a></div>
-                <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="building">buildings</a></div>
-                <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="pillbox">turrets</a></div>
-                <div class="purposeButton"><a href="#" onclick="selectTool(this.id);" id="mine">mines</a></div>
-            </div>
-        </div>
-    
-    </div>
-    
-    
-    <div id="bottomLeftBox">
-    
-        <div id="resIconContainer" style="padding:20px;">
-    
-            <div id="basesBox" style="padding:12px;">
-                <div class="navFont" style="color:#bb9878;">BASES</div>
-                <div style="padding:0px;" class="navFont">
-                    <div id="basebox_0" class="colorBox" style="background-color:#bb9878;"></div>
-                    <div id="basebox_1" class="colorBox" style="background-color:#bb9878;"></div>
-                    <div id="basebox_2" class="colorBox" style="background-color:#bb9878;"></div>
-                    <div id="basebox_3" class="colorBox" style="background-color:#bb9878;"></div>
-                    <div id="basebox_4" class="colorBox" style="background-color:#bb9878;"></div>
-                    <div id="basebox_5" class="colorBox"></div>
-                    <div id="basebox_6" class="colorBox"></div><br/>
-                    <div id="basebox_7" class="colorBox"></div>
-                    <div id="basebox_8" class="colorBox"></div>
-                    <div id="basebox_9" class="colorBox"></div>
-                    <div id="basebox_10" class="colorBox"></div>
-                    <div id="basebox_11" class="colorBox"></div>
-                    <div id="basebox_12" class="colorBox"></div>
-                    <div id="basebox_13" class="colorBox"></div><br/>
-                    <div id="basebox_14" class="colorBox"></div>
-                    <div id="basebox_15" class="colorBox"></div>
-                    <div id="basebox_16" class="colorBox"></div>
-                    <div id="basebox_17" class="colorBox"></div>
-                    <div id="basebox_18" class="colorBox"></div>
-                    <div id="basebox_19" class="colorBox"></div>
-                    <div id="basebox_20" class="colorBox"></div><br/>
-                </div>
-            </div><div id="turretsBox" style="padding:12px;">
-                <div class="navFont" style="color:#14751c;">TURRETS</div>
-                <div style="padding:0px;" class="navFont">
-                	<div id="cbox_0" class="colorBox" style="background-color:#14751c;"></div>
-                    <div id="cbox_1" class="colorBox" style="background-color:#14751c;"></div>
-                    <div id="cbox_2" class="colorBox" style="background-color:#14751c;"></div>
-                    <div id="cbox_3" class="colorBox" style="background-color:#14751c;"></div>
-                    <div id="cbox_4" class="colorBox" style="background-color:#14751c;"></div>
-                    <div id="cbox_5" class="colorBox" style="background-color:#14751c;"></div>
-                    <div id="cbox_6" class="colorBox"></div><br/>
-                    <div id="cbox_7" class="colorBox"></div>
-                    <div id="cbox_8" class="colorBox"></div>
-                    <div id="cbox_9" class="colorBox"></div>
-                    <div id="cbox_10" class="colorBox"></div>
-                    <div id="cbox_11" class="colorBox"></div>
-                    <div id="cbox_12" class="colorBox"></div>
-                    <div id="cbox_13" class="colorBox"></div><br/>
-                    <div id="cbox_14" class="colorBox"></div>
-                    <div id="cbox_15" class="colorBox"></div>
-                    <div id="cbox_16" class="colorBox"></div>
-                    <div id="cbox_17" class="colorBox"></div>
-                    <div id="cbox_18" class="colorBox"></div>
-                    <div id="cbox_19" class="colorBox"></div>
-                    <div id="cbox_20" class="colorBox"></div><br/>
+            function selectTool(str) {
+                resetToolButtons();
+                activateToolButton(str)
+                if (window.gameMessage) {
+                    window.gameMessage("toolSelected", str);
+                }
+            }
+        </script>
+    </head>
+    <body onbeforeunload="if(window.saveSession)window.saveSession();console.log('app closed.');" oncontextmenu="return false;" style="cursor: crosshair">
+        <div id="display-frame">
+            <div class="uiElem" id="fpsContainer" style="top:3px;left:3px;">
+                <div>
+                    <span id="fps"></span>
                 </div>
             </div>
-    
-    
         </div>
-    
-    </div>
-<script type="text/javascript">
+        <div id="hud" style="width:100%;height:100%;z-index:1;top:0px;">
+            <div id="topLeftBox">
+                <div id="logoBox" class="navFont" style="margin:20px;padding:12px;">BOLO | UNIVERSE</div>
+            </div>
+            <div id="topRightBox">
+                <div id="toolContainer" style="padding:20px;">
+                    <div id="purposeBox" style="padding:12px;">
+                        <div class="purposeButton">
+                            <a href="#" onclick="selectTool(this.id);" id="harvest">TREES</a>
+                        </div>
+                        <div class="purposeButton">
+                            <a href="#" onclick="selectTool(this.id);" id="road">roads</a>
+                        </div>
+                        <div class="purposeButton">
+                            <a href="#" onclick="selectTool(this.id);" id="building">buildings</a>
+                        </div>
+                        <div class="purposeButton">
+                            <a href="#" onclick="selectTool(this.id);" id="pillbox">turrets</a>
+                        </div>
+                        <div class="purposeButton">
+                            <a href="#" onclick="selectTool(this.id);" id="mine">mines</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="bottomLeftBox">
+                <div id="resIconContainer" style="padding:20px;">
+                    <div id="basesBox" style="padding:12px;">
+                        <div class="navFont" style="color:#bb9878;">BASES</div>
+                        <div style="padding:0px;" class="navFont">
+                            <div id="basebox_0" class="colorBox" style="background-color:#bb9878;"></div>
+                            <div id="basebox_1" class="colorBox" style="background-color:#bb9878;"></div>
+                            <div id="basebox_2" class="colorBox" style="background-color:#bb9878;"></div>
+                            <div id="basebox_3" class="colorBox" style="background-color:#bb9878;"></div>
+                            <div id="basebox_4" class="colorBox" style="background-color:#bb9878;"></div>
+                            <div id="basebox_5" class="colorBox"></div>
+                            <div id="basebox_6" class="colorBox"></div>
+                            <br/>
+                            <div id="basebox_7" class="colorBox"></div>
+                            <div id="basebox_8" class="colorBox"></div>
+                            <div id="basebox_9" class="colorBox"></div>
+                            <div id="basebox_10" class="colorBox"></div>
+                            <div id="basebox_11" class="colorBox"></div>
+                            <div id="basebox_12" class="colorBox"></div>
+                            <div id="basebox_13" class="colorBox"></div>
+                            <br/>
+                            <div id="basebox_14" class="colorBox"></div>
+                            <div id="basebox_15" class="colorBox"></div>
+                            <div id="basebox_16" class="colorBox"></div>
+                            <div id="basebox_17" class="colorBox"></div>
+                            <div id="basebox_18" class="colorBox"></div>
+                            <div id="basebox_19" class="colorBox"></div>
+                            <div id="basebox_20" class="colorBox"></div>
+                            <br/>
+                        </div>
+                    </div>
+                    <div id="turretsBox" style="padding:12px;">
+                        <div class="navFont" style="color:#14751c;">TURRETS</div>
+                        <div style="padding:0px;" class="navFont">
+                            <div id="cbox_0" class="colorBox" style="background-color:#14751c;"></div>
+                            <div id="cbox_1" class="colorBox" style="background-color:#14751c;"></div>
+                            <div id="cbox_2" class="colorBox" style="background-color:#14751c;"></div>
+                            <div id="cbox_3" class="colorBox" style="background-color:#14751c;"></div>
+                            <div id="cbox_4" class="colorBox" style="background-color:#14751c;"></div>
+                            <div id="cbox_5" class="colorBox" style="background-color:#14751c;"></div>
+                            <div id="cbox_6" class="colorBox"></div>
+                            <br/>
+                            <div id="cbox_7" class="colorBox"></div>
+                            <div id="cbox_8" class="colorBox"></div>
+                            <div id="cbox_9" class="colorBox"></div>
+                            <div id="cbox_10" class="colorBox"></div>
+                            <div id="cbox_11" class="colorBox"></div>
+                            <div id="cbox_12" class="colorBox"></div>
+                            <div id="cbox_13" class="colorBox"></div>
+                            <br/>
+                            <div id="cbox_14" class="colorBox"></div>
+                            <div id="cbox_15" class="colorBox"></div>
+                            <div id="cbox_16" class="colorBox"></div>
+                            <div id="cbox_17" class="colorBox"></div>
+                            <div id="cbox_18" class="colorBox"></div>
+                            <div id="cbox_19" class="colorBox"></div>
+                            <div id="cbox_20" class="colorBox"></div>
+                            <br/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
 
-    function keyUpHandler(e){
-        if (e.which == 13)gameMessage('setTickets',parseInt(e.target.value));
-    }
-</script>
-    <div id="rightBox">
-        <table cellpadding=0 cellspacing=0 border=0>
-            <input type="checkbox" onchange="gameMessage('shdrActivate',this.checked);"/><br/>
-            <input type="range" min=0.0 max=4.0 step=0.01 onchange="gameMessage('shdrV1',this.value);"/><br/>
-            <input type="range" min=0.0 max=4.0 step=0.01 onchange="gameMessage('shdrV2',this.value);"/><br/>
-            <input type="range" min=0.0 max=4.0 step=0.01 onchange="gameMessage('shdrV3',this.value);"/><br/>
-            <input type="range" min=0.0 max=4.0 step=0.01 onchange="gameMessage('shdrV4',this.value);"/><br/>
-            <button onchange="gameMessage('shdrReload',this.value);">reload</button><br/>
-        </table>
-    </div>
-    <div id="centerBox">
-        <div class="navFont" style="color:#db17cb;">PLAYERLIST</div>
-        <table cellpadding=0 cellspacing=0 border=0>
-            <button onclick="gameMessage('addAI');">Add AI</button><br/>
-            <button onclick="gameMessage('loadRandomMap');">Random Map</button><br/>
-            <button onclick="gameMessage('showOptions');">Options</button><br/>
-            <button onclick="gameMessage('togglePause');">Unpause</button><br/>
-            <button onclick="gameMessage('loadStressTest');">Stress Test</button><br/>
-
-            Tickets:<br/>
-            <input type="number" name="tickets" value=500 max=50000 maxlength=5 size=5 onkeyup="keyUpHandler(window.event)" class='selectable'><br/>
-            Maps:<br/>
-            <select id="maps" onchange="gameMessage('changeMap',this.selectedIndex);this.blur();" class='selectable'>
-            </select>
-            <div id="playerListElems"></div>
-        </table>
-    </div>
-
-
-    <div id="bottomCenterBox">
-        <table cellpadding=0 cellspacing=0 border=0>
-            <div id="ticketDisplay" class="navFont" style="color:#db17cb;">TICKETS</div>
-            <div class="navFont" style="color:#db17cb;">CHAT</div>
-            <input id="outgoingChatMessage" class="selectable"></input>
-            <div id="incomingChatMessages" style="color:#db17cb;"></div>
-        </table>
-    </div>
-    
-    <div id="bottomRightBox">
-    
-        <div id="container" style="padding:20px;">
-    
-           
-            <div style="padding:12px;background-color:rgba(0,0,0, 0.5);">
+                function keyUpHandler(e) {
+                    if (e.which == 13)
+                        gameMessage('setTickets', parseInt(e.target.value));
+                }
+            </script>
+            <div id="rightBox">
                 <table cellpadding=0 cellspacing=0 border=0>
-                <tr>
-                <td><div style="background-color:#000;width:100px;"><div id="statColor_shells" style="background-color:#db17cb;width:100px;height:12px;margin-bottom:4px;"></div></div>
-                    <div style="background-color:#000;"><div id="statColor_mines" style="background-color:#2ac8ca;width:100px;height:12px;margin-bottom:4px;"></div></div>
-                    <div style="background-color:#000;"><div id="statColor_armor" style="background-color:#20db17;width:100px;height:12px;margin-bottom:4px;"></div></div>
-                    <div style="background-color:#000;"><div id="statColor_wood" style="background-color:#db8617;width:100px;height:12px;"></div></div></td>
-                <td width="2px;"></td>
-                <td>
-                    <div class="navFont" style="color:#db17cb;">SHELLS</div>
-                    <div class="navFont" style="color:#2ac8ca;">MINES</div>
-                    <div class="navFont" style="color:#20db17;">ARMOR</div>
-                    <div class="navFont" style="color:#db8617;">WOOD</div>
-                    </td>
-                    </tr>
+                    <input type="checkbox" onchange="gameMessage('shdrActivate',this.checked);"/>
+                    <br/>
+                    <input type="range" min=0.0 max=4.0 step=0.01 onchange="gameMessage('shdrV1',this.value);"/>
+                    <br/>
+                    <input type="range" min=0.0 max=4.0 step=0.01 onchange="gameMessage('shdrV2',this.value);"/>
+                    <br/>
+                    <input type="range" min=0.0 max=4.0 step=0.01 onchange="gameMessage('shdrV3',this.value);"/>
+                    <br/>
+                    <input type="range" min=0.0 max=4.0 step=0.01 onchange="gameMessage('shdrV4',this.value);"/>
+                    <br/>
+                    <button onchange="gameMessage('shdrReload',this.value);">reload</button>
+                    <br/>
                 </table>
-    		</div>
-    
+            </div>
+            <div id="centerBox">
+                <div class="navFont" style="color:#db17cb;">PLAYERLIST</div>
+                <table cellpadding=0 cellspacing=0 border=0>
+                    <button onclick="gameMessage('addAI');">Add AI</button>
+                    <br/>
+                    <button onclick="gameMessage('loadRandomMap');">Random Map</button>
+                    <br/>
+                    <button onclick="gameMessage('showOptions');">Options</button>
+                    <br/>
+                    <button onclick="gameMessage('togglePause');">Unpause</button>
+                    <br/>
+                    <button onclick="gameMessage('loadStressTest');">Stress Test</button>
+                    <br/>
+                    Tickets:<br/>
+                    <input type="number" name="tickets" value=500 max=50000 maxlength=5 size=5 onkeyup="keyUpHandler(window.event)" class='selectable'>
+                    <br/>
+                    Maps:<br/>
+                    <select id="maps" onchange="gameMessage('changeMap',this.selectedIndex);this.blur();" class='selectable'></select>
+                    <div id="playerListElems"></div>
+                </table>
+            </div>
+            <div id="bottomCenterBox">
+                <table cellpadding=0 cellspacing=0 border=0>
+                    <div id="ticketDisplay" class="navFont" style="color:#db17cb;">TICKETS</div>
+                    <div class="navFont" style="color:#db17cb;">CHAT</div>
+                    <input id="outgoingChatMessage" class="selectable"></input>
+                    <div id="incomingChatMessages" style="color:#db17cb;"></div>
+                </table>
+            </div>
+            <div id="bottomRightBox">
+                <div id="container" style="padding:20px;">
+                    <div style="padding:12px;background-color:rgba(0,0,0, 0.5);">
+                        <table cellpadding=0 cellspacing=0 border=0>
+                            <tr>
+                                <td>
+                                    <div style="background-color:#000;width:100px;">
+                                        <div id="statColor_shells" style="background-color:#db17cb;width:100px;height:12px;margin-bottom:4px;"></div>
+                                    </div>
+                                    <div style="background-color:#000;">
+                                        <div id="statColor_mines" style="background-color:#2ac8ca;width:100px;height:12px;margin-bottom:4px;"></div>
+                                    </div>
+                                    <div style="background-color:#000;">
+                                        <div id="statColor_armor" style="background-color:#20db17;width:100px;height:12px;margin-bottom:4px;"></div>
+                                    </div>
+                                    <div style="background-color:#000;">
+                                        <div id="statColor_wood" style="background-color:#db8617;width:100px;height:12px;"></div>
+                                    </div>
+                                </td>
+                                <td width="2px;"></td>
+                                <td>
+                                    <div class="navFont" style="color:#db17cb;">SHELLS</div>
+                                    <div class="navFont" style="color:#2ac8ca;">MINES</div>
+                                    <div class="navFont" style="color:#20db17;">ARMOR</div>
+                                    <div class="navFont" style="color:#db8617;">WOOD</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <script type="importmap">
+                {
+                    "imports": {
+                        "three": "https://threejs.org/build/three.module.js",
+                        "three/addons/": "https://threejs.org/examples/jsm/"
+                    }
+                }</script>
+            <canvas id="canvas" style="width: 100%; height: 100%;"></canvas>
+            <script type="module" src="./js/index.js"></script>
         </div>
-    
-    </div>
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://threejs.org/build/three.module.js",
-            "three/addons/": "https://threejs.org/examples/jsm/"
-        }
-    }
-    </script>
-    <canvas id="canvas" style="width: 100%; height: 100%;">
-    </canvas>
-    <script type="module" src = "./js/index.js"></script>
-
-        
-</div>
-
-</body>
+    </body>
 </html>

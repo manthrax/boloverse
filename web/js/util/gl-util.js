@@ -22,7 +22,7 @@
  */
 
 "use strict";
-import {TextureLoader} from "three"
+import {TextureLoader,CanvasTexture} from "three"
 let textureLoader = new TextureLoader();
 // Polyfill to ensure we can always call requestAnimaionFrame
 if (!window.requestAnimationFrame) {
@@ -44,7 +44,7 @@ if (!window.requestAnimationFrame) {
 //return
 export default {
     getContext: function (canvas) {
-        var context;
+        let context;
 
         if (canvas.getContext) {
             try {
@@ -66,8 +66,8 @@ export default {
     },
 
     showGLFailed: function (element) {
-        var errorElement = document.createElement("div");
-        var errorHTML =
+        let errorElement = document.createElement("div");
+        let errorHTML =
             "<h3>Sorry, but a WebGL context could not be created</h3>";
         errorHTML +=
             "Either your browser does not support WebGL, or it may be disabled.<br/>";
@@ -86,10 +86,10 @@ export default {
         attribs,
         uniforms
     ) {
-        var shaderProgram = gl.createProgram();
+        let shaderProgram = gl.createProgram();
 
-        var vs = this._compileShader(gl, vertexShader, gl.VERTEX_SHADER);
-        var fs = this._compileShader(gl, fragmentShader, gl.FRAGMENT_SHADER);
+        let vs = this._compileShader(gl, vertexShader, gl.VERTEX_SHADER);
+        let fs = this._compileShader(gl, fragmentShader, gl.FRAGMENT_SHADER);
 
         gl.attachShader(shaderProgram, vs);
         gl.attachShader(shaderProgram, fs);
@@ -105,8 +105,8 @@ export default {
         // Query any shader attributes and uniforms that we specified needing
         if (attribs) {
             shaderProgram.attribute = {};
-            for (var i in attribs) {
-                var attrib = attribs[i];
+            for (let i in attribs) {
+                let attrib = attribs[i];
                 shaderProgram.attribute[attrib] = gl.getAttribLocation(
                     shaderProgram,
                     attrib
@@ -116,8 +116,8 @@ export default {
 
         if (uniforms) {
             shaderProgram.uniform = {};
-            for (var i in uniforms) {
-                var uniform = uniforms[i];
+            for (let i in uniforms) {
+                let uniform = uniforms[i];
                 shaderProgram.uniform[uniform] = gl.getUniformLocation(
                     shaderProgram,
                     uniform
@@ -129,11 +129,11 @@ export default {
     },
 
     _compileShader: function (gl, source, type) {
-        var shaderHeader = "#ifdef GL_ES\n";
+        let shaderHeader = "#ifdef GL_ES\n";
         shaderHeader += "precision highp float;\n";
         shaderHeader += "#endif\n";
 
-        var shader = gl.createShader(type);
+        let shader = gl.createShader(type);
 
         gl.shaderSource(shader, shaderHeader + source);
         gl.compileShader(shader);
@@ -148,11 +148,24 @@ export default {
     },
 
     createSolidTexture: function (gl, color, dim) {
-        if(!gl)return {}
-        var data = new Uint8Array(color);
-        var texture = gl.createTexture();
+        if(!gl){
+            let canvas = document.createElement('canvas');
+            canvas.width=canvas.height=dim;
+            let ctx = canvas.getContext('2d')
+            let px = ctx.getImageData(0,0,canvas.width,canvas.height)
+    
+            let data = new Uint8Array(color);
+            for(let i=0;i<px.data.length;i++)
+                px.data[i]=data[i%data.length];
+            
+            ctx.putImageData(px,0,0);
+            let tex = new CanvasTexture(canvas)
+            return tex
+        }
+        let data = new Uint8Array(color);
+        let texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        var tdim = dim ? dim : 1;
+        let tdim = dim ? dim : 1;
         gl.texImage2D(
             gl.TEXTURE_2D,
             0,
@@ -170,9 +183,12 @@ export default {
     },
 
     loadTexture: function (gl, src, callback, genMipMaps) {
-        if(!gl)return textureLoader.load(src,callback);
-        var texture = gl.createTexture();
-        var image = new Image();
+        if(!gl)return textureLoader.load(src,(tex)=>{
+            tex.colorSpace = 'srgb'
+            callback(tex);
+        });
+        let texture = gl.createTexture();
+        let image = new Image();
         image.addEventListener("load", function () {
             gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.texImage2D(
@@ -183,7 +199,7 @@ export default {
                 gl.UNSIGNED_BYTE,
                 image
             );
-            var genMipMaps = true;
+            let genMipMaps = true;
             if (genMipMaps) {
                 gl.texParameteri(
                     gl.TEXTURE_2D,
@@ -219,18 +235,18 @@ export default {
         return Date.now();
     },
     startRenderLoop: function (gl, canvas, callback) {
-        var time =
+        let time =
             window.performance !== undefined &&
             window.performance.now !== undefined
                 ? window.performance.now()
                 : Date.now();
 
-        var startTime = time;
-        var lastTimeStamp = startTime;
-        var lastFpsTimeStamp = startTime;
-        var framesPerSecond = 0;
-        var frameCount = 0;
-        var timing = {
+        let startTime = time;
+        let lastTimeStamp = startTime;
+        let lastFpsTimeStamp = startTime;
+        let framesPerSecond = 0;
+        let frameCount = 0;
+        let timing = {
             startTime: startTime,
         };
         function nextFrame(time) {

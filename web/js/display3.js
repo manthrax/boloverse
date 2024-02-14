@@ -1,3 +1,5 @@
+
+import {vec3,mat4} from "./util/gl-matrix.js"
 import camera from "./camera.js"
 
 import*as THREE from "three"
@@ -5,6 +7,9 @@ let {Scene, WebGLRenderer, PerspectiveCamera, Mesh, BufferGeometry, CircleGeomet
 import {OrbitControls} from "three/addons/controls/OrbitControls.js"
 
 let renderer;
+let root;
+let scene;
+let orbitControls;
 
 let _display;
 
@@ -22,21 +27,21 @@ function nv3() {
     return v3cp();
 }
 
-var v3t0 = nv3();
-var v3t1 = nv3();
-var v3t2 = nv3();
-var v3t3 = nv3();
-var v3t4 = nv3();
-var v3t5 = nv3();
-var v3t6 = nv3();
-var v3t7 = nv3();
-var v3t8 = nv3();
-var v3t9 = nv3();
+let v3t0 = nv3();
+let v3t1 = nv3();
+let v3t2 = nv3();
+let v3t3 = nv3();
+let v3t4 = nv3();
+let v3t5 = nv3();
+let v3t6 = nv3();
+let v3t7 = nv3();
+let v3t8 = nv3();
+let v3t9 = nv3();
 
-var projection = new Float32Array(16);
-var viewInverse = new Float32Array(16);
-var viewProjectionInverse = new Float32Array(16);
-var displayDefaults = function() {
+let projection = new Float32Array(16);
+let viewInverse = new Float32Array(16);
+let viewProjectionInverse = new Float32Array(16);
+let displayDefaults = function() {
     this.cameraModule = camera;
     this.camera = new camera.ModelCamera();
 
@@ -55,34 +60,57 @@ var displayDefaults = function() {
     mat4.perspective(this.fov, display.prototype.aspectRatio, this.nearDepth, this.farDepth, projection);
 };
 
-let scene;
-let orbitControls;
 function display() {
     displayDefaults.call(this);
     renderer = new WebGLRenderer({
+		antialias:true,
         canvas
     })
-    renderer.setClearColor(0x905040)
+	renderer.outputColorSpace = 'srgb'
+    renderer.setClearColor(0x203080)
     scene = new THREE.Scene();
+	root = new THREE.Group();
+	root.rotation.x=-Math.PI*.5;
+	root.updateMatrix();
+	root.matrixAutoUpdate = false;
     scene.add(this.camera.perspectiveCamera)
+	scene.add(root);
 
 	this.camera.perspectiveCamera.position.set(20, 20, 20);
-	this.camera.perspectiveCamera.lookAt(scene.position);
+	this.camera.perspectiveCamera.lookAt(root.position);
 	this.camera.perspectiveCamera.updateMatrix();
 
-let dirLight = new THREE.DirectionalLight();
+let dirLight = new THREE.DirectionalLight('white',1.);
 	scene.add(dirLight);
-	dirLight.position.set(0,0,10)
+	dirLight.position.set(0,30,0)
 	
 	orbitControls = new OrbitControls(this.camera.perspectiveCamera,renderer.domElement)
     displayModule._display = this
     this.resize = (gl,canvas)=>{
+
+		if (canvas.width != window.innerWidth ||
+			canvas.height != window.innerHeight) {
+		  // Change the size of the canvas to match the size it's being displayed
+		  canvas.width = window.innerWidth;
+		  canvas.height = window.innerHeight;
+		}
+		this.camera.perspectiveCamera.aspect = canvas.width/canvas.height;
+		this.camera.perspectiveCamera.updateProjectionMatrix();
+		
         renderer.setSize(canvas.width, canvas.height, false);
     }
+	
+	window.onresize=()=>{
+		this.resize(canvas.gl,canvas);
+	}
+
     function meshRenderer(mesh, shader) {
         this.mesh = mesh;
         this.shader = shader;
-        this.updateMesh = ()=>{
+        this.updateMesh = (patch)=>{
+			let m = patch.matrix;
+			let a = this.mesh.matrix.elements;
+			for(let i=0;i<16;i++)a[i]=m[i]
         }
         this.render = ()=>{
         }
@@ -90,9 +118,11 @@ let dirLight = new THREE.DirectionalLight();
     this.meshRenderer = (gl,mesh,shader)=>new meshRenderer(mesh,shader);
     this.destroyMesh = (gl,mesh)=>{
         if (!mesh.parent) {
+            console.log('Bad destroyMesh:',mesh.geometry.vertices) ;
+			return;
             debugger ;
         }
-        scene.remove(mesh);
+        root.remove(mesh);
         //debugger
     }
     this.createFrameRenderer = ()=>{//createFrameRenderer
@@ -125,7 +155,7 @@ display.prototype.alphaKeyDown = function(k) {
 ;
 
 display.prototype.alphaKeyPressed = function(k) {
-    var ck = k.charCodeAt(0);
+    let ck = k.charCodeAt(0);
     if (this.cameraModule.KeyboardState._pressedKeys[ck] && (!this.cameraModule.KeyboardState._debounceKeys[ck])) {
         this.cameraModule.KeyboardState._debounceKeys[ck] = true;
         return true;
@@ -145,9 +175,9 @@ function orthoLookAt(at, from, up, rng, dpth) {
     mat4.translation(orthoWorld, [0, 0, 0]);
     mat4.inverse(world, orthoWorldInverse);
     mat4.transpose(orthoWorldInverse, orthoWorldInverseTranspose);
-    var cw = 0.5;
+    let cw = 0.5;
     //canvas.clientWidth*0.5;
-    var ch = 0.5;
+    let ch = 0.5;
     //canvas.clientHeight*0.5;
     if (rng)
         cw = ch = rng;
@@ -205,9 +235,9 @@ function setViewProjection(view, projection) {
     // t;
 
 }
-var frustumCenter = [0, 0, 0];
+let frustumCenter = [0, 0, 0];
 display.prototype.startRendering = function(viewCamera) {
-    var camera = viewCamera ? viewCamera : this.camera;
+    let camera = viewCamera ? viewCamera : this.camera;
     vec3.scale(camera._center, -1.0, frustumCenter);
     mat4.getColV3(camera._viewMat, 2, v3t0);
     vec3.scale(v3t0, this.farDepth / -2, v3t0);
@@ -216,13 +246,13 @@ display.prototype.startRendering = function(viewCamera) {
 }
 ;
 
-var renderedShaders = [];
-var renderedShaderTop = 0;
+let renderedShaders = [];
+let renderedShaderTop = 0;
 display.prototype.renderActiveShaders = function(passIndex) {
 	orbitControls.update()
     renderer.render(scene, this.camera.perspectiveCamera)
-    for (var t = 0; t < renderedShaderTop; t++) {
-        var shd = renderedShaders[t];
+    for (let t = 0; t < renderedShaderTop; t++) {
+        let shd = renderedShaders[t];
         if (shd.passIndex == passIndex)
             shd.render();
     }
@@ -230,19 +260,19 @@ display.prototype.renderActiveShaders = function(passIndex) {
 ;
 
 display.prototype.finishRendering = function() {
-    for (var t = 0; t < renderedShaderTop; t++) {
-        var shd = renderedShaders[t];
+    for (let t = 0; t < renderedShaderTop; t++) {
+        let shd = renderedShaders[t];
         shd.displayTop = 0;
     }
     renderedShaderTop = 0;
 }
 ;
 
-var tmpRay = {
+let tmpRay = {
     d: [0, 0, 0],
     o: [0, 0, 0]
 };
-var v4t0 = [0, 0, 0, 0];
+let v4t0 = [0, 0, 0, 0];
 display.prototype.computePickRay = function(sx, sy, outRay) {
     if (!outRay)
         outRay = tmpRay;
@@ -252,33 +282,33 @@ display.prototype.computePickRay = function(sx, sy, outRay) {
     v4t0[3] = 1;
     mat4.multiplyVec4(viewProjectionInverse, v4t0);
     vec3.scale(v4t0, 1.0 / v4t0[3]);
-    var cameraPos = mat4.getRowV3(viewInverse, 3, outRay.o);
+    let cameraPos = mat4.getRowV3(viewInverse, 3, outRay.o);
     vec3.subtract(v4t0, cameraPos, outRay.d);
     vec3.normalize(outRay.d);
     return outRay;
 }
 
 display.prototype.instanceMesh = function(mesh, onto, mat) {
-    var vbase = onto.vertices.length;
+    let vbase = onto.vertices.length;
     onto.vertices = onto.vertices.concat(mesh.vertices);
-    var vend = onto.vertices.length;
+    let vend = onto.vertices.length;
     onto.normals = onto.normals.concat(mesh.normals);
     onto.uvs = onto.uvs.concat(mesh.uvs);
-    var ibase = onto.indices.length;
+    let ibase = onto.indices.length;
     onto.indices = onto.indices.concat(mesh.indices);
-    var iend = onto.indices.length;
-    var vtop = vbase / 3;
-    for (var t = ibase; t < iend; t++) {
+    let iend = onto.indices.length;
+    let vtop = vbase / 3;
+    for (let t = ibase; t < iend; t++) {
         onto.indices[t] += vtop;
     }
     //451 2058
     if (mat)
-        for (var t = vbase; t < vend; t += 3) {
-            for (var i = 0; i < 3; i++)
+        for (let t = vbase; t < vend; t += 3) {
+            for (let i = 0; i < 3; i++)
                 v3t0[i] = onto.vertices[t + i];
-            //var vt=onto.vertices.slice(t,t+3);
+            //let vt=onto.vertices.slice(t,t+3);
             mat4.multiplyVec3(mat, v3t0);
-            for (i = 0; i < 3; i++)
+            for (let i = 0; i < 3; i++)
                 onto.vertices[t + i] = v3t0[i];
         }
 }
@@ -294,7 +324,7 @@ display.prototype.geomBatch = function(v, i, n, u) {
 let defMat = new THREE.MeshStandardMaterial();
 
 display.prototype.mesh = function(gl, vertices, indices, normals, uvs) {
-    //	var m = ;
+    //	let m = ;
     //if(vertices)m.vertices=newBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(vertices));
     //if(normals)m.normals=newBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(normals));
     //if(uvs)m.uvs=newBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(uvs));
@@ -312,7 +342,7 @@ display.prototype.mesh = function(gl, vertices, indices, normals, uvs) {
         g.elemCount = indices.length / 3;
     }
     let mesh = new THREE.Mesh(g,defMat)
-    scene.add(mesh)
+    root.add(mesh)
     mesh.matrixAutoUpdate = false;
     return mesh;
 }

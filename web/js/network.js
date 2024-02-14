@@ -1,22 +1,10 @@
-/*if (typeof define !== 'function') {
-    var isNode=true;
-}
 
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
-
-define(["./util/messaging.js"],function(messaging){
-*/
 import messaging from "./util/messaging.js"
-let isNode;
-if (typeof window === 'undefined'){//!== 'undefined') {
-     isNode=true;
-}
+let isNode = (typeof window === 'undefined');
 
 /*********** NETWORKING *********/
 function networkObject(){
-    var self;
+    let self;
     return self={
         g_playerList:{},
         g_localPlayer:undefined,
@@ -45,11 +33,11 @@ function networkObject(){
 rebuildPlayerListUI:function ()
 {
     if(typeof(document)!='object')return;   //No document on Node
-    var elem=document.getElementById("playerListElems");
+    let elem=document.getElementById("playerListElems");
     if(!elem)return;
-    var str="<list>";
-    for(var key in this.g_playerList){
-        var p=this.g_playerList[key];
+    let str="<list>";
+    for(let key in this.g_playerList){
+        let p=this.g_playerList[key];
         str+="<li>"+
             ((p==this.g_localPlayer) ? "<input class='uiComponent' value='"+p.nick+"' onkeypress='outgoingNickKeyPress(event)'></input>":p.nick)+
             "<button class='uiComponent' onclick='doPlayerAction(\""+key+"\",1);'>request</button><button class='uiComponent' onclick='doPlayerAction(\""+key+"\",2);'>accept</button></br>";
@@ -74,7 +62,7 @@ outgoingChatKeyPress:function (event){
 
         self.iosocket.emit('chat',self.outgoingChatElem.value);
 
-        var ourPlayer=self.g_playerList[self.g_networkId];
+        let ourPlayer=self.g_playerList[self.g_networkId];
                 
         if(ourPlayer){
             ourPlayer.chat=self.outgoingChatElem.value;
@@ -97,7 +85,7 @@ outgoingChatKeyPress:function (event){
 
 
 networkAttachClientListeners:function (){
-    var self=this;
+    let self=this;
     if(typeof(document)=='object'){
         this.incomingChatElem=document.getElementById('incomingChatMessages');
         this.outgoingChatElem=document.getElementById('outgoingChatMessage');
@@ -127,14 +115,14 @@ networkAttachClientListeners:function (){
             self.iosocket.emit('control',self.g_targetFixture.id);    //Attempt to take control of our targeted fixture
     });
     this.iosocket.on('chat', function(msg) {
-        var player=self.g_playerList[msg.id];
+        let player=self.g_playerList[msg.id];
         if(player){
             player.chat=msg.message;
             if(self.incomingChatElem)self.incomingChatElem.innerHTML+='<li>'+player.nick+":"+player.chat+'</li>';
         }
     });
     this.iosocket.on('player', function(playerData) {
-        var player=self.g_playerList[playerData.id]=playerData;
+        let player=self.g_playerList[playerData.id]=playerData;
         self.g_localPlayer=self.g_playerList[self.g_networkId];
         self.rebuildPlayerListUI();
     });
@@ -173,21 +161,21 @@ connectToGameServer:function ()
 },
 
 sendFixtureToServer:function (fix){
-    var msg='sync~'+fix.id;
-    for(var bid in fix.bodies){
-        var bod=fix.bodies[bid];
+    let msg='sync~'+fix.id;
+    for(let bid in fix.bodies){
+        let bod=fix.bodies[bid];
         msg+='~'+bod.position[0]+'~'+bod.position[1]+'~'+bod.position[2]+
              '~'+bod.linearVelocity[0]+'~'+bod.linearVelocity[1]+'~'+bod.linearVelocity[2];
     }
     this.iosocket.emit('sim',msg);
 },
 sendControlsToServer:function (fix){
-    var msg='ctrl~'+fix.id;
-    var controls=fix.controls;
-    for(var i in controls.inputs)
+    let msg='ctrl~'+fix.id;
+    let controls=fix.controls;
+    for(let i in controls.inputs)
         msg+='~'+controls.inputs[i];
-    for(var ca in controls.active)
-        for(var a in controls.active[ca])
+    for(let ca in controls.active)
+        for(let a in controls.active[ca])
             msg+='~'+controls.active[ca][a];
     msg+='~'+controls.flipOver;
     this.iosocket.emit('sim',msg);
@@ -196,24 +184,24 @@ parseBool:function (str) {
   return /^y|yes|ok|true$/i.test(str);
 },
 recvSimFromServer:function (msg){
-    var cmd=msg.data.split('~');
+    let cmd=msg.data.split('~');
     if(this.onSim){this.onSim(cmd);return;}
     if(!this.g_fixtures)return;
-    var idx=0;
+    let idx=0;
     while(idx<cmd.length){
-        var remaining=cmd.length-idx;
-        var c=cmd[idx];
+        let remaining=cmd.length-idx;
+        let c=cmd[idx];
         if(c=='sync'){
-            var objID=cmd[++idx];
+            let objID=cmd[++idx];
             idx++;
-            var fix=this.g_fixtures.byId[objID];
+            let fix=this.g_fixtures.byId[objID];
             if(remaining<(fix.bodies.length*6)+2){//cmd + objID + 16 flt
                 this.badPacketCount++;
                 break;
             }
             try{
-                for(var bid in fix.bodies){
-                    var bod=fix.bodies[bid];
+                for(let bid in fix.bodies){
+                    let bod=fix.bodies[bid];
                     v3set(bod.position,parseFloat(cmd[idx++]),parseFloat(cmd[idx++]),parseFloat(cmd[idx++]));
                     v3set(bod.linearVelocity,parseFloat(cmd[idx++]),parseFloat(cmd[idx++]),parseFloat(cmd[idx++]));
                 }
@@ -229,8 +217,8 @@ recvSimFromServer:function (msg){
                 this.badPacketCount++;
                 break;
             }
-            var controls=fix.controls;
-            for(var i in controls.inputs){
+            let controls=fix.controls;
+            for(let i in controls.inputs){
                 controls.inputs[i]=parseFloat(cmd[idx++]);
             }
             
@@ -248,7 +236,7 @@ recvSimFromServer:function (msg){
 ,initNetwork:function (){
     
     this.iosocket=this.connectToGameServer();
-    var self=this;
+    let self=this;
     this.iosocket.on('connect', function () {
         self.networkAttachClientListeners();
         self.iosocket.on('sim', function(data) {
@@ -256,12 +244,12 @@ recvSimFromServer:function (msg){
         });
         if(self.videoStreamHandler)self.iosocket.on('video', self.videoStreamHandler);
         self.iosocket.on('playerState', function(state) {
-            var plr=self.g_playerList[state.id];
-            for(var k in state)plr[k]=state[k];
+            let plr=self.g_playerList[state.id];
+            for(let k in state)plr[k]=state[k];
         });
         self.iosocket.on('chat', function(msg) {
             if(this.g_remoteVideoEnabled){
-                var player=self.g_playerList[msg.id];
+                let player=self.g_playerList[msg.id];
                 if(player){
                     renderPlayerImage(player,getPlayerImageBuffer(player.id));
                     updateDynamicTexture();

@@ -1,14 +1,14 @@
 /**
  * @private
  */
-var prioritySortLow = function (a, b) {
+let prioritySortLow = function (a, b) {
     return b.priority - a.priority;
 };
 
 /**
  * @private
  */
-var prioritySortHigh = function (a, b) {
+let prioritySortHigh = function (a, b) {
     return a.priority - b.priority;
 };
 
@@ -21,10 +21,10 @@ var prioritySortHigh = function (a, b) {
  * @param [options] If low is set to true returns lowest first.
  */
 function PriorityQueue(options) {
-    var contents = [];
+    let contents = [];
 
-    var sorted = false;
-    var sortStyle;
+    let sorted = false;
+    let sortStyle;
 
     if (options && options.low) {
         sortStyle = prioritySortLow;
@@ -35,12 +35,12 @@ function PriorityQueue(options) {
     /**
      * @private
      */
-    var sort = function () {
+    let sort = function () {
         contents.sort(sortStyle);
         sorted = true;
     };
 
-    var self = {
+    let self = {
         /**
          * Removes and returns the next element in the queue.
          * @member PriorityQueue
@@ -54,7 +54,7 @@ function PriorityQueue(options) {
                 sort();
             }
 
-            var element = contents.pop();
+            let element = contents.pop();
 
             if (element) {
                 return element.object;
@@ -76,7 +76,7 @@ function PriorityQueue(options) {
                 sort();
             }
 
-            var element = contents[contents.length - 1];
+            let element = contents[contents.length - 1];
 
             if (element) {
                 return element.object;
@@ -91,7 +91,7 @@ function PriorityQueue(options) {
          * @returns true if the object is in the queue, false otherwise.
          */
         includes: function (object) {
-            for (var i = contents.length - 1; i >= 0; i--) {
+            for (let i = contents.length - 1; i >= 0; i--) {
                 if (contents[i].object === object) {
                     return true;
                 }

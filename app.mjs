@@ -16,20 +16,20 @@ import fs from "fs"
 
 
 async function createBoloServer(){
-    var server={};
+    let server={};
     // Simulator gorp start
-    var BOOT_SIMULATOR=true;
+    let BOOT_SIMULATOR=true;
     if(!BOOT_SIMULATOR)return;
 
 
-    var fs = await import('fs') //require('fs');
+    let fs = await import('fs') //require('fs');
     eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
     // Connect to server
-    var cio = global.io = (await import ('socket.io-client')).default; //require(
+    let cio = global.io = (await import ('socket.io-client')).default; //require(
 
-    var  bolosim = (await import ('./web/js/bolosim.js')).default;
-    var timing={time:0};
-    var messaging = (await import ('./web/js/util/messaging.js')).default
+    let  bolosim = (await import ('./web/js/bolosim.js')).default;
+    let timing={time:0};
+    let messaging = (await import ('./web/js/util/messaging.js')).default
     
     server.simulator=bolosim;
     server.timing=timing;
@@ -55,7 +55,7 @@ async function createBoloServer(){
 
     messaging.listen("networkConnectedToServer",function(){
         bolosim.initSim();
-        var tickInterval=parseInt(1000/60);
+        let tickInterval=parseInt(1000/60);
         function gameLoop(){
             setTimeout(gameLoop,tickInterval);
             global.messaging=server.messaging;
@@ -95,7 +95,7 @@ import mkcert from 'mkcert';
 
 
 
-var app = express();
+let app = express();
 /*
 const options = {
   key: ca.key,
@@ -107,7 +107,7 @@ const options = {
     key: fs.readFileSync('keys/server.key'),
     cert: fs.readFileSync('keys/server.crt')
 };
-var httpServer = https.createServer(options,app);
+let httpServer = https.createServer(options,app);
 
 let sio = new socketio.Server( httpServer )/*,{
     cors: {
@@ -121,7 +121,7 @@ let sio = new socketio.Server( httpServer )/*,{
 app.use(express.static(__dirname+"/web"));
 //app.use(express.compress());
 
-var port = 3000;
+let port = 3000;
 util.puts = console.log;
 util.puts(' x x x '.green);
 util.puts(' welcome to '.blue + 'BOLO '.red + 'v0.1.9.666.x'.yellow);
@@ -130,9 +130,9 @@ util.puts(' x x x '.green);
 util.puts('    happy hunting');
 
 
-var g_logLevel = 2;
-var g_logColors=[''.blue,''.red,''.yellow];
-var log = function(msg,level){
+let g_logLevel = 2;
+let g_logColors=[''.blue,''.red,''.yellow];
+let log = function(msg,level){
     if(!level)level=0;
     if(level<=g_logLevel)
     {
@@ -143,25 +143,25 @@ var log = function(msg,level){
 
 httpServer.listen(port);
 
-var hio = sio.listen(httpServer);
+let hio = sio.listen(httpServer);
 
 //hio.set('log level',0);
 
-var clients={};
-var players={};
-var rooms={};
+let clients={};
+let players={};
+let rooms={};
 
-var joinRequests={};
-var playerSockets={};
+let joinRequests={};
+let playerSockets={};
 
-var occupiedFixtures={};
-var fixtures=[];
+let occupiedFixtures={};
+let fixtures=[];
 
 // info @ recovery.us --- Modem #:001e69b4679a --- Comcast: 8155200014720926
 
-var modifiedCells={}
+let modifiedCells={}
 
-var mapIndex=0;
+let mapIndex=0;
 
 //hio.sockets.on('message', function (msg) {
 	//console.log('Message Received: ', msg);
@@ -198,23 +198,23 @@ function addClient(sockId){
 }
 
 console.log("started!");
-var g_gameHost=null;
+let g_gameHost=null;
 
 hio.sockets.on('connection', function (socket) {
 
-    var address = socket.handshake.address;
+    let address = socket.handshake.address;
     log("New connection from " + address.address + ":" + address.port + " sid:"+socket.id);
 
-    var client=addClient(socket.id);
+    let client=addClient(socket.id);
 
     log("clients:"+JSON.stringify(clients));
 
   //  socket.on('join', function (data) {
-    var player=addPlayer(socket);
+    let player=addPlayer(socket);
     
     players[socket.id]=player;
-    var i=0;
-    for( var k in players)  //Renumber the players
+    let i=0;
+    for( let k in players)  //Renumber the players
         players[k].index=i++;
     log("players:"+JSON.stringify(players));
 
@@ -251,9 +251,9 @@ hio.sockets.on('connection', function (socket) {
     
     socket.on('sim', function (msg) {//This is the primary state message that gets sent for realtime sync
         //console.log('Message Received: ', msg);
-        var plr=players[socket.id];
+        let plr=players[socket.id];
         if(plr.avatar){
-            var pav=fixtures[plr.avatar];
+            let pav=fixtures[plr.avatar];
             if(pav)
                 pav.lastState=msg;
         }
@@ -266,12 +266,12 @@ hio.sockets.on('connection', function (socket) {
         socket.broadcast.emit('chat', {message:msg,id:socket.id});   //Forward chat/game data
     });
     
-    var arrayContains = function(arr,val) {
+    let arrayContains = function(arr,val) {
         return (arr.indexOf(val)==-1)?false:true;
     };
 
-    var arrayRemove = function(arr,args) {
-        var what, a = args, L = a.length, ax;
+    let arrayRemove = function(arr,args) {
+        let what, a = args, L = a.length, ax;
         while (L && this.length) {
             what = a[--L];
             while ((ax = this.indexOf(what)) !== -1) {
@@ -282,7 +282,7 @@ hio.sockets.on('connection', function (socket) {
     };
     
     socket.on('room', function (data) {
-        var plr=players[socket.id];
+        let plr=players[socket.id];
         if(rooms[data.room]){
             socket.broadcast.to(data.room).emit(data.command,data);
         }else{
@@ -296,8 +296,8 @@ hio.sockets.on('connection', function (socket) {
     });
     
     socket.on('joinrequest', function(playerId){
-        var plr=players[socket.id];
-        var plr2=players[playerId];
+        let plr=players[socket.id];
+        let plr2=players[playerId];
 
         log("Got join request from "+plr.nick+" to "+plr2.nick+" "+playerId);
         if(joinRequests[playerId]){
@@ -309,18 +309,18 @@ hio.sockets.on('connection', function (socket) {
     });
     
     socket.on('joinaccept', function(playerId){
-        var plr=players[socket.id];
-        var plr2=players[playerId];
+        let plr=players[socket.id];
+        let plr2=players[playerId];
         log("Got join accept from "+plr.nick+" to "+plr2.nick+" "+playerId);
         if(arrayContains(joinRequests[plr.id],playerId))
         {   //Set up game
             arrayRemove(joinRequests[plr.id],playerId);
             log("Setting up game between "+plr.nick+" and "+plr2.nick+"");
-            var room=""+socket.id+playerId;
+            let room=""+socket.id+playerId;
             addRoom(room);
             socket.join(room);//Join both players into the room that is the combination of thier names..
             
-            var sock2=playerSockets[playerId];
+            let sock2=playerSockets[playerId];
             sock2.join(room);
             
             socket.broadcast.to(room).emit("join",room);
@@ -331,7 +331,7 @@ hio.sockets.on('connection', function (socket) {
     });
     
     socket.on('control', function (fixtureId) {//This is called to request control of a different game object...
-        var plr=players[socket.id];
+        let plr=players[socket.id];
         if(plr.avatar && plr.spectating==false){    //If we are controlling something already...
             delete occupiedFixtures[plr.avatar]; //Disengage from it..
         }
@@ -346,7 +346,7 @@ hio.sockets.on('connection', function (socket) {
                     
                 };
         }
-        var state={id:plr.id,spectating:plr.spectating,avatar:plr.avatar};
+        let state={id:plr.id,spectating:plr.spectating,avatar:plr.avatar};
         hio.sockets.emit('playerState',{id:plr.id,spectating:plr.spectating,avatar:plr.avatar});   //Send the player state change to everyone.
 
         log("control plr:"+plr+" fix:"+fixtureId);
@@ -356,7 +356,7 @@ hio.sockets.on('connection', function (socket) {
 
         log("Client disconnect from " + address.address + ":" + address.port + " sid:"+socket.id);
         log("Disconnect data:" + data);
-        var plyr=players[socket.id];
+        let plyr=players[socket.id];
         if(plyr.avatar && occupiedFixtures[plyr.avatar]==socket.id){//plyr.spectating==false){    //If we are controlling something already...
             delete occupiedFixtures[plyr.avatar]; //Disengage from it..
         }
@@ -364,15 +364,15 @@ hio.sockets.on('connection', function (socket) {
         delete clients[socket.id];
         delete players[socket.id];
         delete playerSockets[socket.id];
-        var i=0;
-        for( var k in players) players[k].index=i++;  //Reindex the players
+        let i=0;
+        for( let k in players) players[k].index=i++;  //Reindex the players
         log("players:"+JSON.stringify(clients));
         log("occupiedFixtures:"+JSON.stringify(occupiedFixtures));
 
         hio.sockets.emit('players',players); //Broadcast the new player list
         
         if(socket.id == g_gameHost){        //Host has left the game...
-            var pkeys=Object.keys(players);
+            let pkeys=Object.keys(players);
             if(pkeys.length===0){
                 g_gameHost=null;
             }else{
@@ -383,4 +383,4 @@ hio.sockets.on('connection', function (socket) {
     });
 });
 
-var testGame=createBoloServer();
+let testGame=createBoloServer();
