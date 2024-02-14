@@ -211,8 +211,8 @@ define([
             for (var si in sounds)
                 loadRequests[sounds[si]] = {file: sounds[si]};
             audio.loadSounds("js/sounds/", loadRequests);
-            audio.startSoundsLoading();
-
+               audio.startSoundsLoading();
+ 
             messaging.listen("playSound",function(msg,snd){
                 audio.play(snd);
             });
@@ -222,9 +222,19 @@ define([
             });
 
             messaging.listen("allSoundsLoaded",function(msg,snd){
-                audio.play("intro");
-                //audio.play("bolotrack.mp3");
+                
+            let firstClick = (e)=>{
+                document.removeEventListener('pointerdown',firstClick)
+                
+                audio.enabled = true;
+                //audio.play("intro");
+                audio.play("bolotrack.mp3");
                 //messaging.send("playSound","bolotrack.mp3");
+                
+            }
+            document.addEventListener('pointerdown',firstClick)
+
+                
             });
 
             boloworld.setTileMeshGenerator(generateTileMesh);

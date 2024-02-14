@@ -1,7 +1,7 @@
 /* Copyright 2011 - Michael A. Schlachter - please contact me if you want to use this code! */
 define(["js/util/messaging.js"],function(messaging) {
     var loggingEnabled=false;
-    var soundDisabled = false;
+    var soundDisabled = true;
     var audibleRadius=200;
     var g_globalSoundVolume=0.01;
 
@@ -346,7 +346,7 @@ define(["js/util/messaging.js"],function(messaging) {
     
     function play(name,vol,caller,doneCbfn,loop) { 
         
-        if (soundDisabled || playingCount>4)
+        if (soundDisabled || playingCount>4 )
             return null;
 		
         var rsrc=files[name];
@@ -432,7 +432,9 @@ define(["js/util/messaging.js"],function(messaging) {
         "playPositional2d"      : playPositional2d,
         "calcPositionalVolume2d": calcPositionalVolume2d,
         "playPositional3d"      : playPositional3d,
-        "calcPositionalVolume3d": calcPositionalVolume3d
+        "calcPositionalVolume3d": calcPositionalVolume3d,
+		set enabled(enable){return (soundDisabled = !enable)},
+		get enabled(){return (!soundDisabled)}
     };
 })
 
