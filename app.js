@@ -1,5 +1,5 @@
 var express = require('express'),
-    sio = require('socket.io'),
+    socketio = require('socket.io'),
     os=require('os'),
     moment=require('moment'),
     util=require('util'),
@@ -7,7 +7,6 @@ var express = require('express'),
     http = require('http');
 
 var define = require('amdefine')(module);
-
 //global.io=sio;
 
 function createBoloServer(){
@@ -66,6 +65,7 @@ function createBoloServer(){
 var app = express();
 var httpServer = http.createServer(app);
 
+sio = socketio( httpServer );
 app.use(express.static(__dirname+"/web"));
 //app.use(express.compress());
 
@@ -93,7 +93,7 @@ httpServer.listen(port);
 
 var hio = sio.listen(httpServer);
 
-hio.set('log level',0);
+//hio.set('log level',0);
 
 var clients={};
 var players={};
