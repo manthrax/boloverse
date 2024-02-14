@@ -204,10 +204,9 @@ require(["util/domReady!", // Waits for page load
         boloworld.update(gl,display,timing,updateSim);
 
         var renderRadar = true;
-
+if(gl)
         if(renderRadar){
-            if(!gl)
-                return;
+           
 
             
             this.radarRTT.bindRTTForRendering(gl);
@@ -233,7 +232,7 @@ require(["util/domReady!", // Waits for page load
         });
 
         var renderRTTRadarView=renderRadar;
-
+if(gl)
         if(deferredRender){
             this.pingRTT.bindRTTForRendering(gl);
             if(accumRender){
@@ -242,10 +241,21 @@ require(["util/domReady!", // Waits for page load
                 this.pingRTT=sv;
             }
         }
+        if(gl)
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    //Clear window framebuffer
 
         this.startRendering();
+
+        if(!gl){
+            
+            this.renderActiveShaders();
+            this.finishRendering();
+            return;
+        }
+
+        
         if(renderFullRes)this.renderActiveShaders();  //Pass 0 Render solid geometry
+        
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.ONE,gl.ONE);                                                    //gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
         gl.cullFace(gl.FRONT);

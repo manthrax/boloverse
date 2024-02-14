@@ -964,6 +964,12 @@ import brain from "./brain.js"
 
                         var targ = [v3t0[0], v3t0[1], v3t0[2]];
                         var targCell = boloworld.getCellAtWorld(targ[0], targ[1]);
+                        if(!targCell){
+                            
+                            playUISound("bubbles");
+                            targetValid = false;
+                            return
+                        }
 
                         if (validPilotTarget(this, currentTool, targCell) == false) {
                             targetValid = false;

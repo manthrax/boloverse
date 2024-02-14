@@ -28,7 +28,9 @@ import {PerspectiveCamera} from "three"
 
 ModelCamera = function (canvas) {
     var self = this, moving = false;
-    this.perspectiveCamera = new PerspectiveCamera();    
+    this.perspectiveCamera = new PerspectiveCamera();   
+    //this.perspectiveCamera.matrixAutoUpdate = false;
+    
     this.lastX=0;
     this.lastY=0;
     this.zoomLevel=0;
