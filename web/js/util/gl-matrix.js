@@ -25,13 +25,9 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-if (typeof(define)!=='undefined') {
+if (typeof window==='undefined') {
     var isNode=true;
-    //var define = require('amdefine')(module);
 }
-
-
-//define(function () {
 
 
 "use strict";
@@ -1953,5 +1949,3 @@ quat4.str = function (quat) {
     return '[' + quat[0] + ', ' + quat[1] + ', ' + quat[2] + ', ' + quat[3] + ']';
 };
 
-
-//});

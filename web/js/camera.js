@@ -1,10 +1,11 @@
+/*
 if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
 define(
     function () {
-
+*/
     "use strict";
 
     var KeyboardState={
@@ -372,9 +373,10 @@ define(
         }
     };
 
-    return {
+//    return 
+    export default{
         ModelCamera: ModelCamera,
         FlyingCamera: FlyingCamera,
         KeyboardState: KeyboardState
     };
-});
+//});

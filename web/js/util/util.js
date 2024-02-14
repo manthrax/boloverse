@@ -1,10 +1,5 @@
 
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
-
-define( function() {
-    return {
+export default {
         DLL:function(link)
         {
             return{
@@ -198,4 +193,4 @@ define( function() {
             }
         }
     }
-});
+    

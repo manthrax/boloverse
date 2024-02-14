@@ -1,8 +1,12 @@
+import camera from "./camera.js"
+import glUtil from "./util/gl-util.js"
 
+/*
 define([
     "camera",
     "util/gl-util"
     ], function(camera, glUtil) {
+	*/
         "use strict";
 /*
 render light depths
@@ -584,7 +588,8 @@ deferred pass... screenspace render fx effects
                 return this;
             }
         };
-        return {
+        //return 
+		export default{
             display: display,
             displayDefaults:displayDefaults,
             getDisplay: function(){return _display;},
@@ -592,8 +597,10 @@ deferred pass... screenspace render fx effects
             view: view,
             viewInverse: viewInverse
         };
+/*
     });
 
+*/
 
 
 

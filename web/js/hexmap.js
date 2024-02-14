@@ -1,10 +1,10 @@
-
+/*
 define(["util/domReady!", // Waits for page load
         "display",
         "world",
         "util/gl-util"
     ], function(doc, displayModule, world, glUtil) { //bolomap,textures
-    
+    */
     function buildTexture(){
         
     }
@@ -106,8 +106,11 @@ define(["util/domReady!", // Waits for page load
 
     }
     
-    return {
+    //return 
+    export default{
         buildTexture:buildTexture,
         buildSphere:buildSphere
-    }    
+    } 
+/*
 });
+*/

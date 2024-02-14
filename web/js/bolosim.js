@@ -1,4 +1,4 @@
-if (typeof define !== 'function') {
+/*if (typeof define !== 'function') {
     console.log("Loading bolosim as node module...");
 }
 
@@ -15,6 +15,16 @@ define([
 ],
 
     function (messaging, bolomap, boloworld, network, brain) {
+    */
+
+
+
+import messaging from "./util/messaging.js"
+import bolomap from "./bolomap.js"
+import boloworld from "./boloworld.js"
+import network from "./network.js"
+import brain from "./brain.js"
+
         if(typeof(global)=='object'){//Node
             global.network=network;
             network.g_isHost=true;
@@ -1032,7 +1042,7 @@ define([
 
             if (curCell.length > 1) {
                 if (curCell[1].name == "base") {
-                    base = curCell[1];
+                    let base = curCell[1];
                     if (base.team == this.team) {//At friendly base
                         //Heal at base
                         healCounter += healRate / 60.0;
@@ -1110,7 +1120,7 @@ define([
                                 playSound(this, "farming_tree_near");
                             } else if (curCell[t].name == "base") {
                                 //Entered base cell .. on base...
-                                base = curCell[t];
+                                let base = curCell[t];
 
                                 if (base.team != this.team) {//Unclaimed base, create a new instance
                                     if(network.connected()){
@@ -1289,7 +1299,7 @@ define([
         messaging.listen("nextCamera",function(){
             messaging.send("game_camera",0);
         });
-        keyEventMap={
+        let keyEventMap={
             /*
              '6':function(){messaging.send("loadDefault");},
              '7':function(){messaging.send("loadStressTest");},
@@ -1563,7 +1573,7 @@ define([
             }
         }
 
-        bsim =
+            let bsim=
         {
             initSim: initSim,
             updateSim: updateSim,
@@ -1575,7 +1585,8 @@ define([
             teamTickets: teamTickets,
             network: network
         }
+        export default bsim;
 
-        return bsim;
+        //return bsim;
 
-    });
+    //});

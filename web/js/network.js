@@ -1,4 +1,4 @@
-if (typeof define !== 'function') {
+/*if (typeof define !== 'function') {
     var isNode=true;
 }
 
@@ -7,6 +7,13 @@ if (typeof define !== 'function') {
 }
 
 define(["./util/messaging.js"],function(messaging){
+*/
+import messaging from "./util/messaging.js"
+let isNode;
+if (typeof window === 'undefined'){//!== 'undefined') {
+     isNode=true;
+}
+
 /*********** NETWORKING *********/
 function networkObject(){
     var self;
@@ -283,19 +290,21 @@ recvSimFromServer:function (msg){
 }
 
 //function
+let network;
 if(typeof network !== "object"){
     network=networkObject();
 }
-
 if(typeof window == "object"){
     if(!window.network){
         window.network=network;
     }
 }
 
-return network;
+
+//return
+  export default  network;
 
 /*{
 };*/
 
-});
+//});
