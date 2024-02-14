@@ -108,7 +108,7 @@ define(
 
                     var nx=self.orbitX;
                     var ny=self.orbitY;
-                    ny += xDelta * 0.025;
+                    ny += xDelta * -0.025;
                     nx += yDelta * 0.025;
 
 
