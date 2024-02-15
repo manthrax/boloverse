@@ -14,6 +14,7 @@ import colors from "colors"
 import https from "https"
 import fs from "fs"
 
+import {mat4,vec3} from './web/js/util/gl-matrix.js';
 
 async function createBoloServer(){
     let server={};
@@ -21,9 +22,6 @@ async function createBoloServer(){
     let BOOT_SIMULATOR=true;
     if(!BOOT_SIMULATOR)return;
 
-
-    let fs = await import('fs') //require('fs');
-    eval(fs.readFileSync('./web/js/util/gl-matrix.js')+'');
     // Connect to server
     let cio = global.io = (await import ('socket.io-client')).default; //require(
 
@@ -90,35 +88,29 @@ import mkcert from 'mkcert';
   });
 
   console.log('Certificates generated successfully.');
-*/  // Save the certificates to files or proceed as needed
+  // Save the certificates to files or proceed as needed
 
-
-
-
-let app = express();
-/*
 const options = {
   key: ca.key,
   cert: ca.cert
 };
 */
 
+
+
+let app = express();
+
 const options = {
     key: fs.readFileSync('keys/server.key'),
     cert: fs.readFileSync('keys/server.crt')
 };
+
 let httpServer = https.createServer(options,app);
 
-let sio = new socketio.Server( httpServer )/*,{
-    cors: {
-      origin: "https://http://136.24.178.125:3000",//appurl.origin,//, // Adjust to your client's origin
-      methods: ["GET", "POST"],
-      allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: true
-    }
-  });*/
+let sio = new socketio.Server( httpServer )
   
 app.use(express.static(__dirname+"/web"));
+
 //app.use(express.compress());
 
 let port = 3000;
