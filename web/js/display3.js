@@ -190,14 +190,27 @@ function orthoLookAt(at, from, up, rng, dpth) {
     mat4.multiply(orthoWorld, orthoViewProjection, orthoWorldViewProjection);
 }
 
-function setViewProjection(view, projection) {
+function setViewProjection(camera, projection) {
+	let view = camera.getViewMat()
     if (!_display.view) {
-        return;
-        let ma = _display.camera.perspectiveCamera.matrix.elements;
+        //return;
+		/*
+		root.attach(cam);
+        let ma = cam.matrix.elements;
         for (let i = 0; i < 16; i++)
             ma[i] = view[i];
-
-        _display.camera.perspectiveCamera.updateMatrixWorld(true);
+		cam.matrix.decompose(cam.position,cam.quaternion,cam.scale)
+		scene.attach(cam);
+        orbitControls.target.set(0,0,-1).applyQuaternion(cam.quaternion).add(cam.position);
+		*/
+		let cam = _display.camera.perspectiveCamera;
+		let cent=camera.getCenter();
+		cam.position.sub(orbitControls.target)
+		 root.localToWorld(orbitControls.target.set(...cent).multiplyScalar(-1));
+		cam.position.add(orbitControls.target)
+		//.applyQuaternion(cam.quaternion).add(cam.position);
+		
+		//_display.camera.perspectiveCamera.updateMatrixWorld(true);
         return;
     }
 
@@ -242,7 +255,7 @@ display.prototype.startRendering = function(viewCamera) {
     mat4.getColV3(camera._viewMat, 2, v3t0);
     vec3.scale(v3t0, this.farDepth / -2, v3t0);
     vec3.add(v3t0, frustumCenter, frustumCenter);
-    setViewProjection(camera.getViewMat(), projection);
+    setViewProjection(camera, projection);
 }
 ;
 
