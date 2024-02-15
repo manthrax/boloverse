@@ -39,8 +39,11 @@ let v3t8 = nv3();
 let v3t9 = nv3();
 
 let projection = new Float32Array(16);
+let projectionInverse = new Float32Array(16);
 let viewInverse = new Float32Array(16);
+let viewProjection = new Float32Array(16);
 let viewProjectionInverse = new Float32Array(16);
+let viewInverseTranspose = new Float32Array(16);
 let displayDefaults = function() {
     this.cameraModule = camera;
     this.camera = new camera.ModelCamera();
@@ -112,7 +115,12 @@ let dirLight = new THREE.DirectionalLight('white',1.);
 			let a = this.mesh.matrix.elements;
 			for(let i=0;i<16;i++)a[i]=m[i]
         }
-        this.render = ()=>{
+		this.destroy=function(){
+			if(this.mesh)
+				if(this.mesh.parent)this.mesh.parent.remove(this.mesh)
+			delete this.mesh;
+		}
+        this.render=function(){
         }
     }
     this.meshRenderer = (gl,mesh,shader)=>new meshRenderer(mesh,shader);
@@ -192,7 +200,8 @@ function orthoLookAt(at, from, up, rng, dpth) {
 
 function setViewProjection(camera, projection) {
 	let view = camera.getViewMat()
-    if (!_display.view) {
+    //if (!_display.view)
+	{
         //return;
 		/*
 		root.attach(cam);
@@ -211,11 +220,11 @@ function setViewProjection(camera, projection) {
 		//.applyQuaternion(cam.quaternion).add(cam.position);
 		
 		//_display.camera.perspectiveCamera.updateMatrixWorld(true);
-        return;
+        //return;
     }
 
-    mat4.set(view, _display.view);
-    mat4.set(projection, _display.projection);
+    //mat4.set(view, _display.view);
+    //mat4.set(projection, _display.projection);
     mat4.inverse(view, viewInverse);
     mat4.transpose(viewInverse, viewInverseTranspose);
     mat4.inverse(projection, projectionInverse);
@@ -286,9 +295,12 @@ let tmpRay = {
     o: [0, 0, 0]
 };
 let v4t0 = [0, 0, 0, 0];
+//let tv0 = new THREE.Vector3();
 display.prototype.computePickRay = function(sx, sy, outRay) {
     if (!outRay)
         outRay = tmpRay;
+
+	//tv0.set(sx * 2 / canvas.width - 1,1 - sy * 2 / canvas.height,0);
     v4t0[0] = sx * 2 / canvas.width - 1;
     v4t0[1] = 1 - sy * 2 / canvas.height;
     v4t0[2] = 0;

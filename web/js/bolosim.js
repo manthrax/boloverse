@@ -367,8 +367,6 @@ function projectileUpdate() {
             exp.colCell = this.colCell;
             exp.colCellCoord = this.colCellCoord;
             exp.destroy = function() {//   dealDamageToMap(this.proj,this.colCellCoord,this.colCell);
-                let tm = this.meshRenderer.mesh;
-                if(tm.parent)tm.parent.remove(tm)
                 
             }
             ;
@@ -432,7 +430,7 @@ function playerTilePassable(obj, tile) {
 
 function rayPlaneIntersect(ro, rd, po, pd, out) {
     let vdd = vec3.dot(rd, pd);
-    if (vdd > 0.0)
+    if (vdd >= 0.0)
         return false;
     vec3.subtract(po, ro, v3t0);
     let vd = vec3.dot(v3t0, pd);

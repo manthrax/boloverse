@@ -138,21 +138,36 @@ let simFPS = 1000.0 / 60;
 let minFPS = 1000.0 / 15;
 let currentMap = null;//bolomap.loadRandomMap();
 
-let GameObject = function () {
-    let go = {
-        id: objIdBase++,
-        matrix: mat4.identity(mat4.create()),
-        components: [],
-        removeComponent: function (comp) {
-            this.components.splice(this.components.indexOf(comp), 1);
-            delete this[name];
-        },
-        addComponent: function (name, comp) {
-            this[name] = comp;
-            this.components.push(comp);
-        }
+class GObj{
+    constructor(){
+        this.id= objIdBase++
+        this.matrix=mat4.identity(mat4.create())
+        this.components= []
     }
-    return go;
+    removeComponent (comp) {
+        this.components.splice(this.components.indexOf(comp), 1);
+        comp.destroy();
+        delete this[comp.constructor.name];
+    }
+    addComponent (name, comp) {
+        this[name] = comp;
+        this.components.push(comp);
+    }
+    
+    get active(){
+        return this._active;    
+    }
+    set active(v){
+        if(this._active&&(!v)){
+            //Deactivated...
+            this.meshRenderer && this.removeComponent(this.meshRenderer);
+            console.log("DEAC",this.id)
+        }
+        return this._active = v;    
+    }
+}
+let GameObject = function () {
+    return new GObj();
 }
 
 let objIdBase = 0;
