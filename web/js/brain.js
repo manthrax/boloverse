@@ -75,11 +75,13 @@ function Brain(bsim,player,module){
     this.progress=1.0;
     this.lastDist2=0.0;
     
-    this.cursorSprite=world.addObject("cursor",v3t0);
+    //this.cursorSprite=world.addObject("cursor",v3t0);
     player.avatar.cursorSprite=this.cursorSprite;
     player.avatar.destroy=function(){
-        this.cursorSprite.active=false;
-        delete this.cursorSprite;
+        if(this.cursorSprite){
+            this.cursorSprite.active=false;
+            delete this.cursorSprite;
+        }
     };
     
    

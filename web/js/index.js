@@ -7,7 +7,7 @@ import messaging from "./util/messaging.js"
 import boloclient from "./boloclient.js"
 import boloworld from "./boloworld.js"
 import bolosim from "./bolosim.js"
-import meshes from "./meshes/testmesh.js"
+import meshes from "../assets/meshes/testmesh.js"
 import hexmap from "./hexmap.js"
 
 "use strict";
@@ -17,46 +17,20 @@ import hexmap from "./hexmap.js"
 let canvas = document.getElementById("canvas");
 let frame = document.getElementById("display-frame");
 let fpsCounter = document.getElementById("fps");
-
-let deferredRender = true;
-let accumRender = false;
-/*
-    let gl = null;//glUtil.getContext(canvas);
-    if(!gl) {
-        // Replace the canvas with a message that instructs them on how to get a WebGL enabled browser
-        glUtil.showGLFailed(frame);
-        throw "GL NOT AVAILABLE."
-        //return;
-    }
-*/
 let gl;
 let display = new displayModule.display(gl,canvas);
 
 // If we don't set this here, the rendering will be skewed
-//    canvas.width = canvas.offsetWidth;
-//    canvas.height = canvas.offsetHeight;
-display.resize(gl, canvas);
 
-//let renderer = new THREE.WebGLRenderer({canvas})
+display.resize(gl, canvas);
 
 display.createFrameRenderer = function(gl, timing) {
     return {
         gl: gl,
         timing: timing,
         update: function(gobj) {
-            //render
-            //console.log("rendering.");
-
             let c = gobj.meshRenderer;
-            if (c)
-                display.renderComponent(gobj, c, c.shader);
-            /*
-                 let comps=gobj.components;
-                 display.setWorld(gobj.matrix);
-                for(let i=0;i<comps.length;i++){
-                    let c=comps[i];
-                    display.renderComponent(gobj,c,c.shader);
-                }*/
+            if (c) display.renderComponent(gobj, c, c.shader);
         }
     }
 }
@@ -67,25 +41,6 @@ function updateSim() {
     display.camera.update();
 }
 
-display.getDebugTexShader = function() {
-    if (this.debugTexShader == null) {
-        this.debugTexShader = boloworld.getShader("debugSwatch");
-        this.debugTexShader.passIndex = 3;
-        this.debugTexShader.dontCull = true;
-    }
-    return this.debugTexShader;
-}
-;
-
-display.getDeferredShader = function() {
-    if (this.deferredTexShader == null) {
-        this.deferredTexShader = boloworld.getShader("deferred");
-        this.deferredTexShader.passIndex = 4;
-        this.deferredTexShader.dontCull = true;
-    }
-    return this.deferredTexShader;
-}
-;
 
 display.createQuadObject = function(bscl, bpx, bpy, shader, srcTex) {
     let dbto = boloworld.addObject("quad1x1", undefined, shader, srcTex);
@@ -95,78 +50,41 @@ display.createQuadObject = function(bscl, bpx, bpy, shader, srcTex) {
     dbto.active = true;
     dbto.dontDestroy = true;
     dbto.destroy = function() {
-        alert("debugTexObject destroyed!");
+        alert("createQuadObject destroyed!");
     }
-    ;
+    
     return dbto;
 }
-;
-display.getDebugTexObject = function() {
-    if (this.debugTexObject == null) {
-        this.debugTexObject = this.createQuadObject(0.13, -5, 5, this.getDebugTexShader(), this.radarRTT.texture);
-    }
-    return this.debugTextObject;
-}
-//    debugTextObject.pos=vec3.create();//[sfrnd(1),sfrnd(1),sfrnd(0)]);
-//    debugTextObject.update=function(){console.log("updating");}
 
 function bootGame() {
     let radarDim = 512;
     let rttDim = 1024;
 
+    ///ZOOOM
+    let camera = display.camera.perspectiveCamera;
+    document.addEventListener('wheel',(e)=>{
+        camera.fov += e.movementY*.01;
+        camera.updateProjectionMatrix();
+    })
+
     display.radarRTT = display.initRTT(gl, radarDim, radarDim);
-    display.radarRTT.texture.bindToUnit = boloworld.bindToUnit;
-
-    display.deferredRTT = display.initRTT(gl, rttDim, rttDim);
-    display.deferredRTT.texture.bindToUnit = boloworld.bindToUnit;
-
-    display.accumRTT = display.initRTT(gl, rttDim, rttDim);
-    display.accumRTT.texture.bindToUnit = boloworld.bindToUnit;
-
-    display.pingRTT = display.deferredRTT;
-    display.pongRTT = display.accumRTT;
-
-    display.debugTexShader = null;
-    display.deferredTexShader = null;
-    display.debugTexObject = null;
-    display.deferredRendererTexObject = null;
-
+    
     boloworld.initWorld();
     boloworld.makeScene();
     messaging.send("initSim");
 
-    display.getDebugTexObject();
-    /*
-        display.deferredRendererTexObject=display.createQuadObject(0.4,0,0,display.getDeferredShader(),display.deferredRTT.texture);
-
-        display.deferredRendererTexObject.blurFactor=1.0;
-        display.deferredRendererTexObject.chromabFactor=1.0;
-        display.deferredRendererTexObject.gainFactor=1.0;
-        display.deferredRendererTexObject.warpFactor=1.0;
-        deferredRender = false;
-
-        messaging.listen("shdrActivate",function(msg,param){deferredRender=param;console.log("Activate:"+param);});
-        messaging.listen("shdrV1",function(msg,param){display.deferredRendererTexObject.blurFactor=parseFloat(param);console.log("sv1:"+param);});
-        messaging.listen("shdrV2",function(msg,param){display.deferredRendererTexObject.chromabFactor=parseFloat(param);console.log("sv2:"+param);});
-        messaging.listen("shdrV3",function(msg,param){display.deferredRendererTexObject.gainFactor=parseFloat(param);console.log("sv3:"+param);});
-        messaging.listen("shdrV4",function(msg,param){display.deferredRendererTexObject.warpFactor=parseFloat(param);console.log("sv4:"+param);});
-
-*/
-
     display.radarCamera = new cameraModule.ModelCamera();
     display.radarCamera.distance = 100;
-    //80
     display.radarCamera.orbitY = 0;
     display.radarCamera.orbitX = 4.5;
-    //    this.orbitY = 6.0;
+    
     display.radarCamera.setCenter([0, 0, 1]);
 
     glUtil.startRenderLoop(gl, canvas, function(gl, timing) {
         fpsCounter.innerHTML = "hz:" + timing.framesPerSecond + "<br/>o:" + (((boloworld.objects.iterCount > 0) ? boloworld.objects.updateSum / boloworld.objects.iterCount : 0)) + "<br/>m:" + display.renderedMeshes + "<br/>t:" + display.renderedTriangles;
-        //gl.clearColor(1.0, 0.0, 0.1, 1.0);
         boloworld.objects.iterCount = 0;
-        boloworld.objects.updateSum = 0;
         display.renderedTriangles = 0;
+        boloworld.objects.updateSum = 0;
         display.renderedMeshes = 0;
         display.renderLoop(gl, timing);
     });
@@ -176,107 +94,16 @@ display.renderFrame = function(gl, timing) {
 
     boloworld.update(gl, display, timing, updateSim);
 
+    
     let renderRadar = true;
-    if (gl)
-        if (renderRadar) {
+    if (renderRadar) {
 
-            this.radarRTT.bindRTTForRendering(gl);
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-            //Clear RTT buffer
-            this.startRendering(this.radarCamera);
-            this.setOrthoViewport(gl, canvas, display.radarRTT.frameBuffer.width, display.radarRTT.frameBuffer.height);
-            this.renderActiveShaders();
-            //Pass 0 Render solid geometry to deferred buffer
-            display.setScreenViewport(gl, canvas);
-            this.unbindRTT(gl);
-        }
-
-    let renderFullRes = true;
-
-    messaging.listen("localPlayerDamaged", function(msg, param) {
-
-        if (typeof (TWEEN) == 'object') {
-            // No tweening on Node
-            let fuzzTween = new TWEEN.Tween(deferredRender);
-            zoomTween.to({
-                scale: 0.08,
-                alpha: 1.0
-            }, 1000.0).onComplete(function(c, v) {//this.active=false;
-            }).easing(TWEEN.Easing.Quadratic.In).start();
-        }
-    });
-
-    let renderRTTRadarView = renderRadar;
-    if (gl)
-        if (deferredRender) {
-            this.pingRTT.bindRTTForRendering(gl);
-            if (accumRender) {
-                let sv = this.pongRTT;
-                this.pongRTT = this.pingRTT;
-                this.pingRTT = sv;
-            }
-        }
-    if (gl)
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    //Clear window framebuffer
-
+    }
     this.startRendering();
-
-    if (!gl) {
-
-        this.renderActiveShaders();
-        this.finishRendering();
-        return;
-    }
-
-    if (renderFullRes)
-        this.renderActiveShaders();
-    //Pass 0 Render solid geometry
-
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE);
-    //gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
-    gl.cullFace(gl.FRONT);
-    if (renderFullRes)
-        this.renderActiveShaders(1);
-    //Pass 1.. render ADDITIVE blend stuff backfaces
-    gl.cullFace(gl.BACK);
-    if (renderFullRes)
-        this.renderActiveShaders(1);
-    //Pass 1.. render ADDITIVE blend stuff frontfaces
-    gl.disable(gl.CULL_FACE);
-    gl.disable(gl.DEPTH_TEST);
-
-    gl.blendFunc(gl.SRC_COLOR, gl.ONE_MINUS_SRC_ALPHA);
-    // Pass 2.. render alpha blended/alpha test geometry / no culling... UI Layer
-    if (renderFullRes)
-        this.renderActiveShaders(2);
-    //gl.disable(gl.BLEND);
-
-    // render debug textures...
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    if (renderRTTRadarView)
-        this.renderActiveShaders(3);
-
-    if (deferredRender) {
-        this.unbindRTT(gl);
-
-        // gl.flush();
-        display.deferredRendererTexObject.diffuseSampler = this.pingRTT.texture;
-        display.deferredRendererTexObject.accumSampler = this.pongRTT.texture;
-
-        this.renderActiveShaders(4);
-        //Render the deferred quad renderer to the screen
-
-    }
-
-    gl.disable(gl.BLEND);
-    gl.enable(gl.CULL_FACE);
-    gl.enable(gl.DEPTH_TEST);
-
+    this.renderActiveShaders();
     this.finishRendering();
 }
-;
+
 
 function fullscreenchange() {
     if (document.webkitIsFullScreen || document.mozFullScreen) {
@@ -295,6 +122,7 @@ frame.addEventListener("mozfullscreenchange", fullscreenchange, false);
 function setStatus(str) {
     document.getElementById('logoBox').innerHTML = "BOLO | UNIVERSE : " + str;
 }
+
 messaging.listen("networkConnectedToServer", function() {
     setStatus("Connected. Loading...");
     bootGame();

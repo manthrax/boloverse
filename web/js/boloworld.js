@@ -3,8 +3,7 @@ import messaging from "./util/messaging.js"
 import util from "./util/util.js"
 import programs from "./programs.js"
 import bolomap from "./bolomap.js"
-import   meshes from "./meshes/testmesh.js"
-import   fontMesh from "./fontMesh.js"
+import   meshes from "../assets/meshes/testmesh.js"
 import "./util/seedrandom.js"
 
 import {vec3,mat4} from "./util/gl-matrix.js"
@@ -161,7 +160,7 @@ class GObj{
         if(this._active&&(!v)){
             //Deactivated...
             this.meshRenderer && this.removeComponent(this.meshRenderer);
-            console.log("DEAC",this.id)
+            //console.log("DEAC",this.id)
         }
         return this._active = v;    
     }
@@ -388,7 +387,6 @@ function initWorld() {
     //let tileTex
     tileDiffuse = loadTexture("./assets/tiles.png");
 
-   // fontMesh.createFontFromMesh(meshes["Font_courier"]);
 }
 
 let meshList = [];

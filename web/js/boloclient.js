@@ -14,7 +14,7 @@ import messaging from "./util/messaging.js";
 import bolomap from "./bolomap.js";
 import bolosim from "./bolosim.js";
 import boloworld from "./boloworld.js";
-import meshes from "./meshes/testmesh.js";
+import meshes from "../assets/meshes/testmesh.js";
 import audio from "./util/audio.js";
 import network from "./network.js";
 
@@ -204,7 +204,7 @@ messaging.listen("initSim", function () {
 
     let loadRequests = {};
     for (let si in sounds) loadRequests[sounds[si]] = { file: sounds[si] };
-    audio.loadSounds("js/sounds/", loadRequests);
+    audio.loadSounds("../assets/sounds/", loadRequests);
     audio.startSoundsLoading();
 
     messaging.listen("playSound", function (msg, snd) {

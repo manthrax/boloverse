@@ -63,6 +63,7 @@ let displayDefaults = function() {
     mat4.perspective(this.fov, display.prototype.aspectRatio, this.nearDepth, this.farDepth, projection);
 };
 
+
 function display() {
     displayDefaults.call(this);
     renderer = new WebGLRenderer({
@@ -72,6 +73,7 @@ function display() {
 	renderer.outputColorSpace = 'srgb'
     renderer.setClearColor(0x203080)
     scene = new THREE.Scene();
+	
 	root = new THREE.Group();
 	root.rotation.x=-Math.PI*.5;
 	root.updateMatrix();
@@ -296,12 +298,17 @@ let tmpRay = {
 };
 let v4t0 = [0, 0, 0, 0];
 //let tv0 = new THREE.Vector3();
+
+
+let raycaster=new THREE.Raycaster()
+let tv0 = new THREE.Vector3();
 display.prototype.computePickRay = function(sx, sy, outRay) {
     if (!outRay)
         outRay = tmpRay;
 
-	//tv0.set(sx * 2 / canvas.width - 1,1 - sy * 2 / canvas.height,0);
-    v4t0[0] = sx * 2 / canvas.width - 1;
+	tv0.set(sx * 2 / canvas.width - 1,1 - sy * 2 / canvas.height,0);
+    /*
+	v4t0[0] = sx * 2 / canvas.width - 1;
     v4t0[1] = 1 - sy * 2 / canvas.height;
     v4t0[2] = 0;
     v4t0[3] = 1;
@@ -310,6 +317,15 @@ display.prototype.computePickRay = function(sx, sy, outRay) {
     let cameraPos = mat4.getRowV3(viewInverse, 3, outRay.o);
     vec3.subtract(v4t0, cameraPos, outRay.d);
     vec3.normalize(outRay.d);
+	*/
+	raycaster.setFromCamera(tv0, this.camera.perspectiveCamera );
+
+	let ro=raycaster.ray.origin;
+	let rd = raycaster.ray.direction
+	root.worldToLocal(ro)
+	root.worldToLocal(rd)
+	outRay.o=[ro.x,ro.y,ro.z]
+	outRay.d=[rd.x,rd.y,rd.z]
     return outRay;
 }
 
@@ -349,10 +365,7 @@ display.prototype.geomBatch = function(v, i, n, u) {
 let defMat = new THREE.MeshStandardMaterial();
 
 display.prototype.mesh = function(gl, vertices, indices, normals, uvs) {
-    //	let m = ;
-    //if(vertices)m.vertices=newBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(vertices));
-    //if(normals)m.normals=newBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(normals));
-    //if(uvs)m.uvs=newBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(uvs));
+
     let g = new THREE.BufferGeometry();
     if (vertices)
         g.setAttribute('position', new THREE.Float32BufferAttribute(vertices,3));
@@ -363,7 +376,6 @@ display.prototype.mesh = function(gl, vertices, indices, normals, uvs) {
 
     if (indices) {
         g.setIndex(indices);
-        //		m.indices=newBuffer(gl,gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(indices));
         g.elemCount = indices.length / 3;
     }
     let mesh = new THREE.Mesh(g,defMat)

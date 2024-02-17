@@ -289,10 +289,4 @@ if(typeof window == "object"){
 }
 
 
-//return
   export default  network;
-
-/*{
-};*/
-
-//});

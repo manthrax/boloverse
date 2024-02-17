@@ -11,10 +11,10 @@ async function loadText(url) {
 let shaderSource, libNoise2D, libNoise3D, libNoise4D;
 
 if (!isNode) {
-    shaderSource = await loadText("./js/shaders.glsl");
-    libNoise2D = await loadText("./js/shaders/noise2D.glsl");
-    libNoise3D = await loadText("./js/shaders/noise3D.glsl");
-    libNoise4D = await loadText("./js/shaders/noise4D.glsl");
+    shaderSource = await loadText("./assets/shaders/shaders.glsl");
+    libNoise2D = await loadText("./assets/shaders/noise2D.glsl");
+    libNoise3D = await loadText("./assets/shaders/noise3D.glsl");
+    libNoise4D = await loadText("./assets/shaders/noise4D.glsl");
 }
 
 let shaderIncludes = {

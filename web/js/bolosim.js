@@ -1051,11 +1051,14 @@ function takeBase(base, team) {
 
 //25th United Airlines UA 900.. 
 function updatePlayer() {
-
+    let moving;
+    let movingForward;
+    let controls = this.controls;
+    if(this.speed>0) movingForward = true;
+    if(controls&(playerControls.up|playerControls.down|playerControls.left|playerControls.right)) moving = true;
     if (localPlayer && localPlayer.avatar == this)
         updateLocalPlayer.call(this);
 
-    let controls = this.controls;
     if (controls & playerControls.harvest) {
         currentTool = "harvest";
     }
@@ -1094,10 +1097,16 @@ function updatePlayer() {
     let impulseVel = 0.0;
     let mat = this.matrix;
 
-    if (this.speed < 0.0)
-        this.speed = 0;
-    else if (this.speed > 1.0)
+    if (this.speed < 0){
+        if(movingForward){
+            this.speed = 0;
+            controls &= ~playerControls.down;
+        }else if(this.speed<-0.25)
+            this.speed = -0.25;
+    }else if (this.speed > 1.0)
         this.speed = 1.0;
+    if(!moving)
+        this.speed *= .95
     //  Handle tank movement
     let msin = Math.sin(this.angle);
     let mcos = Math.cos(this.angle);
@@ -1298,6 +1307,7 @@ function initSim() {
     //DEFAULT MAP
     //Central Map
     //World
+
     startGame(bolomap.getMapIndex("Central Map"), 1, 1);
 }
 
