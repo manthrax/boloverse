@@ -154,8 +154,8 @@ function load(name, path, cb) {
         soundLoadedCB(event, name, cb);
     };
     let errorEvent = function (event) {
-        f.setAttribute("src", "./assets/default.ogg");
-        f.load();
+        //f.setAttribute("src", "../assets/sound/default.ogg");
+        //f.load();
         console.log("Couldn't load sound:" + name + " : " + path);
         //soundLoadedCount++;
     };
@@ -367,6 +367,8 @@ function freeSound(snd) {
 function play(name, vol, caller, doneCbfn, loop) {
     if (soundDisabled || playingCount > 4) return null;
 
+    let snd;
+	try{
     let rsrc = files[name];
     if (rsrc == undefined) {
         console.log("Sound:" + name + " is undefined.");
@@ -374,7 +376,6 @@ function play(name, vol, caller, doneCbfn, loop) {
     }
     let svol = g_globalSoundVolume * (vol != undefined ? parseFloat(vol) : 1.0);
     if (svol < 0.0001) return null;
-    let snd;
     if (freeChannels[rsrc.src]) {
         snd = freeChannels[rsrc.src].pop();
         if (freeChannels[rsrc.src].length == 0) delete freeChannels[rsrc.src];
@@ -388,7 +389,7 @@ function play(name, vol, caller, doneCbfn, loop) {
     snd.doneCbfn = doneCbfn;
     let soundTime = new Date();
     let tm = soundTime.getTime();
-    //console.log("Playing snd:"+name+" at "+tm+" duration:"+rsrc.duration);
+//console.log("Playing snd:"+name+" at "+tm+" duration:"+rsrc.duration);
     snd.name = name;
     //snd.tmDuration=(1000*rsrc.duration)-500;
     snd.tmDuration = 1000 * rsrc.duration;
@@ -406,7 +407,6 @@ function play(name, vol, caller, doneCbfn, loop) {
 		}
 	*/
     //snd.volume=1.0;
-	try{
     snd.play();
 		
 	}
