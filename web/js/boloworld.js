@@ -3,12 +3,12 @@ import messaging from "./util/messaging.js"
 import util from "./util/util.js"
 import programs from "./programs.js"
 import bolomap from "./bolomap.js"
-import   meshes from "../assets/meshes/testmesh.js"
-import "./util/seedrandom.js"
+import meshes from "../assets/meshes/testmesh.js"
+import "./lib/seedrandom.js"
 
-import {vec3,mat4} from "./util/gl-matrix.js"
+import {vec3,mat4} from "./lib/gl-matrix.js"
 let glUtil;
-if(typeof window==='object') glUtil = (await import("./util/gl-util.js")).default;
+if(typeof window==='object') glUtil = (await import("./lib/gl-util.js")).default;
 
 //    util.testDLL();
 
@@ -53,6 +53,11 @@ function showHudObject(obj){
     if(hudFGObject)hideHudObject();
     let exp = hudFGObject=addObject(obj,undefined,getHUDShader());
 
+    display.camera.perspectiveCamera.add(exp.meshRenderer.mesh);
+    exp.meshRenderer.mesh.position.x = -10;
+    exp.meshRenderer.mesh.position.z = -10;
+    exp.meshRenderer.mesh.scale.set(.1,.1,.1);
+    
     //mat4.translate(exp.matrix,[sfrnd(1),sfrnd(1),sfrnd(0)]);
     exp.scale = 0.01;
     exp.alpha = 0.0;
@@ -342,7 +347,7 @@ function bindToUnit(unit) {
 //            }
 }
 
-function loadTexture(name) {
+function loadTexture(name,ondone) {
 //       name = "grid.png";
 
     let tileTex = glUtil.loadTexture(gl, name, function (glTex) {
@@ -361,6 +366,7 @@ function loadTexture(name) {
                     obj.diffuseSampler = tileTex;
             }
         });
+        ondone && ondone(tileTex);
         //tileDiffuse = tileTex;
     });
     return tileTex;
@@ -385,13 +391,21 @@ function initWorld() {
     tileDiffuse.bindToUnit = bindToUnit;
 
     //let tileTex
-    tileDiffuse = loadTexture("./assets/tiles.png");
+    tileDiffuse = loadTexture("./assets/tiles.png",(tex)=>{
+        
+       // doExp(tex);
+        
+    });
 
 }
 
 let meshList = [];
 for (let me in meshes)
     meshList.push(me);
+
+
+
+
 let generateTileMesh = function (mat, mx, my, rand) {
     return meshes["ocean"];
 }
@@ -512,8 +526,7 @@ function getCellIndex(x, y) {
     else if (y > 255)y = 255;
     return x + (y * 256);
 }
-
-function loadMapByName(mapName) {
+async function loadMapByName(mapName) {
     messaging.send("mapLoading",mapName);
 
     objects.iterateActive({update: function (go) {if(!go.dontDestroy)go.active = false;}});
@@ -522,6 +535,14 @@ function loadMapByName(mapName) {
     for (let r in regionGrid)regionGrid[r] = null;
     regionBuildTop = 0;
     currentMap = bolomap.loadMapByName(mapName);
+
+
+let bms = new bolomapshader(display);
+await bms.init();
+//bms.create(currentMap);
+bms.createInstances(currentMap)
+
+    
     makeScene();
     return currentMap;
 }
@@ -571,14 +592,18 @@ function addMeshObject(mesh, position, shader, diffuse) {
     if(display==null){  //Node
         obj.meshRenderer={};
     }else{
+
+
+        
         let batch = display.geomBatch();
         display.instanceMesh(mesh, batch, obj.matrix);
-
         let dmesh = display.mesh(gl,
             batch.vertices,
             batch.indices,
             batch.normals,
             batch.uvs);
+
+        
         let meshRenderer = display.meshRenderer(gl, dmesh, shader ? shader : tileShader);
 
         let a=dmesh.matrix.elements;
@@ -594,6 +619,7 @@ function addMeshObject(mesh, position, shader, diffuse) {
 }
 
 function addObject(meshName, position, shader, diffuse) {
+    meshes[meshName].name=meshName;
     return addMeshObject(meshes[meshName], position, shader, diffuse);
 }
 
@@ -679,7 +705,11 @@ function rebuildRegionAtTile(fx, fy) {
     }
 }
 
+
+import bolomapshader from "./bolomapshader.js"
+
 function makeScene() {//display
+
 
     //	for(let t=0;t<640;t++){
     //		genSquare(sfrnd(10),sfrnd(10),sfrnd(10),sfrnd(Math.PI),sfrnd(Math.PI));

@@ -1,10 +1,13 @@
-
-import {vec3,mat4} from "./util/gl-matrix.js"
+import {vec3, mat4} from "./lib/gl-matrix.js"
 import camera from "./camera.js"
 
 import*as THREE from "three"
+import saveGLB from "./saveGLB.js"
 let {Scene, WebGLRenderer, PerspectiveCamera, Mesh, BufferGeometry, CircleGeometry, BoxGeometry, MeshBasicMaterial, Vector3, AnimationMixer, Object3D, TextureLoader, Sprite, SpriteMaterial, RepeatWrapping, } = THREE;
 import {OrbitControls} from "three/addons/controls/OrbitControls.js"
+
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js'
+    
 
 let renderer;
 let root;
@@ -38,6 +41,10 @@ let v3t7 = nv3();
 let v3t8 = nv3();
 let v3t9 = nv3();
 
+let v0 = new THREE.Vector3();
+let v1 = new THREE.Vector3();
+let v2 = new THREE.Vector3();
+let v3 = new THREE.Vector3();
 let projection = new Float32Array(16);
 let projectionInverse = new Float32Array(16);
 let viewInverse = new Float32Array(16);
@@ -61,75 +68,86 @@ let displayDefaults = function() {
     display.prototype.fov = this.fov;
     display.prototype.aspectRatio = canvas.width / canvas.height;
     mat4.perspective(this.fov, display.prototype.aspectRatio, this.nearDepth, this.farDepth, projection);
+
+    this.gltfLoader = new GLTFLoader()
 };
 
-
 function display() {
+
     displayDefaults.call(this);
     renderer = new WebGLRenderer({
-		antialias:true,
+        antialias: true,
         canvas
     })
-	renderer.outputColorSpace = 'srgb'
+    renderer.outputColorSpace = 'srgb'
     renderer.setClearColor(0x203080)
     scene = new THREE.Scene();
-	
-	root = new THREE.Group();
-	root.rotation.x=-Math.PI*.5;
-	root.updateMatrix();
-	root.matrixAutoUpdate = false;
+
+    root = new THREE.Group();
+
+    this.THREE = THREE;
+    this.scene = scene;
+    this.root = root;
+
+    root.rotation.x = -Math.PI * .5;
+    root.updateMatrix();
+    root.matrixAutoUpdate = false;
     scene.add(this.camera.perspectiveCamera)
-	scene.add(root);
+    scene.add(root);
 
-	this.camera.perspectiveCamera.position.set(20, 20, 20);
-	this.camera.perspectiveCamera.lookAt(root.position);
-	this.camera.perspectiveCamera.updateMatrix();
+    this.camera.perspectiveCamera.position.set(20, 20, 20);
+    this.camera.perspectiveCamera.lookAt(root.position);
+    this.camera.perspectiveCamera.updateMatrix();
 
-let dirLight = new THREE.DirectionalLight('white',1.);
-	scene.add(dirLight);
-	dirLight.position.set(0,30,0)
-	
-	orbitControls = new OrbitControls(this.camera.perspectiveCamera,renderer.domElement)
+    let dirLight = new THREE.DirectionalLight('white',1.);
+    scene.add(dirLight);
+    dirLight.position.set(0, 30, 0)
+
+    orbitControls = new OrbitControls(this.camera.perspectiveCamera,renderer.domElement)
+	orbitControls.enableDamping = true;
     displayModule._display = this
     this.resize = (gl,canvas)=>{
 
-		if (canvas.width != window.innerWidth ||
-			canvas.height != window.innerHeight) {
-		  // Change the size of the canvas to match the size it's being displayed
-		  canvas.width = window.innerWidth;
-		  canvas.height = window.innerHeight;
-		}
-		this.camera.perspectiveCamera.aspect = canvas.width/canvas.height;
-		this.camera.perspectiveCamera.updateProjectionMatrix();
-		
+        if (canvas.width != window.innerWidth || canvas.height != window.innerHeight) {
+            // Change the size of the canvas to match the size it's being displayed
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        this.camera.perspectiveCamera.aspect = canvas.width / canvas.height;
+        this.camera.perspectiveCamera.updateProjectionMatrix();
+
         renderer.setSize(canvas.width, canvas.height, false);
     }
-	
-	window.onresize=()=>{
-		this.resize(canvas.gl,canvas);
-	}
+
+    window.onresize = ()=>{
+        this.resize(canvas.gl, canvas);
+    }
+
 
     function meshRenderer(mesh, shader) {
+		
+		
         this.mesh = mesh;
         this.shader = shader;
         this.updateMesh = (patch)=>{
-			let m = patch.matrix;
-			let a = this.mesh.matrix.elements;
-			for(let i=0;i<16;i++)a[i]=m[i]
+            let m = patch.matrix;
+            let a = this.mesh.matrix.elements;
+            for (let i = 0; i < 16; i++)
+                a[i] = m[i]
         }
-		this.destroy=function(){
-			if(this.mesh)
-				if(this.mesh.parent)this.mesh.parent.remove(this.mesh)
-			delete this.mesh;
-		}
-        this.render=function(){
+        this.destroy = function() {
+            if (this.mesh)
+                if (this.mesh.parent)
+                    this.mesh.parent.remove(this.mesh)
+            delete this.mesh;
         }
+        this.render = function() {}
     }
     this.meshRenderer = (gl,mesh,shader)=>new meshRenderer(mesh,shader);
     this.destroyMesh = (gl,mesh)=>{
         if (!mesh.parent) {
-            console.log('Bad destroyMesh:',mesh.geometry.vertices) ;
-			return;
+            console.log('Bad destroyMesh:', mesh.geometry.vertices);
+            return;
             debugger ;
         }
         root.remove(mesh);
@@ -154,6 +172,33 @@ let dirLight = new THREE.DirectionalLight('white',1.);
     this.initRTT = (gl,width,height)=>{
         return new THREE.WebGLRenderTarget(width,height)
     }
+		
+	let firstExp;
+	let doExp = (tex)=>{
+	    if(!firstExp){
+	        firstExp = true;
+	        let escene = new THREE.Scene();
+	        let mat = new THREE.MeshStandardMaterial({map:tex});
+	        for( let k in meshes){
+	            let mesh = meshes[k]
+	            let batch = display.geomBatch();
+	            let matrix = new THREE.Matrix4()
+	            display.instanceMesh(mesh, batch, matrix.elements);
+	            let dmesh = display.mesh(gl,
+	                batch.vertices,
+	                batch.indices,
+	                batch.normals,
+	                batch.uvs);
+	            dmesh.name = k;
+	            dmesh.material = mat;
+	            //dmesh.material.map = tex;//tileDiffuse;//diffuse;
+	            escene.add(dmesh);
+	                
+	        }
+	        saveGLB(escene,"game.glb")
+	    }
+	}
+		
     _display = this;
 }
 
@@ -201,11 +246,11 @@ function orthoLookAt(at, from, up, rng, dpth) {
 }
 
 function setViewProjection(camera, projection) {
-	let view = camera.getViewMat()
+    let view = camera.getViewMat()
     //if (!_display.view)
-	{
+    {
         //return;
-		/*
+        /*
 		root.attach(cam);
         let ma = cam.matrix.elements;
         for (let i = 0; i < 16; i++)
@@ -214,14 +259,33 @@ function setViewProjection(camera, projection) {
 		scene.attach(cam);
         orbitControls.target.set(0,0,-1).applyQuaternion(cam.quaternion).add(cam.position);
 		*/
-		let cam = _display.camera.perspectiveCamera;
-		let cent=camera.getCenter();
-		cam.position.sub(orbitControls.target)
-		 root.localToWorld(orbitControls.target.set(...cent).multiplyScalar(-1));
-		cam.position.add(orbitControls.target)
-		//.applyQuaternion(cam.quaternion).add(cam.position);
+        let cam = _display.camera.perspectiveCamera;
+        let cent = camera.getCenter();
+       
 		
-		//_display.camera.perspectiveCamera.updateMatrixWorld(true);
+
+		
+		v0.copy(cam.position)
+		v0.sub(orbitControls.target)
+		let y = v0.y;
+		v0.y = 0;
+		let groundLen = v0.length();
+        //cam.position.add(orbitControls.target)
+		
+		root.localToWorld(orbitControls.target.set(...cent).multiplyScalar(-1));
+		
+v1.copy(cam.position).sub(orbitControls.target)
+v1.y =0;
+v1.setLength(groundLen);
+v1.y = Math.max(y,10.);
+v1.add(orbitControls.target)
+cam.position.copy(v1)
+        
+		
+		
+		//.applyQuaternion(cam.quaternion).add(cam.position);
+
+        //_display.camera.perspectiveCamera.updateMatrixWorld(true);
         //return;
     }
 
@@ -273,7 +337,7 @@ display.prototype.startRendering = function(viewCamera) {
 let renderedShaders = [];
 let renderedShaderTop = 0;
 display.prototype.renderActiveShaders = function(passIndex) {
-	orbitControls.update()
+    orbitControls.update()
     renderer.render(scene, this.camera.perspectiveCamera)
     for (let t = 0; t < renderedShaderTop; t++) {
         let shd = renderedShaders[t];
@@ -299,14 +363,13 @@ let tmpRay = {
 let v4t0 = [0, 0, 0, 0];
 //let tv0 = new THREE.Vector3();
 
-
-let raycaster=new THREE.Raycaster()
+let raycaster = new THREE.Raycaster()
 let tv0 = new THREE.Vector3();
 display.prototype.computePickRay = function(sx, sy, outRay) {
     if (!outRay)
         outRay = tmpRay;
 
-	tv0.set(sx * 2 / canvas.width - 1,1 - sy * 2 / canvas.height,0);
+    tv0.set(sx * 2 / canvas.width - 1, 1 - sy * 2 / canvas.height, 0);
     /*
 	v4t0[0] = sx * 2 / canvas.width - 1;
     v4t0[1] = 1 - sy * 2 / canvas.height;
@@ -318,18 +381,54 @@ display.prototype.computePickRay = function(sx, sy, outRay) {
     vec3.subtract(v4t0, cameraPos, outRay.d);
     vec3.normalize(outRay.d);
 	*/
-	raycaster.setFromCamera(tv0, this.camera.perspectiveCamera );
+    raycaster.setFromCamera(tv0, this.camera.perspectiveCamera);
 
-	let ro=raycaster.ray.origin;
-	let rd = raycaster.ray.direction
-	root.worldToLocal(ro)
-	root.worldToLocal(rd)
-	outRay.o=[ro.x,ro.y,ro.z]
-	outRay.d=[rd.x,rd.y,rd.z]
+    let ro = raycaster.ray.origin;
+    let rd = raycaster.ray.direction
+    root.worldToLocal(ro)
+    root.worldToLocal(rd)
+    outRay.o = [ro.x, ro.y, ro.z]
+    outRay.d = [rd.x, rd.y, rd.z]
     return outRay;
 }
 
-display.prototype.instanceMesh = function(mesh, onto, mat) {
+
+function InstanceCache(){
+	let instancedMeshes={}
+	let instances=[]
+	this.createInstance=(mesh)=>{
+		let icache=instancedMeshes[mesh.geometry.id];
+		if(!icache){
+			icache=new THREE.InstancedMesh(mesh.geometry,mesh.material,256);
+			icache.totalCount=icache.count;
+			icache.count = 0;
+			instancedMeshes[mesh.geometry.id] = icache				
+		}
+		let inst={
+			index:icache.count,
+			root:mesh,				
+		}
+		inst.index=icache.count;
+		if(icache.count<icache.totalCount){
+			icache.count++;
+		}else{
+			icache.dispose();
+			let svmatrix=icache.instanceMatrix;
+			icache = new THREE.InstancedMesh(mesh.geometry,mesh.material,icache.totalCount*2);
+			icache.instanceMatrix.array.set(svmatrix.array,0,icache.totalCount)
+			icache.totalCount*=2;
+
+		}
+		return inst;
+	}
+}
+
+let instanceCache = new InstanceCache();
+display.prototype.instanceMesh = function(mesh, onto, mat, obj) {
+
+	//if(obj)
+	//	obj.instance = instanceCache.createInstance(obj.meshRenderer.mesh)
+	
     let vbase = onto.vertices.length;
     onto.vertices = onto.vertices.concat(mesh.vertices);
     let vend = onto.vertices.length;

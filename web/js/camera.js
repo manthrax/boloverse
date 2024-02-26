@@ -1,7 +1,7 @@
 
 "use strict";
-import {vec3,mat4} from "./util/gl-matrix.js"
-import TWEEN from "./util/tween.js"
+import {vec3,mat4} from "./lib/gl-matrix.js"
+import TWEEN from "./lib/tween.js"
 let KeyboardState={
     _pressedKeys: new Array(128),
     _debounceKeys: new Array(128)

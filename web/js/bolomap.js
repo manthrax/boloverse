@@ -166,7 +166,7 @@ function loadMap(ascmap) {
     for (t = 0; t < tileCat.length; t++)
         tilesByName[tileCat[t].name] = tileCat[t];
     var ocean = tilesByName["Ocean"];
-    for (t = 0; t < map.length; t++) map[t] = [ocean];
+	    for (t = 0; t < map.length; t++) map[t] = [ocean];//Fill the map with ocean to start..
     t = 9;
     var nPill = imap[t++];
     var nBases = imap[t++];

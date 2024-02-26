@@ -1,5 +1,5 @@
 //import doc from "./util/domReady.js"
-import glUtil from "./util/gl-util.js"
+import glUtil from "./lib/gl-util.js"
 import displayModule from "./display3.js"
 import cameraModule from "./camera.js"
 

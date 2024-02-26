@@ -2,7 +2,7 @@
 import messaging from "./util/messaging.js"
 import PathFinder from "./util/astar.js"
 import PriorityQueue from "./util/priorityQueue.js"
-import {vec3,mat4} from "./util/gl-matrix.js"
+import {vec3,mat4} from "./lib/gl-matrix.js"
 
 let v3t0=[0,0,0];
 let v3t1=[0,0,0];

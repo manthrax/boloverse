@@ -4,7 +4,7 @@ import boloworld from "./boloworld.js"
 import network from "./network.js"
 import brain from "./brain.js"
 
-import {vec3,mat4} from "./util/gl-matrix.js"
+import {vec3,mat4} from "./lib/gl-matrix.js"
 
 if (typeof (global) == 'object') {
     //Node
@@ -40,7 +40,7 @@ let teamTickets = {
     0: startingTickets,
     1: startingTickets
 };
-
+let cursorPosition = nv3();
 let gamePaused = false;
 
 let tileSpeeds = {
@@ -385,15 +385,31 @@ function projectileUpdate() {
 }
 
 function fireProjectile(shooter) {
-    let bullet = boloworld.addObject("bullet", [shooter.matrix[12], shooter.matrix[13], 0.0]);
+
+    let cursorTarg = mat4.getRowV3(cursorSprite.matrix,3,v3t4)
+    
+    let shooterPos = mat4.getRowV3(shooter.matrix,3,v3t5)
+    
+    
+    let bullet = boloworld.addObject("bullet", [shooterPos[0], shooterPos[1], 0.0]);
     bullet.shooter = shooter;
     bullet.update = projectileUpdate;
     bullet.life = 55;
     mat4.getRowV3(shooter.matrix, 1, v3t0);
 
-    bullet.velocity = vec3.scale(v3t0, 0.75 * boloworld.worldMeter, [0, 0, 0]);
-    mat4.set(shooter.matrix, bullet.matrix);
 
+    if(localPlayer && (shooter==localPlayer.avatar)){
+        
+        vec3.subtract(cursorTarg,shooterPos)
+        vec3.normalize(cursorTarg);
+        
+        mat4.rotateZ(bullet.matrix, -Math.atan2(cursorTarg[0],cursorTarg[1]));
+        bullet.velocity = vec3.scale(cursorTarg, 0.75 * boloworld.worldMeter, [0, 0, 0]);
+        vec3.set(cursorTarg,v3t0);
+    }else{
+        bullet.velocity = vec3.scale(v3t0, 0.75 * boloworld.worldMeter, [0, 0, 0]);
+        mat4.set(shooter.matrix, bullet.matrix);
+    }
     vec3.scale(v3t0, boloworld.worldMeter * 3.0, v3t0);
     bullet.matrix[12] += v3t0[0];
     bullet.matrix[13] += v3t0[1];
@@ -869,6 +885,12 @@ function getCurrentControls() {
         controls |= playerControls.hack;
     if (alphaKeyDown(' '))
         controls |= playerControls.fire;
+    
+ //   if (display.camera.mouseButtonsDown == 2) {
+            
+ //       controls |= playerControls.fire
+        
+//   }
     return controls;
 }
 
@@ -994,6 +1016,7 @@ function updateLocalPlayer() {
     //vec3.add(ray.o,vec3.scale(ray.d,15.0));
     //mat4.setRowV3(cmat,3,ray.o);
 
+
     if (display.camera.mouseButtonsDown == 8) {
         //&1!=0){
         if (mouseWasDown == false) {
@@ -1074,14 +1097,18 @@ function updatePlayer() {
     if (controls & playerControls.mine) {
         currentTool = "mine";
     }
+
+    let rotationSpeed = rspeed;
+    if(this.speed<0)
+        rotationSpeed *= -1;
     if (controls & playerControls.up)
         this.speed += accel;
     if (controls & playerControls.down)
         this.speed -= accel;
     if (controls & playerControls.left)
-        this.angle += rspeed;
+        this.angle += rotationSpeed;
     if (controls & playerControls.right)
-        this.angle -= rspeed;
+        this.angle -= rotationSpeed;
     if (controls & playerControls.hack) {
         this.invMines = 40;
         this.invShells = 40;
@@ -1107,6 +1134,7 @@ function updatePlayer() {
         this.speed = 1.0;
     if(!moving)
         this.speed *= .95
+   
     //  Handle tank movement
     let msin = Math.sin(this.angle);
     let mcos = Math.cos(this.angle);
@@ -1239,6 +1267,8 @@ function updatePlayer() {
     mat4.getRowV3(pmat, 3, this.camTarget);
     mat4.identity(pmat);
     mat4.translate(pmat, this.camTarget);
+
+    
     mat4.rotateZ(pmat, this.angle)
 
     vec3.scale(this.camTarget, -1.0);

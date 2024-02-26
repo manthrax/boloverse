@@ -8,7 +8,7 @@
 
 import displayModule from "./display3.js";
 
-import {vec3,mat4} from "./util/gl-matrix.js"
+import {vec3,mat4} from "./lib/gl-matrix.js"
 
 import messaging from "./util/messaging.js";
 import bolomap from "./bolomap.js";
@@ -45,6 +45,7 @@ let sounds = [
     "tank_sinking_near",
     "bolospawn1.mp3",
     "bolotrack.mp3",
+    "arpeggamata.ogg",
     "spawn_1.mp3",
     "win",
     "lostbase",
@@ -221,7 +222,9 @@ messaging.listen("initSim", function () {
 
             audio.enabled = true;
             //audio.play("intro");
-            audio.play("bolotrack.mp3");
+            //audio.play("bolotrack.mp3");
+            audio.play("arpeggamata.ogg");
+            
             //messaging.send("playSound","bolotrack.mp3");
         };
         document.addEventListener("pointerdown", firstClick);

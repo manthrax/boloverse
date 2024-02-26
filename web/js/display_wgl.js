@@ -1,5 +1,5 @@
 import camera from "./camera.js"
-import glUtil from "./util/gl-util.js"
+import glUtil from "./lib/gl-util.js"
 
         "use strict";
 /*
